@@ -1,0 +1,17 @@
+{
+  "navigation": {
+    "home": "Startseite",
+    "about": "Über uns",
+    "projects": "Projekte",
+    "donate": "Spenden",
+    "partners": "Partner",
+    "transparency": "Transparenz",
+    "volunteer": "Ehrenamt",
+    "contact": "Kontakt"
+  },
+  "hero": {
+    "title": "Humanitäre Hilfe für Sudan & Jemen",
+    "subtitle": "GHAR Foundation - Eingetragene deutsche Hilfsorganisation für Krisenregionen",
+    "cta": "Jetzt spenden"
+  }
+}

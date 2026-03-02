@@ -1,0 +1,17 @@
+{
+  "navigation": {
+    "home": "Home",
+    "about": "About",
+    "projects": "Projects",
+    "donate": "Donate",
+    "partners": "Partners",
+    "transparency": "Transparency",
+    "volunteer": "Volunteer",
+    "contact": "Contact"
+  },
+  "hero": {
+    "title": "Humanitarian Aid for Sudan & Yemen",
+    "subtitle": "GHAR Foundation - German registered charity providing aid to crisis-affected regions",
+    "cta": "Donate Now"
+  }
+}
