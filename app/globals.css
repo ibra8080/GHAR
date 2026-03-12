@@ -3,21 +3,17 @@
 :root {
   --background: #FCFCFA;
   --foreground: #2A2A2A;
-  --primary: #1A6FA0;
-  --secondary: #2D8F16;
-  --accent: #EF8800;
-  --danger: #E20000;
-  --light: #B8FAFF;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-primary: var(--primary);
-  --color-secondary: var(--secondary);
-  --color-accent: var(--accent);
-  --color-danger: var(--danger);
-  --color-light: var(--light);
+  --color-primary: #1A6FA0;
+  --color-secondary: #2D8F16;
+  --color-accent: #EF8800;
+  --color-danger: #E20000;
+  --color-light: #B8FAFF;
+  --color-dark: #2A2A2A;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
