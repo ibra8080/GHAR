@@ -62,10 +62,10 @@ export default function Home() {
   ];
 
   const projects = [
-    { image: "/images/ProjectCards1.png", title: "Clean Water Project", desc: "Providing clean water access to villages in Sudan, improving health outcomes for thousands of families.", country: "Sudan" },
-    { image: "/images/ProjectCards2.png", title: "Food Aid Distribution", desc: "Delivering essential food packages to vulnerable families in Yemen facing severe food insecurity.", country: "Yemen" },
-    { image: "/images/ProjectCards3.png", title: "Medical Camps", desc: "Providing free medical care and essential medicines in refugee camps across conflict-affected regions.", country: "Sudan" },
-    { image: "/images/ProjectCards4.png", title: "Education Initiative", desc: "Supporting children's right to education by building and equipping schools in conflict zones.", country: "Yemen" },
+    { image: "/images/ProjectCards1.png", title: "Clean Water Project", desc: "Providing clean water access to villages in Sudan, improving health outcomes for thousands of families.", country: "Sudan", raised: 12500, goal: 20000 },
+    { image: "/images/ProjectCards2.png", title: "Food Aid Distribution", desc: "Delivering essential food packages to vulnerable families in Yemen facing severe food insecurity.", country: "Yemen", raised: 8700, goal: 15000 },
+    { image: "/images/ProjectCards3.png", title: "Medical Camps", desc: "Providing free medical care and essential medicines in refugee camps across conflict-affected regions.", country: "Sudan", raised: 6200, goal: 10000 },
+    { image: "/images/ProjectCards4.png", title: "Education Initiative", desc: "Supporting children's right to education by building and equipping schools in conflict zones.", country: "Yemen", raised: 9800, goal: 18000 },
   ];
 
   const news = [
@@ -156,6 +156,25 @@ export default function Home() {
                 <span className="text-xs text-primary font-semibold uppercase mb-1">{project.country}</span>
                 <h3 className="text-dark font-bold text-base mb-2">{project.title}</h3>
                 <p className="text-gray-500 text-sm flex-grow leading-relaxed">{project.desc}</p>
+                {/* Progress Bar */}
+                <div className="mt-3">
+                  <div className="flex justify-between text-xs text-gray-500 mb-1">
+                    <span>Raised: €{project.raised.toLocaleString()}</span>
+                    <span>Goal: €{project.goal.toLocaleString()}</span>
+                  </div>
+                  <div className="w-full bg-gray-100 rounded-full h-2">
+                    <div
+                      className="bg-secondary h-2 rounded-full"
+                      style={{ width: `${Math.round((project.raised / project.goal) * 100)}%` }}
+                    />
+                  </div>
+                  <p className="text-xs text-primary font-semibold mt-1">
+                    {Math.round((project.raised / project.goal) * 100)}% funded
+                  </p>
+                </div>
+                <Link href={`/projects/${["clean-water-project","food-aid-distribution","medical-camps","education-initiative"][i]}`} className="mt-2 text-primary text-xs hover:underline">
+                  Read More →
+                </Link>
                 <Link href="/donate" className="mt-4 bg-secondary hover:bg-green-700 text-white text-center py-2 rounded font-medium text-sm transition-colors">
                   Donate
                 </Link>
