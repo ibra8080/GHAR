@@ -5,18 +5,14 @@ import Link from "next/link";
 import { useState } from "react";
 import { Eye, Target, Heart, Shield, Users, Award } from "lucide-react";
 import { createClient } from "@supabase/supabase-js";
+import { team, partners } from "@/lib/data";
+
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-const team = [
-  { name: "Ahmed Al-Rashid", role: "Executive Director", image: "/images/HeroImage1.png" },
-  { name: "Sara Müller", role: "Program Manager", image: "/images/HeroImage2.png" },
-  { name: "Omar Hassan", role: "Field Coordinator", image: "/images/ProjectCards1.png" },
-  { name: "Lena Weber", role: "Finance Director", image: "/images/ProjectCards2.png" },
-];
 
 const values = [
   { icon: <Heart size={28} className="text-primary" />, title: "Humanity", desc: "We place human dignity at the center of everything we do." },
@@ -25,12 +21,6 @@ const values = [
   { icon: <Award size={28} className="text-primary" />, title: "Accountability", desc: "We uphold the highest standards in humanitarian aid delivery." },
 ];
 
-const partners = [
-  { name: "Partner 1", image: "/images/GahrLogo.svg" },
-  { name: "Partner 2", image: "/images/GahrLogo.svg" },
-  { name: "Partner 3", image: "/images/GahrLogo.svg" },
-  { name: "Partner 4", image: "/images/GahrLogo.svg" },
-];
 
 export default function AboutPage() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });

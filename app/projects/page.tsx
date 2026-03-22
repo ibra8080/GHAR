@@ -3,15 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { projects } from "@/lib/data";
 
-const projects = [
-  { id: "clean-water-project", image: "/images/ProjectCards1.png", title: "Clean Water Project", desc: "Providing clean water access to villages in Sudan, improving health outcomes for thousands of families through solar-powered pumping stations.", country: "Sudan", category: "Water", raised: 12500, goal: 20000 },
-  { id: "food-aid-distribution", image: "/images/ProjectCards2.png", title: "Food Aid Distribution", desc: "Delivering essential food packages to vulnerable families in Yemen facing severe food insecurity and malnutrition.", country: "Yemen", category: "Food", raised: 8700, goal: 15000 },
-  { id: "medical-camps", image: "/images/ProjectCards3.png", title: "Medical Camps", desc: "Providing free medical care and essential medicines in refugee camps across conflict-affected regions in Sudan.", country: "Sudan", category: "Medical", raised: 6200, goal: 10000 },
-  { id: "education-initiative", image: "/images/ProjectCards4.png", title: "Education Initiative", desc: "Supporting children's right to education by building and equipping schools in conflict zones across Yemen.", country: "Yemen", category: "Education", raised: 9800, goal: 18000 },
-  { id: "emergency-shelter", image: "/images/HeroImage1.png", title: "Emergency Shelter", desc: "Building temporary and permanent shelters for families displaced by conflict and natural disasters in Sudan.", country: "Sudan", category: "Shelter", raised: 14000, goal: 25000 },
-  { id: "winter-aid-campaign", image: "/images/HeroImage2.png", title: "Winter Aid Campaign", desc: "Distributing winter clothing, blankets, and heating supplies to vulnerable families in Yemen during harsh winter months.", country: "Yemen", category: "Aid", raised: 5500, goal: 12000 },
-];
 
 const filters = ["All", "Sudan", "Yemen"];
 

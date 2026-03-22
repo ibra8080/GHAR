@@ -4,6 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { Users, Heart, Globe } from "lucide-react";
+import { slides, projects, news, stats } from "@/lib/data";
+
 
 // Counter Hook
 function useCounter(target: number, duration: number = 2000) {
@@ -38,42 +40,7 @@ function useCounter(target: number, duration: number = 2000) {
 export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  const slides = [
-    {
-      image: "/images/HeroImage1.png",
-      title: "Sheltering Lives,\nRestoring Hope",
-      subtitle: "German Humanitarian Relief Organization providing aid to crisis-affected regions",
-    },
-    {
-      image: "/images/HeroImage2.png",
-      title: "Clean Water\nFor All",
-      subtitle: "Bringing safe drinking water to thousands of families in Sudan",
-    },
-    {
-      image: "/images/ProjectCards1.png",
-      title: "Fighting Hunger\nTogether",
-      subtitle: "Delivering food aid to vulnerable families across Yemen",
-    },
-    {
-      image: "/images/ProjectCards2.png",
-      title: "Education\nChanges Lives",
-      subtitle: "Supporting children's right to learn in conflict zones",
-    },
-  ];
-
-  const projects = [
-    { image: "/images/ProjectCards1.png", title: "Clean Water Project", desc: "Providing clean water access to villages in Sudan, improving health outcomes for thousands of families.", country: "Sudan", raised: 12500, goal: 20000 },
-    { image: "/images/ProjectCards2.png", title: "Food Aid Distribution", desc: "Delivering essential food packages to vulnerable families in Yemen facing severe food insecurity.", country: "Yemen", raised: 8700, goal: 15000 },
-    { image: "/images/ProjectCards3.png", title: "Medical Camps", desc: "Providing free medical care and essential medicines in refugee camps across conflict-affected regions.", country: "Sudan", raised: 6200, goal: 10000 },
-    { image: "/images/ProjectCards4.png", title: "Education Initiative", desc: "Supporting children's right to education by building and equipping schools in conflict zones.", country: "Yemen", raised: 9800, goal: 18000 },
-  ];
-
-  const news = [
-    { image: "/images/NewsSection1.png", title: "GHAR Foundation launches new water project in Sudan", excerpt: "The new water project aims to provide clean drinking water to over 5,000 families in rural Sudan through solar-powered pumping stations.", date: "March 2026" },
-    { image: "/images/NewsSection2.png", title: "Food distribution campaign reaches 1,000 families in Yemen", excerpt: "Our latest food aid campaign successfully distributed emergency food packages to families in the most affected areas of Yemen.", date: "February 2026" },
-    { image: "/images/ProjectCards3.png", title: "Medical camp serves 800 patients in refugee camp", excerpt: "GHAR Foundation's mobile medical team provided free consultations, medicines and emergency care to hundreds of patients.", date: "January 2026" },
-    { image: "/images/ProjectCards4.png", title: "New school opens its doors for 200 children", excerpt: "Thanks to the generous support of our donors, a new school has been built providing quality education to 200 children in conflict zones.", date: "December 2025" },
-  ];
+  
 
   // Auto-play slider
   useEffect(() => {
@@ -84,9 +51,9 @@ export default function Home() {
   }, [slides.length]);
 
   // Counters
-  const counter1 = useCounter(5100);
-  const counter2 = useCounter(2100);
-  const counter3 = useCounter(12);
+  const counter1 = useCounter(stats[0].number);
+  const counter2 = useCounter(stats[1].number);
+  const counter3 = useCounter(stats[2].number);
 
   return (
     <div className="bg-background">
@@ -147,7 +114,7 @@ export default function Home() {
       <section className="py-16 px-4 md:px-8 max-w-7xl mx-auto">
         <h2 className="text-3xl font-bold text-dark mb-10 text-center">Our Projects</h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          {projects.map((project, i) => (
+          {projects.slice(0, 4).map((project, i) => (
             <div key={i} className="rounded-xl overflow-hidden shadow-md bg-white flex flex-col">
               <div className="relative h-48">
                 <Image src={project.image} alt={project.title} fill className="object-cover" />
@@ -172,7 +139,7 @@ export default function Home() {
                     {Math.round((project.raised / project.goal) * 100)}% funded
                   </p>
                 </div>
-                <Link href={`/projects/${["clean-water-project","food-aid-distribution","medical-camps","education-initiative"][i]}`} className="mt-2 text-primary text-xs hover:underline">
+                <Link href={`/projects/${project.id}`} className="mt-2 text-primary text-xs hover:underline">
                   Read More →
                 </Link>
                 <Link href="/donate" className="mt-4 bg-secondary hover:bg-green-700 text-white text-center py-2 rounded font-medium text-sm transition-colors">
@@ -225,7 +192,7 @@ export default function Home() {
           </Link>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {news.map((item, i) => (
+          {news.slice(0, 4).map((item, i) => (
             <div key={i} className="flex gap-4 bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
               <div className="relative w-36 shrink-0">
                 <Image src={item.image} alt={item.title} fill className="object-cover" />

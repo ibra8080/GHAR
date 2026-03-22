@@ -4,21 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { Calendar, ArrowLeft, ArrowRight } from "lucide-react";
+import { news as allNews } from "@/lib/data";
 
-const allNews = [
-  { id: 1, image: "/images/NewsSection1.png", title: "GHAR Foundation launches new water project in Sudan", excerpt: "The new water project aims to provide clean drinking water to over 5,000 families in rural Sudan through solar-powered pumping stations.", date: "March 15, 2026", year: 2026, category: "Water" },
-  { id: 2, image: "/images/NewsSection2.png", title: "Food distribution campaign reaches 1,000 families in Yemen", excerpt: "Our latest food aid campaign successfully distributed emergency food packages to families in the most affected areas of Yemen.", date: "February 20, 2026", year: 2026, category: "Food" },
-  { id: 3, image: "/images/ProjectCards3.png", title: "Medical camp serves 800 patients in refugee camp", excerpt: "GHAR Foundation's mobile medical team provided free consultations, medicines and emergency care to hundreds of patients.", date: "January 10, 2026", year: 2026, category: "Medical" },
-  { id: 4, image: "/images/ProjectCards4.png", title: "New school opens its doors for 200 children", excerpt: "Thanks to the generous support of our donors, a new school has been built providing quality education to 200 children in conflict zones.", date: "December 5, 2025", year: 2025, category: "Education" },
-  { id: 5, image: "/images/HeroImage1.png", title: "Emergency shelter project completed in Sudan", excerpt: "GHAR Foundation has successfully completed the construction of 50 permanent homes for displaced families in Sudan.", date: "November 18, 2025", year: 2025, category: "Shelter" },
-  { id: 6, image: "/images/HeroImage2.png", title: "Winter aid campaign kicks off in Yemen", excerpt: "As temperatures drop, GHAR Foundation begins distributing winter kits to vulnerable families across three governorates in Yemen.", date: "October 30, 2025", year: 2025, category: "Aid" },
-  { id: 7, image: "/images/NewsSection1.png", title: "GHAR Foundation receives recognition from German authorities", excerpt: "The foundation has been officially recognized by German humanitarian authorities for its transparent operations and effective aid delivery.", date: "September 12, 2025", year: 2025, category: "News" },
-  { id: 8, image: "/images/NewsSection2.png", title: "Partnership signed with local organizations in Sudan", excerpt: "A new partnership agreement has been signed with three local organizations in Sudan to strengthen our presence and reach on the ground.", date: "August 3, 2025", year: 2025, category: "News" },
-  { id: 9, image: "/images/ProjectCards1.png", title: "Clean water project phase 2 begins", excerpt: "Following the success of phase 1, GHAR Foundation has launched phase 2 of the clean water project, targeting 8 additional villages.", date: "July 20, 2025", year: 2025, category: "Water" },
-  { id: 10, image: "/images/ProjectCards2.png", title: "Ramadan food campaign distributes 2,000 packages", excerpt: "During Ramadan 2025, GHAR Foundation distributed 2,000 food packages to families in Sudan and Yemen, bringing joy during the holy month.", date: "March 25, 2025", year: 2025, category: "Food" },
-  { id: 11, image: "/images/ProjectCards3.png", title: "Medical training program launched for local health workers", excerpt: "A new training program has been launched to build local capacity in basic healthcare delivery in remote areas of Sudan.", date: "February 14, 2025", year: 2025, category: "Medical" },
-  { id: 12, image: "/images/ProjectCards4.png", title: "GHAR Foundation celebrates its first anniversary", excerpt: "One year after its founding, GHAR Foundation reflects on its achievements and looks ahead to an ambitious year of growth and impact.", date: "January 1, 2025", year: 2025, category: "News" },
-];
 
 const ITEMS_PER_PAGE = 10;
 const years = ["All", "2026", "2025"];
