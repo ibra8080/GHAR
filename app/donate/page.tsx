@@ -241,7 +241,7 @@ export default function DonatePage() {
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
               <h3 className="text-dark font-bold text-lg mb-4">Other Ways to Donate</h3>
               <div className="flex flex-col gap-3">
-                
+                <a
                   href="https://www.launchgood.com"
                   target="_blank"
                   rel="noopener noreferrer"
