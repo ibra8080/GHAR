@@ -45,7 +45,8 @@ export default function DonatePage() {
   };
 
   const projectOptions = [
-    { id: "general", label: "Where Most Needed" },
+    { id: "general", label: "General Donation" },
+    { id: "zakat", label: "Zakat" },
     ...projects.map((p) => ({ id: p.id, label: p.title })),
   ];
 
