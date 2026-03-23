@@ -4,14 +4,58 @@
     "about": "Über uns",
     "projects": "Projekte",
     "donate": "Spenden",
-    "partners": "Partner",
     "transparency": "Transparenz",
     "volunteer": "Ehrenamt",
-    "contact": "Kontakt"
+    "contact": "Kontakt",
+    "donateNow": "Jetzt spenden"
   },
-  "hero": {
-    "title": "Humanitäre Hilfe für Sudan & Jemen",
-    "subtitle": "GHAR Foundation - Eingetragene deutsche Hilfsorganisation für Krisenregionen",
-    "cta": "Jetzt spenden"
+  "home": {
+    "projects": "Unsere Projekte",
+    "funded": "finanziert",
+    "raised": "Gesammelt",
+    "goal": "Ziel",
+    "readMore": "Mehr lesen →",
+    "donate": "Spenden",
+    "quote": "Jede Geste der Großzügigkeit zählt, und jeder kann dazu beitragen, die Welt zu einem besseren Ort zu machen.",
+    "familiesSupported": "unterstützte Familien",
+    "donationsReceived": "erhaltene Spenden",
+    "countriesReached": "erreichte Länder",
+    "latestNews": "Aktuelle Nachrichten",
+    "viewAllNews": "Alle Nachrichten →",
+    "donateNow": "Jetzt spenden"
+  },
+  "about": {
+  "heroTitle": "Über die GHAR Foundation",
+  "heroSubtitle": "Eine deutsche humanitäre Organisation, die sich der Unterstützung von Krisenregionen widmet",
+  "storyTitle": "Unsere Geschichte",
+  "story1": "Die GHAR Foundation wurde in Bremen, Deutschland, von einer Gruppe engagierter Menschen gegründet, die die verheerenden humanitären Krisen in Sudan und Jemen hautnah miterlebt haben.",
+  "story2": "Der Name \"GHAR\" — arabisch für \"Höhle\" — symbolisiert Schutz und Zuflucht und spiegelt unsere Kernmission wider, Vertriebenen Hoffnung zu geben.",
+  "story3": "Seit unserer Gründung sind wir zu einer vertrauenswürdigen humanitären Organisation gewachsen, die Tausende von Familien in mehreren Krisengebieten unterstützt.",
+  "missionTitle": "Unsere Mission",
+  "missionDesc": "Sofortige und nachhaltige humanitäre Hilfe für krisenbetroffene Gemeinschaften in Sudan, Jemen und darüber hinaus zu leisten — sauberes Wasser, Nahrung, medizinische Versorgung und Bildung bereitzustellen.",
+  "visionTitle": "Unsere Vision",
+  "visionDesc": "Eine Welt, in der jeder Mensch Zugang zu den grundlegenden Lebensnotwendigkeiten hat und Gemeinschaften mit Würde und Hoffnung wiederaufbauen können.",
+  "valuesTitle": "Unsere Werte",
+  "teamTitle": "Unser Team",
+  "partnersTitle": "Unsere Partner",
+  "ctaTitle": "Machen Sie heute einen Unterschied",
+  "ctaSubtitle": "Schließen Sie sich unserer Mission an, denen Hilfe zu bringen, die sie am meisten brauchen.",
+  "donateNow": "Jetzt spenden",
+  "volunteerWithUs": "Ehrenamtlich tätig werden",
+  "contactTitle": "Kontakt aufnehmen",
+  "contactSubtitle": "Senden Sie uns eine Nachricht und wir melden uns so schnell wie möglich.",
+  "namePlaceholder": "Ihr Name",
+  "emailPlaceholder": "Ihre E-Mail",
+  "messagePlaceholder": "Ihre Nachricht",
+  "sending": "Wird gesendet...",
+  "sendMessage": "Nachricht senden",
+  "successMessage": "Nachricht erfolgreich gesendet! Wir werden uns bald melden.",
+  "errorMessage": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
+  "values": {
+    "humanity": { "title": "Menschlichkeit", "desc": "Wir stellen die Menschenwürde in den Mittelpunkt unseres Handelns." },
+    "transparency": { "title": "Transparenz", "desc": "Vollständige Rechenschaftspflicht gegenüber unseren Spendern." },
+    "impact": { "title": "Wirkung", "desc": "Wir messen unseren Erfolg am realen Wandel, den wir bewirken." },
+    "accountability": { "title": "Verantwortung", "desc": "Wir halten die höchsten Standards in der humanitären Hilfe ein." }
+  }
   }
 }

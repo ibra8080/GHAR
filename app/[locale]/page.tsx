@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { Users, Heart, Globe } from "lucide-react";
 import { slides, projects, news, stats } from "@/lib/data";
-
+import { useTranslations, useLocale } from "next-intl";
 
 // Counter Hook
 function useCounter(target: number, duration: number = 2000) {
@@ -39,18 +39,16 @@ function useCounter(target: number, duration: number = 2000) {
 
 export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const t = useTranslations("home");
+  const locale = useLocale();
 
-  
-
-  // Auto-play slider
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 10000);
     return () => clearInterval(interval);
-  }, [slides.length]);
+  }, []);
 
-  // Counters
   const counter1 = useCounter(stats[0].number);
   const counter2 = useCounter(stats[1].number);
   const counter3 = useCounter(stats[2].number);
@@ -71,7 +69,6 @@ export default function Home() {
           ))}
           <div className="absolute inset-0 bg-black/40" />
 
-          {/* Text */}
           <div className="absolute inset-0 flex flex-col justify-center px-8 md:px-20">
             <h1 className="text-4xl md:text-6xl font-bold text-white leading-tight max-w-2xl transition-all duration-700">
               {slides[currentSlide].title.split("\n").map((line, i) => (
@@ -83,7 +80,6 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Dots */}
           <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2">
             {slides.map((_, i) => (
               <button
@@ -94,25 +90,23 @@ export default function Home() {
             ))}
           </div>
 
-          {/* Donate Button - Desktop */}
           <div className="hidden md:block absolute bottom-6 right-8 md:right-20">
-            <Link href="/donate" className="bg-secondary hover:bg-green-700 text-white px-8 py-3 rounded font-semibold text-lg transition-colors">
-              Donate Now
+            <Link href={`/${locale}/donate`} className="bg-secondary hover:bg-green-700 text-white px-8 py-3 rounded font-semibold text-lg transition-colors">
+              {t("donateNow")}
             </Link>
           </div>
         </div>
 
-        {/* Donate Button - Mobile (below image) */}
         <div className="md:hidden flex justify-center py-4 bg-background">
-          <Link href="/donate" className="bg-secondary hover:bg-green-700 text-white px-10 py-3 rounded font-semibold text-lg transition-colors">
-            Donate Now
+          <Link href={`/${locale}/donate`} className="bg-secondary hover:bg-green-700 text-white px-10 py-3 rounded font-semibold text-lg transition-colors">
+            {t("donateNow")}
           </Link>
         </div>
       </section>
 
       {/* Projects Section */}
       <section className="py-16 px-4 md:px-8 max-w-7xl mx-auto">
-        <h2 className="text-3xl font-bold text-dark mb-10 text-center">Our Projects</h2>
+        <h2 className="text-3xl font-bold text-dark mb-10 text-center">{t("projects")}</h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {projects.slice(0, 4).map((project, i) => (
             <div key={i} className="rounded-xl overflow-hidden shadow-md bg-white flex flex-col">
@@ -123,11 +117,10 @@ export default function Home() {
                 <span className="text-xs text-primary font-semibold uppercase mb-1">{project.country}</span>
                 <h3 className="text-dark font-bold text-base mb-2">{project.title}</h3>
                 <p className="text-gray-500 text-sm flex-grow leading-relaxed">{project.desc}</p>
-                {/* Progress Bar */}
                 <div className="mt-3">
                   <div className="flex justify-between text-xs text-gray-500 mb-1">
-                    <span>Raised: €{project.raised.toLocaleString()}</span>
-                    <span>Goal: €{project.goal.toLocaleString()}</span>
+                    <span>{t("raised")}: €{project.raised.toLocaleString()}</span>
+                    <span>{t("goal")}: €{project.goal.toLocaleString()}</span>
                   </div>
                   <div className="w-full bg-gray-100 rounded-full h-2">
                     <div
@@ -136,14 +129,14 @@ export default function Home() {
                     />
                   </div>
                   <p className="text-xs text-primary font-semibold mt-1">
-                    {Math.round((project.raised / project.goal) * 100)}% funded
+                    {Math.round((project.raised / project.goal) * 100)}% {t("funded")}
                   </p>
                 </div>
-                <Link href={`/projects/${project.id}`} className="mt-2 text-primary text-xs hover:underline">
-                  Read More →
+                <Link href={`/${locale}/projects/${project.id}`} className="mt-2 text-primary text-xs hover:underline">
+                  {t("readMore")}
                 </Link>
-                <Link href="/donate" className="mt-4 bg-secondary hover:bg-green-700 text-white text-center py-2 rounded font-medium text-sm transition-colors">
-                  Donate
+                <Link href={`/${locale}/donate`} className="mt-4 bg-secondary hover:bg-green-700 text-white text-center py-2 rounded font-medium text-sm transition-colors">
+                  {t("donate")}
                 </Link>
               </div>
             </div>
@@ -156,7 +149,7 @@ export default function Home() {
         <div className="max-w-3xl mx-auto text-center px-4">
           <span className="text-6xl text-primary font-serif leading-none">&ldquo;</span>
           <p className="text-xl md:text-2xl text-dark font-medium italic mt-2">
-            Every act of generosity counts, and everyone can contribute to making the world a better place.
+            {t("quote")}
           </p>
           <span className="text-6xl text-primary font-serif leading-none">&rdquo;</span>
         </div>
@@ -168,17 +161,17 @@ export default function Home() {
           <div ref={counter1.ref} className="flex flex-col items-center gap-3 p-8 border border-gray-100 rounded-xl">
             <Users size={32} className="text-primary" />
             <span className="text-4xl font-bold text-dark">{counter1.count.toLocaleString()}+</span>
-            <span className="text-gray-500 text-sm">Families Supported</span>
+            <span className="text-gray-500 text-sm">{t("familiesSupported")}</span>
           </div>
           <div ref={counter2.ref} className="flex flex-col items-center gap-3 p-8 border border-gray-100 rounded-xl">
             <Heart size={32} className="text-primary" />
             <span className="text-4xl font-bold text-dark">{counter2.count.toLocaleString()}+</span>
-            <span className="text-gray-500 text-sm">Donations Received</span>
+            <span className="text-gray-500 text-sm">{t("donationsReceived")}</span>
           </div>
           <div ref={counter3.ref} className="flex flex-col items-center gap-3 p-8 border border-gray-100 rounded-xl">
             <Globe size={32} className="text-primary" />
             <span className="text-4xl font-bold text-dark">{counter3.count}+</span>
-            <span className="text-gray-500 text-sm">Countries Reached</span>
+            <span className="text-gray-500 text-sm">{t("countriesReached")}</span>
           </div>
         </div>
       </section>
@@ -186,9 +179,9 @@ export default function Home() {
       {/* News Section */}
       <section className="py-16 px-4 max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-10">
-          <h2 className="text-3xl font-bold text-dark">Latest News</h2>
-          <Link href="/news" className="text-primary hover:underline text-sm font-medium">
-            View all news →
+          <h2 className="text-3xl font-bold text-dark">{t("latestNews")}</h2>
+          <Link href={`/${locale}/news`} className="text-primary hover:underline text-sm font-medium">
+            {t("viewAllNews")}
           </Link>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -201,7 +194,7 @@ export default function Home() {
                 <span className="text-xs text-primary font-semibold mb-2">{item.date}</span>
                 <h3 className="text-dark font-semibold text-sm leading-snug mb-2">{item.title}</h3>
                 <p className="text-gray-500 text-xs leading-relaxed">{item.excerpt}</p>
-                <Link href="/news" className="text-primary text-xs mt-3 hover:underline">Read more →</Link>
+                <Link href={`/${locale}/news`} className="text-primary text-xs mt-3 hover:underline">{t("readMore")}</Link>
               </div>
             </div>
           ))}

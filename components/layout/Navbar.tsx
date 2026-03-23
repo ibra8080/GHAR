@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { Search, User, Menu, X, ChevronDown } from "lucide-react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useRouter, usePathname } from "next/navigation";
 
 const languages = [
@@ -17,11 +17,11 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const locale = useLocale();
+  const t = useTranslations("navigation");
   const router = useRouter();
   const pathname = usePathname();
 
   const switchLanguage = (newLocale: string) => {
-    // استبدل الـ locale في الـ pathname
     const segments = pathname.split("/");
     segments[1] = newLocale;
     const newPath = segments.join("/");
@@ -38,21 +38,15 @@ export default function Navbar() {
 
           {/* Logo */}
           <Link href={`/${locale}`} className="flex items-center">
-            <Image
-              src="/images/GahrLogo.svg"
-              alt="GHAR Foundation"
-              width={120}
-              height={60}
-              priority
-            />
+            <Image src="/images/GahrLogo.svg" alt="GHAR Foundation" width={120} height={60} priority />
           </Link>
 
           {/* Desktop Center Links */}
           <div className="hidden md:flex items-center gap-8">
-            <Link href={`/${locale}/about`} className="text-primary hover:text-[#2A2A2A] transition-colors text-sm font-medium">About US</Link>
-            <Link href={`/${locale}/projects`} className="text-primary hover:text-[#2A2A2A] transition-colors text-sm font-medium">Our Projects</Link>
-            <Link href={`/${locale}/volunteer`} className="text-primary hover:text-[#2A2A2A] transition-colors text-sm font-medium">Volunteer</Link>
-            <Link href={`/${locale}/contact`} className="text-primary hover:text-[#2A2A2A] transition-colors text-sm font-medium">Contact US</Link>
+            <Link href={`/${locale}/about`} className="text-primary hover:text-[#2A2A2A] transition-colors text-sm font-medium">{t("about")}</Link>
+            <Link href={`/${locale}/projects`} className="text-primary hover:text-[#2A2A2A] transition-colors text-sm font-medium">{t("projects")}</Link>
+            <Link href={`/${locale}/volunteer`} className="text-primary hover:text-[#2A2A2A] transition-colors text-sm font-medium">{t("volunteer")}</Link>
+            <Link href={`/${locale}/contact`} className="text-primary hover:text-[#2A2A2A] transition-colors text-sm font-medium">{t("contact")}</Link>
           </div>
 
           {/* Desktop Right Side */}
@@ -89,7 +83,7 @@ export default function Navbar() {
             </div>
 
             <Link href={`/${locale}/donate`} className="bg-secondary hover:bg-green-700 text-white px-5 py-2 rounded text-sm font-semibold transition-colors ml-2">
-              Donate Now
+              {t("donateNow")}
             </Link>
           </div>
 
@@ -97,34 +91,32 @@ export default function Navbar() {
           <button className="md:hidden p-2 text-dark" onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
-
         </div>
       </div>
 
       {/* Mobile Menu */}
       {menuOpen && (
         <div className="md:hidden bg-background border-t border-gray-100 px-4 py-4 flex flex-col gap-4">
-          <Link href={`/${locale}/about`} className="text-dark hover:text-primary text-sm font-medium" onClick={() => setMenuOpen(false)}>About US</Link>
-          <Link href={`/${locale}/projects`} className="text-dark hover:text-primary text-sm font-medium" onClick={() => setMenuOpen(false)}>Our Projects</Link>
-          <Link href={`/${locale}/volunteer`} className="text-dark hover:text-primary text-sm font-medium" onClick={() => setMenuOpen(false)}>Volunteer</Link>
-          <Link href={`/${locale}/contact`} className="text-dark hover:text-primary text-sm font-medium" onClick={() => setMenuOpen(false)}>Contact US</Link>
-          {/* Mobile Language Switcher */}
+          <Link href={`/${locale}/about`} className="text-dark hover:text-primary text-sm font-medium" onClick={() => setMenuOpen(false)}>{t("about")}</Link>
+          <Link href={`/${locale}/projects`} className="text-dark hover:text-primary text-sm font-medium" onClick={() => setMenuOpen(false)}>{t("projects")}</Link>
+          <Link href={`/${locale}/volunteer`} className="text-dark hover:text-primary text-sm font-medium" onClick={() => setMenuOpen(false)}>{t("volunteer")}</Link>
+          <Link href={`/${locale}/contact`} className="text-dark hover:text-primary text-sm font-medium" onClick={() => setMenuOpen(false)}>{t("contact")}</Link>
           <div className="flex gap-3">
             {languages.map((lang) => (
               <button
                 key={lang.code}
                 onClick={() => { switchLanguage(lang.code); setMenuOpen(false); }}
                 className={`text-sm font-medium px-2 py-1 rounded transition-colors ${
-                  locale === lang.code
-                    ? "bg-primary text-white"
-                    : "text-dark hover:text-primary"
+                  locale === lang.code ? "bg-primary text-white" : "text-dark hover:text-primary"
                 }`}
               >
                 {lang.label}
               </button>
             ))}
           </div>
-          <Link href={`/${locale}/donate`} className="bg-secondary text-white px-5 py-2 rounded text-sm font-semibold text-center" onClick={() => setMenuOpen(false)}>Donate Now</Link>
+          <Link href={`/${locale}/donate`} className="bg-secondary text-white px-5 py-2 rounded text-sm font-semibold text-center" onClick={() => setMenuOpen(false)}>
+            {t("donateNow")}
+          </Link>
         </div>
       )}
     </nav>
