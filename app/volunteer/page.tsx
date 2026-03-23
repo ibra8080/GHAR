@@ -69,6 +69,7 @@ const jobs = [
 export default function VolunteerPage() {
   const [form, setForm] = useState({
     name: "",
+    phone: "",
     email: "",
     country: "",
     specialty: "",
@@ -80,10 +81,19 @@ export default function VolunteerPage() {
   const handleSubmit = async () => {
     if (!form.name || !form.email || !form.country || !form.specialty || !form.availability) return;
     setStatus("loading");
+    
     const { error } = await supabase.from("volunteers").insert([form]);
     if (error) { setStatus("error"); return; }
+
+    // Send confirmation email
+    await fetch("/api/send-volunteer-confirmation", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: form.name, email: form.email }),
+    });
+
     setStatus("success");
-    setForm({ name: "", email: "", country: "", specialty: "", availability: "", message: "" });
+    setForm({ name: "", phone: "", email: "", country: "", specialty: "", availability: "", message: "" });
   };
 
   return (
@@ -132,13 +142,22 @@ export default function VolunteerPage() {
                   className="border border-gray-200 rounded-lg px-4 py-3 text-sm text-dark focus:outline-none focus:border-primary transition-colors"
                 />
                 <input
+                    type="tel"
+                    placeholder="Your Phone Number"
+                    value={form.phone}
+                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                    className="border border-gray-200 rounded-lg px-4 py-3 text-sm text-dark focus:outline-none focus:border-primary transition-colors"
+                    />
+                </div>
+                <input
                   type="email"
                   placeholder="Your Email *"
                   value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  onChange={(e) => setForm({ ...form, email: e.target.value.toLowerCase() })}
                   className="border border-gray-200 rounded-lg px-4 py-3 text-sm text-dark focus:outline-none focus:border-primary transition-colors"
                 />
-              </div>
+                
+              
 
               <input
                 type="text"
