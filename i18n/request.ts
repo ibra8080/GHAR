@@ -1,20 +1,8 @@
-import { getRequestConfig } from "next-intl/server";
-import { cookies, headers } from "next/headers";
+import { getRequestConfig } from 'next-intl/server';
+import { routing } from './routing';
 
-const locales = ["en", "ar", "de"];
-
-export default getRequestConfig(async () => {
-  // Auto-detect from browser
-  const headersList = await headers();
-  const acceptLanguage = headersList.get("accept-language") || "en";
-
-  let locale = "en";
-  for (const lang of locales) {
-    if (acceptLanguage.startsWith(lang)) {
-      locale = lang;
-      break;
-    }
-  }
+export default getRequestConfig(async ({ requestLocale }) => {
+  const locale = (await requestLocale) ?? routing.defaultLocale;
 
   return {
     locale,
