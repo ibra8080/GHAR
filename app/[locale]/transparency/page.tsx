@@ -1,17 +1,11 @@
 import Link from "next/link";
 import { Shield, FileText, PieChart, Users, Award, Download } from "lucide-react";
+import { useTranslations, useLocale } from "next-intl";
 
 const reports = [
-  { year: "2025", title: "Annual Financial Report 2025", size: "2.4 MB", status: "Available" },
-  { year: "2024", title: "Annual Financial Report 2024", size: "1.8 MB", status: "Available" },
-  { year: "2023", title: "Annual Financial Report 2023", size: "1.2 MB", status: "Available" },
-];
-
-const allocations = [
-  { label: "Direct Aid & Projects", percentage: 75, color: "#1A6FA0" },
-  { label: "Operations & Admin", percentage: 15, color: "#2D8F16" },
-  { label: "Fundraising", percentage: 7, color: "#EF8800" },
-  { label: "Reserve Fund", percentage: 3, color: "#2A2A2A" },
+  { year: "2025", title: "Annual Financial Report 2025", size: "2.4 MB" },
+  { year: "2024", title: "Annual Financial Report 2024", size: "1.8 MB" },
+  { year: "2023", title: "Annual Financial Report 2023", size: "1.2 MB" },
 ];
 
 const governance = [
@@ -28,17 +22,25 @@ const certifications = [
 ];
 
 export default function TransparencyPage() {
+  const t = useTranslations("transparency");
+  const locale = useLocale();
+
+  const allocations = [
+    { label: t("allocations.directAid"), percentage: 75, color: "#1A6FA0" },
+    { label: t("allocations.operations"), percentage: 15, color: "#2D8F16" },
+    { label: t("allocations.fundraising"), percentage: 7, color: "#EF8800" },
+    { label: t("allocations.reserve"), percentage: 3, color: "#2A2A2A" },
+  ];
+
   return (
     <div className="bg-background">
 
-      {/* Hero - No Image */}
+      {/* Hero */}
       <section className="bg-primary py-20 px-4 text-center">
         <div className="max-w-3xl mx-auto">
           <Shield size={48} className="text-white mx-auto mb-4" />
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Transparency & Accountability</h1>
-          <p className="text-white/80 text-lg max-w-2xl mx-auto">
-            We believe that trust is built through openness. Here you will find everything you need to know about how we operate and use your donations.
-          </p>
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">{t("heroTitle")}</h1>
+          <p className="text-white/80 text-lg max-w-2xl mx-auto">{t("heroSubtitle")}</p>
         </div>
       </section>
 
@@ -46,15 +48,13 @@ export default function TransparencyPage() {
       <section className="py-16 px-4 max-w-7xl mx-auto">
         <div className="flex items-center gap-3 mb-10">
           <FileText size={28} className="text-primary" />
-          <h2 className="text-3xl font-bold text-dark">Financial Reports</h2>
+          <h2 className="text-3xl font-bold text-dark">{t("reportsTitle")}</h2>
         </div>
         <div className="flex flex-col gap-4">
           {reports.map((report, i) => (
             <div key={i} className="flex items-center justify-between bg-white rounded-xl border border-gray-100 shadow-sm p-5 hover:shadow-md transition-shadow">
               <div className="flex items-center gap-4">
-                <div className="bg-primary/10 text-primary font-bold text-sm px-3 py-1 rounded-lg">
-                  {report.year}
-                </div>
+                <div className="bg-primary/10 text-primary font-bold text-sm px-3 py-1 rounded-lg">{report.year}</div>
                 <div>
                   <p className="text-dark font-semibold text-sm">{report.title}</p>
                   <p className="text-gray-400 text-xs mt-0.5">{report.size}</p>
@@ -62,7 +62,7 @@ export default function TransparencyPage() {
               </div>
               <button className="flex items-center gap-2 text-primary hover:text-white hover:bg-primary border border-primary px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                 <Download size={14} />
-                Download
+                {t("download")}
               </button>
             </div>
           ))}
@@ -74,10 +74,9 @@ export default function TransparencyPage() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center gap-3 mb-10">
             <PieChart size={28} className="text-primary" />
-            <h2 className="text-3xl font-bold text-dark">How We Use Your Donations</h2>
+            <h2 className="text-3xl font-bold text-dark">{t("donationsTitle")}</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            {/* Bar Chart */}
             <div className="flex flex-col gap-4">
               {allocations.map((item, i) => (
                 <div key={i}>
@@ -86,26 +85,19 @@ export default function TransparencyPage() {
                     <span className="text-dark font-bold text-sm">{item.percentage}%</span>
                   </div>
                   <div className="w-full bg-gray-100 rounded-full h-4">
-                    <div
-                      className="h-4 rounded-full transition-all duration-500"
-                      style={{ width: `${item.percentage}%`, backgroundColor: item.color }}
-                    />
+                    <div className="h-4 rounded-full transition-all duration-500"
+                      style={{ width: `${item.percentage}%`, backgroundColor: item.color }} />
                   </div>
                 </div>
               ))}
             </div>
-            {/* Text */}
             <div>
-              <h3 className="text-2xl font-bold text-dark mb-4">Our Commitment to Efficiency</h3>
-              <p className="text-gray-600 leading-relaxed mb-4">
-                We are committed to ensuring that the maximum possible portion of every donation goes directly to those who need it most. Our operational costs are kept to a minimum through efficient management and the dedication of our volunteers.
-              </p>
-              <p className="text-gray-600 leading-relaxed mb-4">
-                We follow the guidelines set by the DZI (Deutsches Zentralinstitut für soziale Fragen) and aim to achieve full certification as we grow.
-              </p>
+              <h3 className="text-2xl font-bold text-dark mb-4">{t("efficiencyTitle")}</h3>
+              <p className="text-gray-600 leading-relaxed mb-4">{t("efficiencyText1")}</p>
+              <p className="text-gray-600 leading-relaxed mb-4">{t("efficiencyText2")}</p>
               <div className="bg-white rounded-xl border border-gray-100 p-4">
                 <p className="text-primary font-bold text-2xl">75%</p>
-                <p className="text-gray-500 text-sm">of every euro donated goes directly to aid projects</p>
+                <p className="text-gray-500 text-sm">{t("efficiencyHighlight")}</p>
               </div>
             </div>
           </div>
@@ -116,7 +108,7 @@ export default function TransparencyPage() {
       <section className="py-16 px-4 max-w-7xl mx-auto">
         <div className="flex items-center gap-3 mb-10">
           <Users size={28} className="text-primary" />
-          <h2 className="text-3xl font-bold text-dark">Governance Structure</h2>
+          <h2 className="text-3xl font-bold text-dark">{t("governanceTitle")}</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {governance.map((member, i) => (
@@ -134,7 +126,7 @@ export default function TransparencyPage() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center gap-3 mb-10">
             <Award size={28} className="text-primary" />
-            <h2 className="text-3xl font-bold text-dark">Certifications & Registration</h2>
+            <h2 className="text-3xl font-bold text-dark">{t("certificationsTitle")}</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {certifications.map((cert, i) => (
@@ -152,12 +144,10 @@ export default function TransparencyPage() {
       {/* CTA */}
       <section className="py-16 bg-primary text-white text-center">
         <div className="max-w-3xl mx-auto px-4">
-          <h2 className="text-3xl font-bold mb-4">Questions About Our Finances?</h2>
-          <p className="text-white/80 mb-8 text-lg">
-            We are always happy to answer any questions about how we operate and use donations.
-          </p>
-          <Link href="/about#contact" className="bg-secondary hover:bg-green-700 text-white px-12 py-3 rounded font-semibold text-lg transition-colors">
-            Contact Us
+          <h2 className="text-3xl font-bold mb-4">{t("ctaTitle")}</h2>
+          <p className="text-white/80 mb-8 text-lg">{t("ctaSubtitle")}</p>
+          <Link href={`/${locale}/about`} className="bg-secondary hover:bg-green-700 text-white px-12 py-3 rounded font-semibold text-lg transition-colors">
+            {t("contactUs")}
           </Link>
         </div>
       </section>

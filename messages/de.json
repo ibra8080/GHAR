@@ -141,5 +141,28 @@
     "ctaTitle": "Bereit, einen Unterschied zu machen?",
     "ctaSubtitle": "Ob Sie Ihre Zeit spenden oder Geld — jeder Beitrag zählt.",
     "donateNow": "Jetzt spenden"
+  },
+  "transparency": {
+    "heroTitle": "Transparenz & Rechenschaftspflicht",
+    "heroSubtitle": "Wir glauben, dass Vertrauen durch Offenheit aufgebaut wird. Hier finden Sie alles, was Sie über unsere Arbeit und die Verwendung Ihrer Spenden wissen müssen.",
+    "reportsTitle": "Finanzberichte",
+    "download": "Herunterladen",
+    "available": "Verfügbar",
+    "donationsTitle": "Wie wir Ihre Spenden verwenden",
+    "efficiencyTitle": "Unser Engagement für Effizienz",
+    "efficiencyText1": "Wir sind bestrebt sicherzustellen, dass der größtmögliche Teil jeder Spende direkt an die Bedürftigsten geht. Unsere Betriebskosten werden durch effizientes Management minimiert.",
+    "efficiencyText2": "Wir befolgen die Richtlinien des DZI und streben eine vollständige Zertifizierung an.",
+    "efficiencyHighlight": "jedes gespendeten Euros fließen direkt in Hilfsprojekte",
+    "governanceTitle": "Governance-Struktur",
+    "certificationsTitle": "Zertifizierungen & Registrierung",
+    "ctaTitle": "Fragen zu unseren Finanzen?",
+    "ctaSubtitle": "Wir beantworten gerne alle Fragen zu unserer Arbeit und Spendenverwendung.",
+    "contactUs": "Kontakt aufnehmen",
+    "allocations": {
+      "directAid": "Direkte Hilfe & Projekte",
+      "operations": "Betrieb & Verwaltung",
+      "fundraising": "Spendenakquise",
+      "reserve": "Reservefonds"
+    }
   }
 }

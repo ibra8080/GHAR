@@ -141,5 +141,28 @@
     "ctaTitle": "Ready to Make a Difference?",
     "ctaSubtitle": "Whether you volunteer your time or donate, every contribution counts.",
     "donateNow": "Donate Now"
+  },
+  "transparency": {
+    "heroTitle": "Transparency & Accountability",
+    "heroSubtitle": "We believe that trust is built through openness. Here you will find everything you need to know about how we operate and use your donations.",
+    "reportsTitle": "Financial Reports",
+    "download": "Download",
+    "available": "Available",
+    "donationsTitle": "How We Use Your Donations",
+    "efficiencyTitle": "Our Commitment to Efficiency",
+    "efficiencyText1": "We are committed to ensuring that the maximum possible portion of every donation goes directly to those who need it most. Our operational costs are kept to a minimum through efficient management and the dedication of our volunteers.",
+    "efficiencyText2": "We follow the guidelines set by the DZI (Deutsches Zentralinstitut für soziale Fragen) and aim to achieve full certification as we grow.",
+    "efficiencyHighlight": "of every euro donated goes directly to aid projects",
+    "governanceTitle": "Governance Structure",
+    "certificationsTitle": "Certifications & Registration",
+    "ctaTitle": "Questions About Our Finances?",
+    "ctaSubtitle": "We are always happy to answer any questions about how we operate and use donations.",
+    "contactUs": "Contact Us",
+    "allocations": {
+      "directAid": "Direct Aid & Projects",
+      "operations": "Operations & Admin",
+      "fundraising": "Fundraising",
+      "reserve": "Reserve Fund"
+    }
   }
 }
