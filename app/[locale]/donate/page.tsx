@@ -1,11 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useState } from "react";
 import { Heart, RefreshCw, Shield, Globe } from "lucide-react";
 import { createClient } from "@supabase/supabase-js";
 import { projects } from "@/lib/data";
+import { useTranslations, useLocale } from "next-intl";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -22,6 +22,8 @@ export default function DonatePage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const t = useTranslations("donate");
+  const locale = useLocale();
 
   const finalAmount = customAmount ? parseFloat(customAmount) : selectedAmount;
 
@@ -45,8 +47,8 @@ export default function DonatePage() {
   };
 
   const projectOptions = [
-    { id: "general", label: "General Donation" },
-    { id: "zakat", label: "Zakat" },
+    { id: "general", label: t("generalDonation") },
+    { id: "zakat", label: t("zakat") },
     ...projects.map((p) => ({ id: p.id, label: p.title })),
   ];
 
@@ -58,10 +60,8 @@ export default function DonatePage() {
         <Image src="/images/HeroImage1.png" alt="Donate" fill className="object-cover" priority />
         <div className="absolute inset-0 bg-black/50" />
         <div className="absolute inset-0 flex flex-col justify-center items-center text-center px-4">
-          <h1 className="text-4xl md:text-6xl font-bold text-white">Make a Difference</h1>
-          <p className="text-white/80 mt-4 text-lg max-w-2xl">
-            Your donation directly funds life-changing projects in Sudan and Yemen
-          </p>
+          <h1 className="text-4xl md:text-6xl font-bold text-white">{t("heroTitle")}</h1>
+          <p className="text-white/80 mt-4 text-lg max-w-2xl">{t("heroSubtitle")}</p>
         </div>
       </section>
 
@@ -75,7 +75,7 @@ export default function DonatePage() {
 
               {/* Donation Type */}
               <div className="mb-8">
-                <h3 className="text-dark font-bold text-lg mb-4">Donation Type</h3>
+                <h3 className="text-dark font-bold text-lg mb-4">{t("donationType")}</h3>
                 <div className="flex gap-3">
                   <button
                     onClick={() => setDonationType("once")}
@@ -86,7 +86,7 @@ export default function DonatePage() {
                     }`}
                   >
                     <Heart size={16} className="inline mr-2" />
-                    One Time
+                    {t("oneTime")}
                   </button>
                   <button
                     onClick={() => setDonationType("monthly")}
@@ -97,14 +97,14 @@ export default function DonatePage() {
                     }`}
                   >
                     <RefreshCw size={16} className="inline mr-2" />
-                    Monthly
+                    {t("monthly")}
                   </button>
                 </div>
               </div>
 
               {/* Amount */}
               <div className="mb-8">
-                <h3 className="text-dark font-bold text-lg mb-4">Select Amount</h3>
+                <h3 className="text-dark font-bold text-lg mb-4">{t("selectAmount")}</h3>
                 <div className="grid grid-cols-4 gap-3 mb-4">
                   {amounts.map((amount) => (
                     <button
@@ -122,7 +122,7 @@ export default function DonatePage() {
                 </div>
                 <input
                   type="number"
-                  placeholder="Custom amount (€)"
+                  placeholder={t("customAmount")}
                   value={customAmount}
                   onChange={(e) => { setCustomAmount(e.target.value); setSelectedAmount(null); }}
                   className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm text-dark focus:outline-none focus:border-primary transition-colors"
@@ -131,7 +131,7 @@ export default function DonatePage() {
 
               {/* Project */}
               <div className="mb-8">
-                <h3 className="text-dark font-bold text-lg mb-4">Support a Specific Project</h3>
+                <h3 className="text-dark font-bold text-lg mb-4">{t("selectProject")}</h3>
                 <select
                   value={selectedProject}
                   onChange={(e) => setSelectedProject(e.target.value)}
@@ -145,18 +145,18 @@ export default function DonatePage() {
 
               {/* Personal Info */}
               <div className="mb-8">
-                <h3 className="text-dark font-bold text-lg mb-4">Your Information</h3>
+                <h3 className="text-dark font-bold text-lg mb-4">{t("yourInfo")}</h3>
                 <div className="flex flex-col gap-3">
                   <input
                     type="text"
-                    placeholder="Your Name"
+                    placeholder={t("namePlaceholder")}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     className="border border-gray-200 rounded-lg px-4 py-3 text-sm text-dark focus:outline-none focus:border-primary transition-colors"
                   />
                   <input
                     type="email"
-                    placeholder="Your Email"
+                    placeholder={t("emailPlaceholder")}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="border border-gray-200 rounded-lg px-4 py-3 text-sm text-dark focus:outline-none focus:border-primary transition-colors"
@@ -167,32 +167,26 @@ export default function DonatePage() {
               {/* Summary */}
               <div className="bg-primary/5 rounded-xl p-4 mb-6">
                 <div className="flex justify-between items-center">
-                  <span className="text-dark font-medium text-sm">Your donation:</span>
+                  <span className="text-dark font-medium text-sm">{t("summaryDonation")}</span>
                   <span className="text-primary font-bold text-xl">€{finalAmount || 0}</span>
                 </div>
                 <div className="flex justify-between items-center mt-1">
-                  <span className="text-gray-500 text-xs">Type:</span>
+                  <span className="text-gray-500 text-xs">{t("summaryType")}</span>
                   <span className="text-gray-500 text-xs capitalize">{donationType}</span>
                 </div>
                 <div className="flex justify-between items-center mt-1">
-                  <span className="text-gray-500 text-xs">Project:</span>
+                  <span className="text-gray-500 text-xs">{t("summaryProject")}</span>
                   <span className="text-gray-500 text-xs">{projectOptions.find(p => p.id === selectedProject)?.label}</span>
                 </div>
               </div>
 
-              {/* Status Messages */}
               {status === "success" && (
-                <p className="text-secondary text-sm text-center mb-4">
-                  ✅ Your information has been saved. Redirecting to PayPal...
-                </p>
+                <p className="text-secondary text-sm text-center mb-4">{t("successMessage")}</p>
               )}
               {status === "error" && (
-                <p className="text-red-500 text-sm text-center mb-4">
-                  ❌ Something went wrong. Please try again.
-                </p>
+                <p className="text-red-500 text-sm text-center mb-4">{t("errorMessage")}</p>
               )}
 
-              {/* PayPal Button */}
               <button
                 onClick={handleDonate}
                 disabled={status === "loading" || !name || !email || !finalAmount}
@@ -201,57 +195,55 @@ export default function DonatePage() {
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
                   <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 2.72a.641.641 0 0 1 .633-.537h7.66c2.589 0 4.377.592 5.314 1.76.434.548.712 1.12.825 1.699.118.61.098 1.32-.064 2.11l-.007.038v.52l.233.132c.196.108.376.234.537.374.292.252.509.567.641.933.136.38.18.826.135 1.323-.055.611-.229 1.163-.514 1.638-.258.434-.594.8-.998 1.084-.388.274-.843.48-1.353.613-.493.13-1.053.196-1.664.196h-.396c-.283 0-.557.102-.773.286a1.154 1.154 0 0 0-.39.726l-.03.159-.476 3.02-.022.11a.641.641 0 0 1-.632.537H7.076z"/>
                 </svg>
-                {status === "loading" ? "Processing..." : "Donate with PayPal"}
+                {status === "loading" ? t("processing") : t("donatePayPal")}
               </button>
 
-              <p className="text-center text-gray-400 text-xs mt-3">
-                You will be redirected to PayPal to complete your donation securely
-              </p>
+              <p className="text-center text-gray-400 text-xs mt-3">{t("redirectMessage")}</p>
             </div>
           </div>
 
           {/* Sidebar */}
           <div className="md:col-span-1 flex flex-col gap-6">
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-dark font-bold text-lg mb-4">Why Donate to GHAR?</h3>
+              <h3 className="text-dark font-bold text-lg mb-4">{t("whyTitle")}</h3>
               <div className="flex flex-col gap-4">
                 <div className="flex items-start gap-3">
                   <Shield size={20} className="text-primary shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-dark font-medium text-sm">100% Transparent</p>
-                    <p className="text-gray-500 text-xs mt-0.5">Full financial reports published annually</p>
+                    <p className="text-dark font-medium text-sm">{t("transparent")}</p>
+                    <p className="text-gray-500 text-xs mt-0.5">{t("transparentDesc")}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <Globe size={20} className="text-primary shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-dark font-medium text-sm">Direct Impact</p>
-                    <p className="text-gray-500 text-xs mt-0.5">Your donation reaches those who need it most</p>
+                    <p className="text-dark font-medium text-sm">{t("directImpact")}</p>
+                    <p className="text-gray-500 text-xs mt-0.5">{t("directImpactDesc")}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <Heart size={20} className="text-primary shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-dark font-medium text-sm">Zakat Eligible</p>
-                    <p className="text-gray-500 text-xs mt-0.5">Donations are Zakat and Sadaqah compliant</p>
+                    <p className="text-dark font-medium text-sm">{t("zakatEligible")}</p>
+                    <p className="text-gray-500 text-xs mt-0.5">{t("zakatDesc")}</p>
                   </div>
                 </div>
               </div>
             </div>
 
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-dark font-bold text-lg mb-4">Other Ways to Donate</h3>
+              <h3 className="text-dark font-bold text-lg mb-4">{t("otherWays")}</h3>
               <div className="flex flex-col gap-3">
-                <a
+                  <a
                   href="https://www.launchgood.com"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block w-full border border-primary text-primary text-center py-3 rounded-lg font-medium text-sm hover:bg-primary hover:text-white transition-colors"
                 >
-                  Donate via Launchgood
+                  {t("launchgood")}
                 </a>
                 <div className="border border-gray-100 rounded-lg p-4">
-                  <p className="text-dark font-medium text-sm mb-2">Bank Transfer</p>
+                  <p className="text-dark font-medium text-sm mb-2">{t("bankTransfer")}</p>
                   <p className="text-gray-500 text-xs">IBAN: DE00 0000 0000 0000 0000 00</p>
                   <p className="text-gray-500 text-xs">BIC: XXXXXXXX</p>
                   <p className="text-gray-500 text-xs">Bank: Sparkasse Bremen</p>
