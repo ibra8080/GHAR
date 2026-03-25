@@ -1,8 +1,15 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { MapPin, Mail } from "lucide-react";
+import { useTranslations, useLocale } from "next-intl";
+import { projects } from "@/lib/data";
 
 export default function Footer() {
+  const t = useTranslations("footer");
+  const locale = useLocale();
+
   return (
     <footer className="bg-primary text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -10,44 +17,42 @@ export default function Footer() {
 
           {/* Column 1: Logo + Description */}
           <div className="col-span-2 md:col-span-1 flex flex-col items-center md:items-start text-center md:text-left">
-            <Image
-              src="/images/GahrLogoW.svg"
-              alt="GHAR Foundation"
-              width={100}
-              height={50}
-            />
+            <Image src="/images/GahrLogoW.svg" alt="GHAR Foundation" width={100} height={50} />
             <p className="mt-4 text-white/70 text-sm leading-relaxed max-w-[180px]">
-              German Humanitarian Relief Organization providing aid to crisis-affected regions worldwide.
+              {t("description")}
             </p>
           </div>
 
           {/* Column 2: Links */}
           <div className="md:pl-8">
             <ul className="space-y-2 mt-2">
-              <li><Link href="/about" className="text-white/80 hover:text-white text-sm transition-colors">About US</Link></li>
-              <li><Link href="/volunteer" className="text-white/80 hover:text-white text-sm transition-colors">Volunteer</Link></li>
-              <li><Link href="/jobs" className="text-white/80 hover:text-white text-sm transition-colors">Jobs</Link></li>
-              <li><Link href="/partners" className="text-white/80 hover:text-white text-sm transition-colors">Partnership</Link></li>
-              <li><Link href="/transparency" className="text-white/80 hover:text-white text-sm transition-colors">Transparency</Link></li>
-              <li><Link href="/press" className="text-white/80 hover:text-white text-sm transition-colors">Press release</Link></li>
+              <li><Link href={`/${locale}/about`} className="text-white/80 hover:text-white text-sm transition-colors">{t("aboutUs")}</Link></li>
+              <li><Link href={`/${locale}/volunteer`} className="text-white/80 hover:text-white text-sm transition-colors">{t("volunteer")}</Link></li>
+              <li><Link href={`/${locale}/jobs`} className="text-white/80 hover:text-white text-sm transition-colors">{t("jobs")}</Link></li>
+              <li><Link href={`/${locale}/partners`} className="text-white/80 hover:text-white text-sm transition-colors">{t("partnership")}</Link></li>
+              <li><Link href={`/${locale}/transparency`} className="text-white/80 hover:text-white text-sm transition-colors">{t("transparency")}</Link></li>
+              <li><Link href={`/${locale}/news`} className="text-white/80 hover:text-white text-sm transition-colors">{t("pressRelease")}</Link></li>
             </ul>
           </div>
 
           {/* Column 3: Projects */}
           <div>
             <ul className="space-y-2 mt-2">
-              <li><Link href="/projects" className="text-white font-medium text-sm">Our Projects</Link></li>
-              <li><Link href="/projects/1" className="text-white/80 hover:text-white text-sm transition-colors">Project 1</Link></li>
-              <li><Link href="/projects/2" className="text-white/80 hover:text-white text-sm transition-colors">Project 2</Link></li>
-              <li><Link href="/projects/3" className="text-white/80 hover:text-white text-sm transition-colors">Project 3</Link></li>
-              <li><Link href="/projects/4" className="text-white/80 hover:text-white text-sm transition-colors">Project 4</Link></li>
-              <li><Link href="/projects" className="text-white/80 hover:text-white text-sm transition-colors">Others</Link></li>
+              <li><Link href={`/${locale}/projects`} className="text-white font-medium text-sm">{t("ourProjects")}</Link></li>
+              {projects.slice(0, 4).map((project) => (
+                <li key={project.id}>
+                  <Link href={`/${locale}/projects/${project.id}`} className="text-white/80 hover:text-white text-sm transition-colors">
+                    {project.title}
+                  </Link>
+                </li>
+              ))}
+              <li><Link href={`/${locale}/projects`} className="text-white/80 hover:text-white text-sm transition-colors">{t("others")}</Link></li>
             </ul>
           </div>
 
           {/* Column 4: Contact */}
           <div className="col-span-2 md:col-span-1 flex flex-col items-center md:items-start text-center md:text-left">
-            <h3 className="text-white font-semibold mb-4">Contact US</h3>
+            <h3 className="text-white font-semibold mb-4">{t("contactUs")}</h3>
             <div className="flex items-start gap-2 mb-3">
               <MapPin size={16} className="text-white/70 mt-0.5 shrink-0" />
               <div>
@@ -87,9 +92,9 @@ export default function Footer() {
       {/* Bottom Bar */}
       <div className="border-t border-white/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-center items-center">
-            <p className="text-white/60 text-xs">© 2026 GHAR - All Rights Reserved - Developed By IbrahimAbusaif</p>
+          <p className="text-white/60 text-xs">© 2026 GHAR - All Rights Reserved - Developed By IbrahimAbusaif</p>
         </div>
-        </div>
+      </div>
     </footer>
   );
 }

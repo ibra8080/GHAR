@@ -164,5 +164,17 @@
       "fundraising": "Fundraising",
       "reserve": "Reserve Fund"
     }
+  },
+  "footer": {
+    "description": "German Humanitarian Relief Organization providing aid to crisis-affected regions worldwide.",
+    "aboutUs": "About US",
+    "volunteer": "Volunteer",
+    "jobs": "Jobs",
+    "partnership": "Partnership",
+    "transparency": "Transparency",
+    "pressRelease": "Press Release",
+    "ourProjects": "Our Projects",
+    "others": "Others",
+    "contactUs": "Contact US"
   }
 }

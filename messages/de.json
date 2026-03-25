@@ -164,5 +164,17 @@
       "fundraising": "Spendenakquise",
       "reserve": "Reservefonds"
     }
+  },
+  "footer": {
+    "description": "Deutsche humanitäre Hilfsorganisation, die Krisenregionen weltweit unterstützt.",
+    "aboutUs": "Über uns",
+    "volunteer": "Ehrenamt",
+    "jobs": "Stellen",
+    "partnership": "Partnerschaft",
+    "transparency": "Transparenz",
+    "pressRelease": "Pressemitteilungen",
+    "ourProjects": "Unsere Projekte",
+    "others": "Weitere",
+    "contactUs": "Kontakt"
   }
 }

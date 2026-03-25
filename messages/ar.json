@@ -164,5 +164,17 @@
       "fundraising": "جمع التبرعات",
       "reserve": "صندوق الاحتياطي"
     }
+  },
+  "footer": {
+    "description": "منظمة إنسانية ألمانية تقدم المساعدة للمناطق المتضررة من الأزمات حول العالم.",
+    "aboutUs": "من نحن",
+    "volunteer": "تطوع",
+    "jobs": "وظائف",
+    "partnership": "الشراكة",
+    "transparency": "الشفافية",
+    "pressRelease": "البيانات الصحفية",
+    "ourProjects": "مشاريعنا",
+    "others": "المزيد",
+    "contactUs": "تواصل معنا"
   }
 }
