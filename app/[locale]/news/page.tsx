@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Calendar, ArrowLeft, ArrowRight } from "lucide-react";
 import { news as allNews } from "@/lib/data";
-
+import { useTranslations, useLocale } from "next-intl";
 
 const ITEMS_PER_PAGE = 10;
 const years = ["All", "2026", "2025"];
@@ -13,6 +13,8 @@ const years = ["All", "2026", "2025"];
 export default function NewsPage() {
   const [activeYear, setActiveYear] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
+  const t = useTranslations("news");
+  const locale = useLocale();
 
   const filtered = activeYear === "All"
     ? allNews
@@ -29,6 +31,12 @@ export default function NewsPage() {
     setCurrentPage(1);
   };
 
+  const yearFilters = [
+    { key: "All", label: t("filterAll") },
+    { key: "2026", label: "2026" },
+    { key: "2025", label: "2025" },
+  ];
+
   return (
     <div className="bg-background">
 
@@ -37,32 +45,30 @@ export default function NewsPage() {
         <Image src="/images/NewsSection1.png" alt="News" fill className="object-cover" priority />
         <div className="absolute inset-0 bg-black/50" />
         <div className="absolute inset-0 flex flex-col justify-center items-center text-center px-4">
-          <h1 className="text-4xl md:text-6xl font-bold text-white">Latest News</h1>
-          <p className="text-white/80 mt-4 text-lg max-w-2xl">
-            Stay updated with our latest activities, projects, and impact stories
-          </p>
+          <h1 className="text-4xl md:text-6xl font-bold text-white">{t("heroTitle")}</h1>
+          <p className="text-white/80 mt-4 text-lg max-w-2xl">{t("heroSubtitle")}</p>
         </div>
       </section>
 
       {/* Filter Bar */}
       <section className="py-8 px-4 max-w-7xl mx-auto">
         <div className="flex gap-3 justify-center flex-wrap">
-          {years.map((year) => (
+          {yearFilters.map((year) => (
             <button
-              key={year}
-              onClick={() => handleYearChange(year)}
+              key={year.key}
+              onClick={() => handleYearChange(year.key)}
               className={`px-6 py-2 rounded-full text-sm font-medium transition-colors ${
-                activeYear === year
+                activeYear === year.key
                   ? "bg-primary text-white"
                   : "bg-white text-dark border border-gray-200 hover:border-primary hover:text-primary"
               }`}
             >
-              {year}
+              {year.label}
             </button>
           ))}
         </div>
         <p className="text-center text-gray-400 text-sm mt-4">
-          {filtered.length} articles found
+          {t("articlesFound", { count: filtered.length })}
         </p>
       </section>
 
@@ -87,8 +93,8 @@ export default function NewsPage() {
                     <Calendar size={12} />
                     <span>{item.date}</span>
                   </div>
-                  <Link href={`/news/${item.id}`} className="text-primary text-xs hover:underline font-medium">
-                    Read more →
+                  <Link href={`/${locale}/news/${item.id}`} className="text-primary text-xs hover:underline font-medium">
+                    {t("readMore")}
                   </Link>
                 </div>
               </div>
@@ -106,7 +112,7 @@ export default function NewsPage() {
               disabled={currentPage === 1}
               className="flex items-center gap-1 px-4 py-2 rounded-lg border border-gray-200 text-sm text-dark hover:border-primary hover:text-primary transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              <ArrowLeft size={14} /> Previous
+              <ArrowLeft size={14} /> {t("previous")}
             </button>
 
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
@@ -128,11 +134,11 @@ export default function NewsPage() {
               disabled={currentPage === totalPages}
               className="flex items-center gap-1 px-4 py-2 rounded-lg border border-gray-200 text-sm text-dark hover:border-primary hover:text-primary transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              Next <ArrowRight size={14} />
+              {t("next")} <ArrowRight size={14} />
             </button>
           </div>
           <p className="text-center text-gray-400 text-xs mt-3">
-            Page {currentPage} of {totalPages}
+            {t("pageOf", { current: currentPage, total: totalPages })}
           </p>
         </section>
       )}

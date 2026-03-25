@@ -57,5 +57,27 @@
       "impact": { "title": "Impact", "desc": "We measure our success by the real change we create on the ground." },
       "accountability": { "title": "Accountability", "desc": "We uphold the highest standards in humanitarian aid delivery." }
     }
+  },
+  "projects": {
+  "heroTitle": "Our Projects",
+  "heroSubtitle": "Every project is a step toward a better world — see how your support makes a real difference",
+  "filterAll": "All",
+  "raised": "Raised",
+  "goal": "Goal",
+  "funded": "funded",
+  "readMore": "Read More →",
+  "donateNow": "Donate Now",
+  "ctaTitle": "Support Our Work",
+  "ctaSubtitle": "Your donation directly funds these projects and changes lives on the ground."
+  },
+    "news": {
+    "heroTitle": "Latest News",
+    "heroSubtitle": "Stay updated with our latest activities, projects, and impact stories",
+    "filterAll": "All",
+    "articlesFound": "{count} articles found",
+    "readMore": "Read more →",
+    "previous": "Previous",
+    "next": "Next",
+    "pageOf": "Page {current} of {total}"
   }
 }
