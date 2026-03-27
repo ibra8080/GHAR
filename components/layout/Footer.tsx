@@ -29,9 +29,9 @@ export default function Footer() {
               <li><Link href={`/${locale}/about`} className="text-white/80 hover:text-white text-sm transition-colors">{t("aboutUs")}</Link></li>
               <li><Link href={`/${locale}/volunteer`} className="text-white/80 hover:text-white text-sm transition-colors">{t("volunteer")}</Link></li>
               <li><Link href={`/${locale}/jobs`} className="text-white/80 hover:text-white text-sm transition-colors">{t("jobs")}</Link></li>
-              <li><Link href={`/${locale}/partners`} className="text-white/80 hover:text-white text-sm transition-colors">{t("partnership")}</Link></li>
               <li><Link href={`/${locale}/transparency`} className="text-white/80 hover:text-white text-sm transition-colors">{t("transparency")}</Link></li>
               <li><Link href={`/${locale}/news`} className="text-white/80 hover:text-white text-sm transition-colors">{t("pressRelease")}</Link></li>
+              <li><Link href={`/${locale}/privacy`} className="text-white/80 hover:text-white text-sm transition-colors">{t("privacy")}</Link></li>
             </ul>
           </div>
 

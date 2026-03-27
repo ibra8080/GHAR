@@ -6,6 +6,7 @@ import Footer from '@/components/layout/Footer';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import CookieBanner from '@/components/layout/CookieBanner';
 
 const locales = ['en', 'ar', 'de'];
 
@@ -105,6 +106,7 @@ export default async function LocaleLayout({
             {children}
           </main>
           <Footer />
+          <CookieBanner />
         </NextIntlClientProvider>
       </body>
     </html>
