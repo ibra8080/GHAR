@@ -4,7 +4,7 @@ const client = createClient({
   projectId: 'eg9gx04a',
   dataset: 'ghar',
   apiVersion: '2024-01-01',
-  token: 'skK1mYlaSL40uaqwbYfs6VDETIeitSKYqgT7E6vnGQX0Hp9VCa8NmyUkMOd31ZlaFCf9fmlDWrYbuILMd71s2WYNazN0yGKr0NHAjnroLKrQmzQhHdoucPTcy9HyBCw3uGvzQyFIFequTz1TbWtTCIZkEcfGOZnaYhiPGOF7WFUJLmVzlZAr',
+  token: process.env.SANITY_API_TOKEN,
   useCdn: false,
 });
 
