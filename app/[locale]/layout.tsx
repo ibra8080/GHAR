@@ -7,6 +7,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import CookieBanner from '@/components/layout/CookieBanner';
+import { getSiteSettings } from '@/sanity/lib/queries';
 
 const locales = ['en', 'ar', 'de'];
 
@@ -48,25 +49,14 @@ export async function generateMetadata({
     metadataBase: new URL('https://ghar-seven.vercel.app'),
     alternates: {
       canonical: `/${locale}`,
-      languages: {
-        'en': '/en',
-        'ar': '/ar',
-        'de': '/de',
-      },
+      languages: { 'en': '/en', 'ar': '/ar', 'de': '/de' },
     },
     openGraph: {
       title: titles[locale] || titles.en,
       description: descriptions[locale] || descriptions.en,
       url: `https://ghar-seven.vercel.app/${locale}`,
       siteName: 'GHAR Foundation',
-      images: [
-        {
-          url: '/images/HeroImage1.png',
-          width: 1200,
-          height: 630,
-          alt: 'GHAR Foundation',
-        },
-      ],
+      images: [{ url: '/images/HeroImage1.png', width: 1200, height: 630, alt: 'GHAR Foundation' }],
       locale: locale,
       type: 'website',
     },
@@ -76,10 +66,7 @@ export async function generateMetadata({
       description: descriptions[locale] || descriptions.en,
       images: ['/images/HeroImage1.png'],
     },
-    robots: {
-      index: true,
-      follow: true,
-    },
+    robots: { index: true, follow: true },
   };
 }
 
@@ -94,18 +81,22 @@ export default async function LocaleLayout({
 
   if (!locales.includes(locale)) notFound();
 
-  const messages = await getMessages();
+  const [messages, siteSettings] = await Promise.all([
+    getMessages(),
+    getSiteSettings(),
+  ]);
+
   const isRTL = locale === 'ar';
 
   return (
-    <html lang={locale} dir={isRTL ? 'rtl' : 'ltr'}>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}>
+    <html lang={locale} dir={isRTL ? 'rtl' : 'ltr'} suppressHydrationWarning>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`} suppressHydrationWarning>
         <NextIntlClientProvider messages={messages}>
           <Navbar />
           <main className="flex-grow">
             {children}
           </main>
-          <Footer />
+          <Footer siteSettings={siteSettings} />
           <CookieBanner />
         </NextIntlClientProvider>
       </body>
