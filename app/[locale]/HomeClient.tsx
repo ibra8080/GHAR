@@ -5,19 +5,20 @@ import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { Users, Heart, Globe } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
-import { slides, stats } from "@/lib/data";
 
 function useCounter(target: number, duration: number = 2000) {
   const [count, setCount] = useState(0);
   const [started, setStarted] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+  const divRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const el = divRef.current;
+    if (!el) return;
     const observer = new IntersectionObserver(
       ([entry]) => { if (entry.isIntersecting && !started) setStarted(true); },
       { threshold: 0.5 }
     );
-    if (ref.current) observer.observe(ref.current);
+    observer.observe(el);
     return () => observer.disconnect();
   }, [started]);
 
@@ -33,7 +34,7 @@ function useCounter(target: number, duration: number = 2000) {
     requestAnimationFrame(step);
   }, [started, target, duration]);
 
-  return { count, ref };
+  return { count, divRef };
 }
 
 type Project = {
@@ -64,32 +65,61 @@ type NewsItem = {
   category: string;
 };
 
+type HeroSlide = {
+  image: string;
+  title: string;
+  titleAr: string;
+  titleDe: string;
+  subtitle: string;
+  subtitleAr: string;
+  subtitleDe: string;
+};
+
+type Stat = {
+  number: number;
+  label: string;
+  labelAr: string;
+  labelDe: string;
+};
+
 export default function HomeClient({
   projects,
   news,
+  heroSlides,
+  stats,
 }: {
   projects: Project[];
   news: NewsItem[];
+  heroSlides: HeroSlide[];
+  stats: Stat[];
 }) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const t = useTranslations("home");
   const locale = useLocale();
 
+  const slides = heroSlides.length > 0 ? heroSlides : [];
+
   useEffect(() => {
+    if (slides.length === 0) return;
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 10000);
     return () => clearInterval(interval);
-  }, []);
+  }, [slides.length]);
 
-  const counter1 = useCounter(stats[0].number);
-  const counter2 = useCounter(stats[1].number);
-  const counter3 = useCounter(stats[2].number);
+  const counter1 = useCounter(stats[0]?.number || 0);
+  const counter2 = useCounter(stats[1]?.number || 0);
+  const counter3 = useCounter(stats[2]?.number || 0);
 
   const getTitle = (p: Project) => locale === "ar" ? p.titleAr : locale === "de" ? p.titleDe : p.title;
   const getDesc = (p: Project) => locale === "ar" ? p.descAr : locale === "de" ? p.descDe : p.desc;
   const getNewsTitle = (n: NewsItem) => locale === "ar" ? n.titleAr : locale === "de" ? n.titleDe : n.title;
   const getNewsExcerpt = (n: NewsItem) => locale === "ar" ? n.excerptAr : locale === "de" ? n.excerptDe : n.excerpt;
+  const getSlideTitle = (s: HeroSlide) => locale === "ar" ? s.titleAr : locale === "de" ? s.titleDe : s.title;
+  const getSlideSubtitle = (s: HeroSlide) => locale === "ar" ? s.subtitleAr : locale === "de" ? s.subtitleDe : s.subtitle;
+  const getStatLabel = (s: Stat) => locale === "ar" ? s.labelAr : locale === "de" ? s.labelDe : s.label;
+
+  if (slides.length === 0) return null;
 
   return (
     <div className="bg-background">
@@ -99,18 +129,22 @@ export default function HomeClient({
         <div className="relative h-[85vh]">
           {slides.map((slide, i) => (
             <div key={i} className={`absolute inset-0 transition-opacity duration-1000 ${i === currentSlide ? "opacity-100" : "opacity-0"}`}>
-              <Image src={slide.image} alt={`Slide ${i + 1}`} fill className="object-cover" priority={i === 0} />
+              <Image
+                src={slide.image || "/images/HeroImage1.png"}
+                alt={`Slide ${i + 1}`}
+                fill className="object-cover" priority={i === 0}
+              />
             </div>
           ))}
           <div className="absolute inset-0 bg-black/40" />
           <div className="absolute inset-0 flex flex-col justify-center px-8 md:px-20">
             <h1 className="text-4xl md:text-6xl font-bold text-white leading-tight max-w-2xl transition-all duration-700">
-              {slides[currentSlide].title.split("\n").map((line, i) => (
+              {getSlideTitle(slides[currentSlide]).split("\n").map((line, i) => (
                 <span key={i}>{line}<br /></span>
               ))}
             </h1>
             <p className="text-white/80 mt-4 text-lg max-w-xl transition-all duration-700">
-              {slides[currentSlide].subtitle}
+              {getSlideSubtitle(slides[currentSlide])}
             </p>
           </div>
           <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2">
@@ -139,11 +173,7 @@ export default function HomeClient({
           {projects.slice(0, 4).map((project, i) => (
             <div key={i} className="rounded-xl overflow-hidden shadow-md bg-white flex flex-col">
               <div className="relative h-48">
-                <Image
-                  src={project.image || "/images/ProjectCards1.png"}
-                  alt={getTitle(project)}
-                  fill className="object-cover"
-                />
+                <Image src={project.image || "/images/ProjectCards1.png"} alt={getTitle(project)} fill className="object-cover" />
               </div>
               <div className="p-4 flex flex-col flex-grow">
                 <span className="text-xs text-primary font-semibold uppercase mb-1">{project.countryCode}</span>
@@ -186,20 +216,20 @@ export default function HomeClient({
       {/* Stats Section */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-          <div ref={counter1.ref} className="flex flex-col items-center gap-3 p-8 border border-gray-100 rounded-xl">
+          <div ref={counter1.divRef} className="flex flex-col items-center gap-3 p-8 border border-gray-100 rounded-xl">
             <Users size={32} className="text-primary" />
             <span className="text-4xl font-bold text-dark">{counter1.count.toLocaleString()}+</span>
-            <span className="text-gray-500 text-sm">{t("familiesSupported")}</span>
+            <span className="text-gray-500 text-sm">{stats[0] ? getStatLabel(stats[0]) : ''}</span>
           </div>
-          <div ref={counter2.ref} className="flex flex-col items-center gap-3 p-8 border border-gray-100 rounded-xl">
+          <div ref={counter2.divRef} className="flex flex-col items-center gap-3 p-8 border border-gray-100 rounded-xl">
             <Heart size={32} className="text-primary" />
             <span className="text-4xl font-bold text-dark">{counter2.count.toLocaleString()}+</span>
-            <span className="text-gray-500 text-sm">{t("donationsReceived")}</span>
+            <span className="text-gray-500 text-sm">{stats[1] ? getStatLabel(stats[1]) : ''}</span>
           </div>
-          <div ref={counter3.ref} className="flex flex-col items-center gap-3 p-8 border border-gray-100 rounded-xl">
+          <div ref={counter3.divRef} className="flex flex-col items-center gap-3 p-8 border border-gray-100 rounded-xl">
             <Globe size={32} className="text-primary" />
             <span className="text-4xl font-bold text-dark">{counter3.count}+</span>
-            <span className="text-gray-500 text-sm">{t("countriesReached")}</span>
+            <span className="text-gray-500 text-sm">{stats[2] ? getStatLabel(stats[2]) : ''}</span>
           </div>
         </div>
       </section>

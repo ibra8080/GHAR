@@ -1,4 +1,4 @@
-import { getProjects, getNews } from "@/sanity/lib/queries";
+import { getProjects, getNews, getHeroSlides, getStats } from "@/sanity/lib/queries";
 import HomeClient from "./HomeClient";
 
 export default async function Home({
@@ -7,8 +7,19 @@ export default async function Home({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  const projects = await getProjects();
-  const news = await getNews();
+  const [projects, news, heroSlides, stats] = await Promise.all([
+    getProjects(),
+    getNews(),
+    getHeroSlides(),
+    getStats(),
+  ]);
 
-  return <HomeClient projects={projects} news={news} />;
+  return (
+    <HomeClient
+      projects={projects}
+      news={news}
+      heroSlides={heroSlides}
+      stats={stats}
+    />
+  );
 }
