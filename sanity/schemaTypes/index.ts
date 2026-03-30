@@ -3,7 +3,11 @@ import { project } from './project';
 import { news } from './news';
 import { teamMember } from './teamMember';
 import { partner } from './partner';
+import { heroSlide } from './heroSlide';
+import { stat } from './stat';
+import { siteSettings } from './siteSettings';
+import { aboutContent } from './aboutContent';
 
 export const schema: { types: SchemaTypeDefinition[] } = {
-  types: [project, news, teamMember, partner],
+  types: [project, news, teamMember, partner, heroSlide, stat, siteSettings, aboutContent],
 };
