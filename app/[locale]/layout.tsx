@@ -7,7 +7,8 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import CookieBanner from '@/components/layout/CookieBanner';
-import { getSiteSettings } from '@/sanity/lib/queries';
+import { getSiteSettings, getProjects } from '@/sanity/lib/queries';
+
 
 const locales = ['en', 'ar', 'de'];
 
@@ -81,9 +82,10 @@ export default async function LocaleLayout({
 
   if (!locales.includes(locale)) notFound();
 
-  const [messages, siteSettings] = await Promise.all([
+  const [messages, siteSettings, projects] = await Promise.all([
     getMessages(),
     getSiteSettings(),
+    getProjects(),
   ]);
 
   const isRTL = locale === 'ar';
@@ -96,7 +98,7 @@ export default async function LocaleLayout({
           <main className="flex-grow">
             {children}
           </main>
-          <Footer siteSettings={siteSettings} />
+          <Footer siteSettings={siteSettings} projects={projects} />
           <CookieBanner />
         </NextIntlClientProvider>
       </body>

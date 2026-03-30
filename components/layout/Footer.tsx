@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { MapPin, Mail } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
-import { projects } from "@/lib/data";
 
 type SiteSettings = {
   address: string;
@@ -22,18 +21,33 @@ type SiteSettings = {
   bankName: string;
 } | null;
 
-export default function Footer({ siteSettings }: { siteSettings: SiteSettings }) {
+type Project = {
+  id: string;
+  title: string;
+  titleAr: string;
+  titleDe: string;
+};
+
+export default function Footer({
+  siteSettings,
+  projects = [],
+}: {
+  siteSettings: SiteSettings;
+  projects: Project[];
+}) {
   const t = useTranslations("footer");
   const locale = useLocale();
 
   const email = siteSettings?.email || 'info@ghar.de';
-  const address = siteSettings?.address || 'kullenkampffalee 193';
+  const address = siteSettings?.address || 'Kullenkampffallee 193';
   const city = siteSettings?.city || '28217 Bremen, Germany';
   const facebook = siteSettings?.facebook || '#';
   const instagram = siteSettings?.instagram || '#';
   const twitter = siteSettings?.twitter || '#';
   const linkedin = siteSettings?.linkedin || '#';
   const youtube = siteSettings?.youtube || '#';
+
+  const getTitle = (p: Project) => locale === "ar" ? p.titleAr : locale === "de" ? p.titleDe : p.title;
 
   return (
     <footer className="bg-primary text-white">
@@ -67,7 +81,7 @@ export default function Footer({ siteSettings }: { siteSettings: SiteSettings })
               {projects.slice(0, 4).map((project) => (
                 <li key={project.id}>
                   <Link href={`/${locale}/projects/${project.id}`} className="text-white/80 hover:text-white text-sm transition-colors">
-                    {project.title}
+                    {getTitle(project)}
                   </Link>
                 </li>
               ))}
@@ -91,7 +105,6 @@ export default function Footer({ siteSettings }: { siteSettings: SiteSettings })
                 {email}
               </a>
             </div>
-            {/* Social Icons */}
             <div className="flex gap-4 mt-2 justify-center md:justify-start">
               <a href={facebook} className="text-white hover:text-white/70 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
