@@ -6,7 +6,7 @@ export default async function Home({
 }: {
   params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await params;
+  await params;
   const [projects, news, heroSlides, stats] = await Promise.all([
     getProjects(),
     getNews(),

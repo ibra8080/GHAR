@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
 import { Heart, RefreshCw, Shield, Globe } from "lucide-react";
 import { createClient } from "@supabase/supabase-js";
