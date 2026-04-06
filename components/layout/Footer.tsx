@@ -41,11 +41,11 @@ export default function Footer({
   const email = siteSettings?.email || 'info@ghar.de';
   const address = siteSettings?.address || 'Kullenkampffallee 193';
   const city = siteSettings?.city || '28217 Bremen, Germany';
-  const facebook = siteSettings?.facebook || '#';
-  const instagram = siteSettings?.instagram || '#';
-  const twitter = siteSettings?.twitter || '#';
-  const linkedin = siteSettings?.linkedin || '#';
-  const youtube = siteSettings?.youtube || '#';
+  const facebook = siteSettings?.facebook || `/${locale}/contact`;
+const instagram = siteSettings?.instagram || `/${locale}/contact`;
+const twitter = siteSettings?.twitter || `/${locale}/contact`;
+const linkedin = siteSettings?.linkedin || `/${locale}/contact`;
+const youtube = siteSettings?.youtube || `/${locale}/contact`;
 
   const getTitle = (p: Project) => locale === "ar" ? p.titleAr : locale === "de" ? p.titleDe : p.title;
 
