@@ -194,3 +194,24 @@ export async function getJobs() {
     return [];
   }
 }
+
+// ===== PAGE SETTINGS =====
+export async function getPageSettings() {
+  try {
+    return await client.fetch(`
+      *[_type == "pageSettings"][0] {
+        "heroHome": heroHome.asset->url,
+        "heroAbout": heroAbout.asset->url,
+        "heroProjects": heroProjects.asset->url,
+        "heroNews": heroNews.asset->url,
+        "heroDonate": heroDonate.asset->url,
+        "heroVolunteer": heroVolunteer.asset->url,
+        "heroTransparency": heroTransparency.asset->url,
+        "heroContact": heroContact.asset->url,
+        "heroJobs": heroJobs.asset->url,
+      }
+    `);
+  } catch {
+    return null;
+  }
+}

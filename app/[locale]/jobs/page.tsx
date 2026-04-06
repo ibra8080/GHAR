@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { MapPin } from "lucide-react";
-import { getJobs } from "@/sanity/lib/queries";
+import { getJobs, getPageSettings } from "@/sanity/lib/queries";
 
 type Job = {
   id: string;
@@ -36,7 +36,12 @@ export default async function JobsPage({
 }) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "jobs" });
-  const jobs: Job[] = await getJobs();
+  const [jobs, pageSettings] = await Promise.all([
+    getJobs(),
+    getPageSettings(),
+  ]);
+
+  const heroImage = pageSettings?.heroJobs || "/images/HeroImage2.png";
 
   const getTitle = (job: Job) => locale === "ar" ? job.titleAr : locale === "de" ? job.titleDe : job.title;
   const getDesc = (job: Job) => locale === "ar" ? job.descAr : locale === "de" ? job.descDe : job.desc;
@@ -46,7 +51,7 @@ export default async function JobsPage({
 
       {/* Hero */}
       <section className="relative h-[40vh]">
-        <Image src="/images/HeroImage2.png" alt="Jobs" fill className="object-cover" priority />
+        <Image src={heroImage} alt="Jobs" fill className="object-cover" priority />
         <div className="absolute inset-0 bg-black/50" />
         <div className="absolute inset-0 flex flex-col justify-center items-center text-center px-4">
           <h1 className="text-4xl md:text-6xl font-bold text-white">{t("heroTitle")}</h1>

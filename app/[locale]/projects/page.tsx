@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { getProjects } from "@/sanity/lib/queries";
+import { getProjects, getPageSettings } from "@/sanity/lib/queries";
 import ProjectsClient from "./ProjectsClient";
 
 export default async function ProjectsPage({
@@ -11,14 +11,19 @@ export default async function ProjectsPage({
 }) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "projects" });
-  const projects = await getProjects();
+  const [projects, pageSettings] = await Promise.all([
+    getProjects(),
+    getPageSettings(),
+  ]);
+
+  const heroImage = pageSettings?.heroProjects || "/images/ProjectCards1.png";
 
   return (
     <div className="bg-background">
 
       {/* Hero */}
       <section className="relative h-[40vh]">
-        <Image src="/images/ProjectCards1.png" alt="Our Projects" fill className="object-cover" priority />
+        <Image src={heroImage} alt="Our Projects" fill className="object-cover" priority />
         <div className="absolute inset-0 bg-black/50" />
         <div className="absolute inset-0 flex flex-col justify-center items-center text-center px-4">
           <h1 className="text-4xl md:text-6xl font-bold text-white">{t("heroTitle")}</h1>

@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
-import { getProjects, getSiteSettings } from "@/sanity/lib/queries";
+import { getProjects, getSiteSettings, getPageSettings } from "@/sanity/lib/queries";
 import DonateClient from "./DonateClient";
 
 export default async function DonatePage({
@@ -10,15 +10,18 @@ export default async function DonatePage({
 }) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "donate" });
-  const [projects, siteSettings] = await Promise.all([
+  const [projects, siteSettings, pageSettings] = await Promise.all([
     getProjects(),
     getSiteSettings(),
+    getPageSettings(),
   ]);
+
+  const heroImage = pageSettings?.heroDonate || "/images/HeroImage1.png";
 
   return (
     <div className="bg-background">
       <section className="relative h-[40vh]">
-        <Image src="/images/HeroImage1.png" alt="Donate" fill className="object-cover" priority />
+        <Image src={heroImage} alt="Donate" fill className="object-cover" priority />
         <div className="absolute inset-0 bg-black/50" />
         <div className="absolute inset-0 flex flex-col justify-center items-center text-center px-4">
           <h1 className="text-4xl md:text-6xl font-bold text-white">{t("heroTitle")}</h1>

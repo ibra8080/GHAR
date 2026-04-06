@@ -132,7 +132,7 @@ export default function AboutClient({
       {/* Values */}
       <section className="py-16 px-4 max-w-7xl mx-auto">
         <h2 className="text-3xl font-bold text-dark mb-10 text-center">{t("valuesTitle")}</h2>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {values.map((value, i) => (
             <div key={i} className="flex flex-col items-center text-center p-6 rounded-xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-shadow">
               <div className="mb-4">{value.icon}</div>
