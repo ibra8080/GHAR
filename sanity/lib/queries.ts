@@ -169,3 +169,28 @@ export async function getAboutContent() {
     return null;
   }
 }
+
+// ===== JOBS =====
+export async function getJobs() {
+  try {
+    return await client.fetch(`
+      *[_type == "job" && isActive == true] | order(order asc) {
+        "id": slug.current,
+        "title": title.en,
+        "titleAr": title.ar,
+        "titleDe": title.de,
+        "desc": desc.en,
+        "descAr": desc.ar,
+        "descDe": desc.de,
+        "requirements": requirements.en,
+        "requirementsAr": requirements.ar,
+        "requirementsDe": requirements.de,
+        type,
+        location,
+        applyEmail,
+      }
+    `);
+  } catch {
+    return [];
+  }
+}

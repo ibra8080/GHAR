@@ -7,7 +7,8 @@ import { heroSlide } from './heroSlide';
 import { stat } from './stat';
 import { siteSettings } from './siteSettings';
 import { aboutContent } from './aboutContent';
+import { job } from './job';
 
 export const schema: { types: SchemaTypeDefinition[] } = {
-  types: [project, news, teamMember, partner, heroSlide, stat, siteSettings, aboutContent],
+  types: [project, news, teamMember, partner, heroSlide, stat, siteSettings, aboutContent, job],
 };

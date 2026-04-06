@@ -165,6 +165,17 @@
       "reserve": "Reservefonds"
     }
   },
+  "jobs": {
+  "heroTitle": "Offene Stellen",
+  "heroSubtitle": "Werden Sie Teil unseres Teams und bewirken Sie etwas",
+  "noJobs": "Derzeit keine offenen Stellen. Bitte schauen Sie später wieder vorbei.",
+  "viewDetails": "Details anzeigen",
+  "applyNow": "Jetzt bewerben",
+  "backToJobs": "Zurück zu Stellen",
+  "ctaTitle": "Möchten Sie stattdessen ehrenamtlich tätig sein?",
+  "ctaSubtitle": "Sie können uns auch als Freiwilliger ohne feste Stelle unterstützen.",
+  "volunteerWithUs": "Ehrenamtlich tätig sein"
+},
   "footer": {
     "description": "Deutsche humanitäre Hilfsorganisation, die Krisenregionen weltweit unterstützt.",
     "aboutUs": "Über uns",

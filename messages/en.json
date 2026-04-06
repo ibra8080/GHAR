@@ -165,6 +165,17 @@
       "reserve": "Reserve Fund"
     }
   },
+  "jobs": {
+  "heroTitle": "Open Positions",
+  "heroSubtitle": "Join our team and make a difference",
+  "noJobs": "No open positions at the moment. Please check back later.",
+  "viewDetails": "View Details",
+  "applyNow": "Apply Now",
+  "backToJobs": "Back to Jobs",
+  "ctaTitle": "Want to Volunteer Instead?",
+  "ctaSubtitle": "You can also support us as a volunteer without a formal position.",
+  "volunteerWithUs": "Volunteer With Us"
+},
   "footer": {
     "description": "German Humanitarian Relief Organization providing aid to crisis-affected regions worldwide.",
     "aboutUs": "About US",
