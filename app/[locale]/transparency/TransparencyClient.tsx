@@ -5,20 +5,83 @@ import Image from "next/image";
 import { Shield, FileText, PieChart, Users, Award, Download } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 
-export default function TransparencyClient({ heroImage }: { heroImage: string | null }) {
+type Allocation = {
+  label: string; labelAr: string; labelDe: string;
+  percentage: number; color: string;
+};
+
+type Report = {
+  year: string;
+  title: string; titleAr: string; titleDe: string;
+  fileUrl: string; size: string;
+};
+
+type GovernanceMember = {
+  role: string; roleAr: string; roleDe: string;
+  name: string;
+  responsibility: string; responsibilityAr: string; responsibilityDe: string;
+};
+
+type Certification = {
+  name: string; nameAr: string; nameDe: string;
+  body: string; year: string;
+};
+
+type TransparencyContent = {
+  allocations: Allocation[];
+  reports: Report[];
+  governance: GovernanceMember[];
+  certifications: Certification[];
+  efficiencyPercentage: number;
+} | null;
+
+const defaultAllocations = [
+  { label: 'Direct Aid & Projects', labelAr: 'الإغاثة المباشرة والمشاريع', labelDe: 'Direkte Hilfe & Projekte', percentage: 75, color: '#1A6FA0' },
+  { label: 'Operations & Admin', labelAr: 'العمليات والإدارة', labelDe: 'Betrieb & Verwaltung', percentage: 15, color: '#2D8F16' },
+  { label: 'Fundraising', labelAr: 'جمع التبرعات', labelDe: 'Spendenakquise', percentage: 7, color: '#EF8800' },
+  { label: 'Reserve Fund', labelAr: 'صندوق الاحتياطي', labelDe: 'Reservefonds', percentage: 3, color: '#2A2A2A' },
+];
+
+const defaultReports = [
+  { year: '2025', title: 'Annual Financial Report 2025', titleAr: 'التقرير المالي السنوي 2025', titleDe: 'Jahresfinanzbericht 2025', fileUrl: '', size: '2.4 MB' },
+  { year: '2024', title: 'Annual Financial Report 2024', titleAr: 'التقرير المالي السنوي 2024', titleDe: 'Jahresfinanzbericht 2024', fileUrl: '', size: '1.8 MB' },
+  { year: '2023', title: 'Annual Financial Report 2023', titleAr: 'التقرير المالي السنوي 2023', titleDe: 'Jahresfinanzbericht 2023', fileUrl: '', size: '1.2 MB' },
+];
+
+const defaultGovernance = [
+  { role: 'Executive Director', roleAr: 'المدير التنفيذي', roleDe: 'Geschäftsführer', name: 'Ahmed Al-Rashid', responsibility: 'Overall leadership and strategic direction', responsibilityAr: 'القيادة العامة والتوجه الاستراتيجي', responsibilityDe: 'Gesamtleitung und strategische Ausrichtung' },
+  { role: 'Finance Director', roleAr: 'مديرة المالية', roleDe: 'Finanzleiterin', name: 'Lena Weber', responsibility: 'Financial oversight and compliance', responsibilityAr: 'الإشراف المالي والامتثال', responsibilityDe: 'Finanzaufsicht und Compliance' },
+  { role: 'Program Manager', roleAr: 'مديرة البرامج', roleDe: 'Programmleiterin', name: 'Sara Müller', responsibility: 'Project implementation and monitoring', responsibilityAr: 'تنفيذ المشاريع ومتابعتها', responsibilityDe: 'Projektdurchführung und Monitoring' },
+  { role: 'Field Coordinator', roleAr: 'منسق ميداني', roleDe: 'Feldkoordinator', name: 'Omar Hassan', responsibility: 'On-ground operations in Sudan & Yemen', responsibilityAr: 'العمليات الميدانية في السودان واليمن', responsibilityDe: 'Vor-Ort-Operationen in Sudan und Jemen' },
+];
+
+const defaultCertifications = [
+  { name: 'Registered NGO in Germany', nameAr: 'منظمة غير حكومية مسجلة في ألمانيا', nameDe: 'Eingetragene NGO in Deutschland', body: 'Amtsgericht Bremen', year: '2024' },
+  { name: 'Tax-Exempt Status', nameAr: 'الإعفاء الضريبي', nameDe: 'Steuerbefreiung', body: 'Finanzamt Bremen', year: '2024' },
+  { name: 'DZI Certification (Pending)', nameAr: 'شهادة DZI (قيد الانتظار)', nameDe: 'DZI-Zertifizierung (ausstehend)', body: 'Deutsches Zentralinstitut für soziale Fragen', year: '2026' },
+];
+
+export default function TransparencyClient({
+  heroImage,
+  transparencyContent,
+}: {
+  heroImage: string | null;
+  transparencyContent: TransparencyContent;
+}) {
   const t = useTranslations("transparency");
   const locale = useLocale();
 
-  const allocations = [
-    { label: t("allocations.directAid"), percentage: 75, color: "#1A6FA0" },
-    { label: t("allocations.operations"), percentage: 15, color: "#2D8F16" },
-    { label: t("allocations.fundraising"), percentage: 7, color: "#EF8800" },
-    { label: t("allocations.reserve"), percentage: 3, color: "#2A2A2A" },
-  ];
+  const allocations = transparencyContent?.allocations || defaultAllocations;
+  const reports = transparencyContent?.reports || defaultReports;
+  const governance = transparencyContent?.governance || defaultGovernance;
+  const certifications = transparencyContent?.certifications || defaultCertifications;
+  const efficiencyPercentage = transparencyContent?.efficiencyPercentage || 75;
 
-  const reports = t.raw("reports") as { year: string; title: string; size: string }[];
-  const governance = t.raw("governance") as { role: string; name: string; responsibility: string }[];
-  const certifications = t.raw("certifications") as { name: string; body: string; year: string }[];
+  const getAllocationLabel = (a: Allocation) => locale === "ar" ? a.labelAr : locale === "de" ? a.labelDe : a.label;
+  const getReportTitle = (r: Report) => locale === "ar" ? r.titleAr : locale === "de" ? r.titleDe : r.title;
+  const getRole = (g: GovernanceMember) => locale === "ar" ? g.roleAr : locale === "de" ? g.roleDe : g.role;
+  const getResponsibility = (g: GovernanceMember) => locale === "ar" ? g.responsibilityAr : locale === "de" ? g.responsibilityDe : g.responsibility;
+  const getCertName = (c: Certification) => locale === "ar" ? c.nameAr : locale === "de" ? c.nameDe : c.name;
 
   return (
     <div className="bg-background">
@@ -50,14 +113,22 @@ export default function TransparencyClient({ heroImage }: { heroImage: string | 
               <div className="flex items-center gap-4">
                 <div className="bg-primary/10 text-primary font-bold text-sm px-3 py-1 rounded-lg">{report.year}</div>
                 <div>
-                  <p className="text-dark font-semibold text-sm">{report.title}</p>
+                  <p className="text-dark font-semibold text-sm">{getReportTitle(report)}</p>
                   <p className="text-gray-400 text-xs mt-0.5">{report.size}</p>
                 </div>
               </div>
-              <button className="flex items-center gap-2 text-primary hover:text-white hover:bg-primary border border-primary px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                <Download size={14} />
-                {t("download")}
-              </button>
+              {report.fileUrl ? (
+                <a href={report.fileUrl} target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-primary hover:text-white hover:bg-primary border border-primary px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                  <Download size={14} />
+                  {t("download")}
+                </a>
+              ) : (
+                <span className="flex items-center gap-2 text-gray-400 border border-gray-200 px-4 py-2 rounded-lg text-sm">
+                  <Download size={14} />
+                  {t("available")}
+                </span>
+              )}
             </div>
           ))}
         </div>
@@ -75,7 +146,7 @@ export default function TransparencyClient({ heroImage }: { heroImage: string | 
               {allocations.map((item, i) => (
                 <div key={i}>
                   <div className="flex justify-between items-center mb-1">
-                    <span className="text-dark text-sm font-medium">{item.label}</span>
+                    <span className="text-dark text-sm font-medium">{getAllocationLabel(item)}</span>
                     <span className="text-dark font-bold text-sm">{item.percentage}%</span>
                   </div>
                   <div className="w-full bg-gray-100 rounded-full h-4">
@@ -90,7 +161,7 @@ export default function TransparencyClient({ heroImage }: { heroImage: string | 
               <p className="text-gray-600 leading-relaxed mb-4">{t("efficiencyText1")}</p>
               <p className="text-gray-600 leading-relaxed mb-4">{t("efficiencyText2")}</p>
               <div className="bg-white rounded-xl border border-gray-100 p-4">
-                <p className="text-primary font-bold text-2xl">75%</p>
+                <p className="text-primary font-bold text-2xl">{efficiencyPercentage}%</p>
                 <p className="text-gray-500 text-sm">{t("efficiencyHighlight")}</p>
               </div>
             </div>
@@ -107,9 +178,9 @@ export default function TransparencyClient({ heroImage }: { heroImage: string | 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {governance.map((member, i) => (
             <div key={i} className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-              <p className="text-xs text-primary font-semibold uppercase mb-1">{member.role}</p>
+              <p className="text-xs text-primary font-semibold uppercase mb-1">{getRole(member)}</p>
               <p className="text-dark font-bold text-base mb-1">{member.name}</p>
-              <p className="text-gray-500 text-sm">{member.responsibility}</p>
+              <p className="text-gray-500 text-sm">{getResponsibility(member)}</p>
             </div>
           ))}
         </div>
@@ -126,7 +197,7 @@ export default function TransparencyClient({ heroImage }: { heroImage: string | 
             {certifications.map((cert, i) => (
               <div key={i} className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 text-center">
                 <Award size={32} className="text-primary mx-auto mb-3" />
-                <p className="text-dark font-bold text-base mb-1">{cert.name}</p>
+                <p className="text-dark font-bold text-base mb-1">{getCertName(cert)}</p>
                 <p className="text-gray-500 text-xs mb-1">{cert.body}</p>
                 <p className="text-primary text-xs font-semibold">{cert.year}</p>
               </div>

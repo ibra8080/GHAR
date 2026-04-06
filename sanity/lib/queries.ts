@@ -215,3 +215,47 @@ export async function getPageSettings() {
     return null;
   }
 }
+
+// ===== TRANSPARENCY CONTENT =====
+export async function getTransparencyContent() {
+  try {
+    return await client.fetch(`
+      *[_type == "transparencyContent"][0] {
+        allocations[] {
+          "label": label.en,
+          "labelAr": label.ar,
+          "labelDe": label.de,
+          percentage,
+          color,
+        },
+        reports[] {
+          year,
+          "title": title.en,
+          "titleAr": title.ar,
+          "titleDe": title.de,
+          "fileUrl": file.asset->url,
+          size,
+        },
+        governance[] {
+          "role": role.en,
+          "roleAr": role.ar,
+          "roleDe": role.de,
+          name,
+          "responsibility": responsibility.en,
+          "responsibilityAr": responsibility.ar,
+          "responsibilityDe": responsibility.de,
+        },
+        certifications[] {
+          "name": name.en,
+          "nameAr": name.ar,
+          "nameDe": name.de,
+          body,
+          year,
+        },
+        efficiencyPercentage,
+      }
+    `);
+  } catch {
+    return null;
+  }
+}
