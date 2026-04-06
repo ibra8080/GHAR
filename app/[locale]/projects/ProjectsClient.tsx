@@ -70,13 +70,13 @@ export default function ProjectsClient({ projects }: { projects: Project[] }) {
           {filtered.map((project, i) => {
             const progress = Math.round((project.raised / project.goal) * 100);
             return (
-              <div key={i} className="rounded-xl overflow-hidden shadow-md bg-white flex flex-col">
+              <Link key={i} href={`/${locale}/projects/${project.id}`} className="rounded-xl overflow-hidden shadow-md bg-white flex flex-col hover:shadow-lg transition-shadow group">
                 <div className="relative h-52">
                   <Image
                     src={project.image || "/images/ProjectCards1.png"}
                     alt={getTitle(project)}
                     fill
-                    className="object-cover"
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
                 <div className="p-5 flex flex-col flex-grow">
@@ -88,7 +88,7 @@ export default function ProjectsClient({ projects }: { projects: Project[] }) {
                     <span className="text-xs text-gray-400">{project.category}</span>
                   </div>
                   <h3 className="text-dark font-bold text-lg mb-2">{getTitle(project)}</h3>
-                  <p className="text-gray-500 text-sm leading-relaxed flex-grow">{getDesc(project)}</p>
+                  <p className="text-gray-500 text-sm leading-relaxed flex-grow group-hover:underline">{getDesc(project)}</p>
 
                   <div className="mt-4">
                     <div className="flex justify-between text-xs text-gray-500 mb-1">
@@ -101,14 +101,18 @@ export default function ProjectsClient({ projects }: { projects: Project[] }) {
                     <p className="text-xs text-primary font-semibold mt-1">{progress}% {t("funded")}</p>
                   </div>
 
-                  <Link href={`/${locale}/projects/${project.id}`} className="mt-3 text-primary text-xs hover:underline text-center block">
+                  <span className="mt-3 text-primary text-xs group-hover:underline text-center block">
                     {t("readMore")}
-                  </Link>
-                  <Link href={`/${locale}/donate`} className="mt-2 bg-secondary hover:bg-green-700 text-white text-center py-2 rounded font-medium text-sm transition-colors">
+                  </span>
+                  <Link
+                    href={`/${locale}/donate`}
+                    onClick={(e) => e.stopPropagation()}
+                    className="mt-2 bg-secondary hover:bg-green-700 text-white text-center py-2 rounded font-medium text-sm transition-colors"
+                  >
                     {t("donateNow")}
                   </Link>
                 </div>
-              </div>
+              </Link>
             );
           })}
         </div>

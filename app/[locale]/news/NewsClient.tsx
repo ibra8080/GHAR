@@ -80,7 +80,7 @@ export default function NewsClient({ news }: { news: NewsItem[] }) {
       <section className="pb-8 px-4 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {paginated.map((item) => (
-            <div key={item.id} className="flex gap-4 bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition-shadow">
+            <Link key={item.id} href={`/${locale}/news`} className="flex gap-4 bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition-shadow group">
               <div className="relative w-40 shrink-0">
                 <Image src={item.image || "/images/NewsSection1.png"} alt={getTitle(item)} fill className="object-cover" />
               </div>
@@ -89,7 +89,7 @@ export default function NewsClient({ news }: { news: NewsItem[] }) {
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">{item.category}</span>
                   </div>
-                  <h3 className="text-dark font-semibold text-sm leading-snug mb-2">{getTitle(item)}</h3>
+                  <h3 className="text-dark font-semibold text-sm leading-snug mb-2 group-hover:underline">{getTitle(item)}</h3>
                   <p className="text-gray-500 text-xs leading-relaxed">{getExcerpt(item)}</p>
                 </div>
                 <div className="flex items-center justify-between mt-3">
@@ -97,12 +97,12 @@ export default function NewsClient({ news }: { news: NewsItem[] }) {
                     <Calendar size={12} />
                     <span>{item.date}</span>
                   </div>
-                  <Link href={`/${locale}/news`} className="text-primary text-xs hover:underline font-medium">
+                  <span className="text-primary text-xs group-hover:underline font-medium">
                     {t("readMore")}
-                  </Link>
+                  </span>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </section>

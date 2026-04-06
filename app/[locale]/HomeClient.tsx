@@ -171,14 +171,19 @@ export default function HomeClient({
         <h2 className="text-3xl font-bold text-dark mb-10 text-center">{t("projects")}</h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {projects.slice(0, 4).map((project, i) => (
-            <div key={i} className="rounded-xl overflow-hidden shadow-md bg-white flex flex-col">
+            <Link key={i} href={`/${locale}/projects/${project.id}`} className="rounded-xl overflow-hidden shadow-md bg-white flex flex-col hover:shadow-lg transition-shadow group">
               <div className="relative h-48">
-                <Image src={project.image || "/images/ProjectCards1.png"} alt={getTitle(project)} fill className="object-cover" />
+                <Image
+                  src={project.image || "/images/ProjectCards1.png"}
+                  alt={getTitle(project)}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-300"
+                />
               </div>
               <div className="p-4 flex flex-col flex-grow">
                 <span className="text-xs text-primary font-semibold uppercase mb-1">{project.countryCode}</span>
                 <h3 className="text-dark font-bold text-base mb-2">{getTitle(project)}</h3>
-                <p className="text-gray-500 text-sm flex-grow leading-relaxed">{getDesc(project)}</p>
+                <p className="text-gray-500 text-sm flex-grow leading-relaxed group-hover:underline">{getDesc(project)}</p>
                 <div className="mt-3">
                   <div className="flex justify-between text-xs text-gray-500 mb-1">
                     <span>{t("raised")}: €{project.raised.toLocaleString()}</span>
@@ -192,14 +197,18 @@ export default function HomeClient({
                     {Math.round((project.raised / project.goal) * 100)}% {t("funded")}
                   </p>
                 </div>
-                <Link href={`/${locale}/projects/${project.id}`} className="mt-2 text-primary text-xs hover:underline">
+                <span className="mt-2 text-primary text-xs group-hover:underline">
                   {t("readMore")}
-                </Link>
-                <Link href={`/${locale}/donate`} className="mt-4 bg-secondary hover:bg-green-700 text-white text-center py-2 rounded font-medium text-sm transition-colors">
+                </span>
+                <Link
+                  href={`/${locale}/donate`}
+                  onClick={(e) => e.stopPropagation()}
+                  className="mt-4 bg-secondary hover:bg-green-700 text-white text-center py-2 rounded font-medium text-sm transition-colors"
+                >
                   {t("donate")}
                 </Link>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </section>
@@ -244,17 +253,17 @@ export default function HomeClient({
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {news.slice(0, 4).map((item, i) => (
-            <div key={i} className="flex gap-4 bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
+            <Link key={i} href={`/${locale}/news`} className="flex gap-4 bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition-shadow group">
               <div className="relative w-36 shrink-0">
                 <Image src={item.image || "/images/NewsSection1.png"} alt={getNewsTitle(item)} fill className="object-cover" />
               </div>
               <div className="p-4 flex flex-col justify-center">
                 <span className="text-xs text-primary font-semibold mb-2">{item.date}</span>
-                <h3 className="text-dark font-semibold text-sm leading-snug mb-2">{getNewsTitle(item)}</h3>
+                <h3 className="text-dark font-semibold text-sm leading-snug mb-2 group-hover:underline">{getNewsTitle(item)}</h3>
                 <p className="text-gray-500 text-xs leading-relaxed">{getNewsExcerpt(item)}</p>
-                <Link href={`/${locale}/news`} className="text-primary text-xs mt-3 hover:underline">{t("readMore")}</Link>
+                <span className="text-primary text-xs mt-3 group-hover:underline">{t("readMore")}</span>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </section>
