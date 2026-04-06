@@ -10,7 +10,8 @@ import { aboutContent } from './aboutContent';
 import { job } from './job';
 import { pageSettings } from './pageSettings';
 import { transparencyContent } from './transparencyContent';
+import { privacyContent } from './privacyContent';
 
 export const schema: { types: SchemaTypeDefinition[] } = {
-  types: [project, news, teamMember, partner, heroSlide, stat, siteSettings, aboutContent, job, pageSettings, transparencyContent],
+  types: [project, news, teamMember, partner, heroSlide, stat, siteSettings, aboutContent, job, pageSettings, transparencyContent, privacyContent],
 };

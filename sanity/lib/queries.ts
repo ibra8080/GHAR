@@ -259,3 +259,19 @@ export async function getTransparencyContent() {
     return null;
   }
 }
+
+// ===== PRIVACY CONTENT =====
+export async function getPrivacyContent() {
+  try {
+    return await client.fetch(`
+      *[_type == "privacyContent"][0] {
+        lastUpdated,
+        contentEn,
+        contentAr,
+        contentDe,
+      }
+    `);
+  } catch {
+    return null;
+  }
+}

@@ -1,4 +1,4 @@
-import { getPageSettings } from "@/sanity/lib/queries";
+import { getPageSettings, getTransparencyContent } from "@/sanity/lib/queries";
 import TransparencyClient from "./TransparencyClient";
 
 export default async function TransparencyPage({
@@ -7,8 +7,17 @@ export default async function TransparencyPage({
   params: Promise<{ locale: string }>;
 }) {
   await params;
-  const pageSettings = await getPageSettings();
+  const [pageSettings, transparencyContent] = await Promise.all([
+    getPageSettings(),
+    getTransparencyContent(),
+  ]);
+
   const heroImage = pageSettings?.heroTransparency || null;
 
-  return <TransparencyClient heroImage={heroImage} />;
+  return (
+    <TransparencyClient
+      heroImage={heroImage}
+      transparencyContent={transparencyContent}
+    />
+  );
 }
