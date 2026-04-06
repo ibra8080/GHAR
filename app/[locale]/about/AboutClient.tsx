@@ -214,7 +214,7 @@ export default function AboutClient({
             {status === "success" && <p className="text-secondary text-sm text-center">{t("successMessage")}</p>}
             {status === "error" && <p className="text-red-500 text-sm text-center">{t("errorMessage")}</p>}
             <button onClick={handleSubmit} disabled={status === "loading"}
-              className="bg-primary hover:bg-blue-800 text-white py-3 rounded-lg font-semibold text-sm transition-colors disabled:opacity-50">
+              className="bg-primary hover:bg-secondary text-white py-3 rounded-lg font-semibold text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
               {status === "loading" ? t("sending") : t("sendMessage")}
             </button>
           </div>
