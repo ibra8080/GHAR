@@ -96,7 +96,7 @@
     "summaryType": "Art:",
     "summaryProject": "Projekt:",
     "successMessage": "✅ Ihre Daten wurden gespeichert. Weiterleitung zu PayPal...",
-    "errorMessage": "❌ Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
+    "errorMessage": "Wir nehmen derzeit keine Online-Spenden an. Bitte nutzen Sie die Banküberweisung oder kontaktieren Sie uns unter info@ghar.de",
     "processing": "Wird verarbeitet...",
     "donatePayPal": "Mit PayPal spenden",
     "redirectMessage": "Sie werden zu PayPal weitergeleitet, um Ihre Spende sicher abzuschließen",

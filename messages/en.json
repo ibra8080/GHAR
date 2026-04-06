@@ -96,7 +96,7 @@
     "summaryType": "Type:",
     "summaryProject": "Project:",
     "successMessage": "✅ Your information has been saved. Redirecting to PayPal...",
-    "errorMessage": "❌ Something went wrong. Please try again.",
+    "errorMessage": "We are not currently accepting donations online. Please use bank transfer or contact us at info@ghar.de",
     "processing": "Processing...",
     "donatePayPal": "Donate with PayPal",
     "redirectMessage": "You will be redirected to PayPal to complete your donation securely",
