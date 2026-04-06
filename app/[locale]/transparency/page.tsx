@@ -1,25 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import { Shield, FileText, PieChart, Users, Award, Download } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
-
-const reports = [
-  { year: "2025", title: "Annual Financial Report 2025", size: "2.4 MB" },
-  { year: "2024", title: "Annual Financial Report 2024", size: "1.8 MB" },
-  { year: "2023", title: "Annual Financial Report 2023", size: "1.2 MB" },
-];
-
-const governance = [
-  { role: "Executive Director", name: "Ahmed Al-Rashid", responsibility: "Overall leadership and strategic direction" },
-  { role: "Finance Director", name: "Lena Weber", responsibility: "Financial oversight and compliance" },
-  { role: "Program Manager", name: "Sara Müller", responsibility: "Project implementation and monitoring" },
-  { role: "Field Coordinator", name: "Omar Hassan", responsibility: "On-ground operations in Sudan & Yemen" },
-];
-
-const certifications = [
-  { name: "Registered NGO in Germany", body: "Amtsgericht Bremen", year: "2024" },
-  { name: "Tax-Exempt Status", body: "Finanzamt Bremen", year: "2024" },
-  { name: "DZI Certification (Pending)", body: "Deutsches Zentralinstitut für soziale Fragen", year: "2026" },
-];
 
 export default function TransparencyPage() {
   const t = useTranslations("transparency");
@@ -31,6 +14,33 @@ export default function TransparencyPage() {
     { label: t("allocations.fundraising"), percentage: 7, color: "#EF8800" },
     { label: t("allocations.reserve"), percentage: 3, color: "#2A2A2A" },
   ];
+
+  const reports = locale === "ar"
+    ? t.raw("reports") as { year: string; title: string; size: string }[]
+    : locale === "de"
+    ? t.raw("reports") as { year: string; title: string; size: string }[]
+    : [
+        { year: "2025", title: "Annual Financial Report 2025", size: "2.4 MB" },
+        { year: "2024", title: "Annual Financial Report 2024", size: "1.8 MB" },
+        { year: "2023", title: "Annual Financial Report 2023", size: "1.2 MB" },
+      ];
+
+  const governance = locale === "ar" || locale === "de"
+    ? t.raw("governance") as { role: string; name: string; responsibility: string }[]
+    : [
+        { role: "Executive Director", name: "Ahmed Al-Rashid", responsibility: "Overall leadership and strategic direction" },
+        { role: "Finance Director", name: "Lena Weber", responsibility: "Financial oversight and compliance" },
+        { role: "Program Manager", name: "Sara Müller", responsibility: "Project implementation and monitoring" },
+        { role: "Field Coordinator", name: "Omar Hassan", responsibility: "On-ground operations in Sudan & Yemen" },
+      ];
+
+  const certifications = locale === "ar" || locale === "de"
+    ? t.raw("certifications") as { name: string; body: string; year: string }[]
+    : [
+        { name: "Registered NGO in Germany", body: "Amtsgericht Bremen", year: "2024" },
+        { name: "Tax-Exempt Status", body: "Finanzamt Bremen", year: "2024" },
+        { name: "DZI Certification (Pending)", body: "Deutsches Zentralinstitut für soziale Fragen", year: "2026" },
+      ];
 
   return (
     <div className="bg-background">
@@ -146,7 +156,7 @@ export default function TransparencyPage() {
         <div className="max-w-3xl mx-auto px-4">
           <h2 className="text-3xl font-bold mb-4">{t("ctaTitle")}</h2>
           <p className="text-white/80 mb-8 text-lg">{t("ctaSubtitle")}</p>
-          <Link href={`/${locale}/about`} className="bg-secondary hover:bg-green-700 text-white px-12 py-3 rounded font-semibold text-lg transition-colors">
+          <Link href={`/${locale}/contact`} className="bg-secondary hover:bg-green-700 text-white px-12 py-3 rounded font-semibold text-lg transition-colors">
             {t("contactUs")}
           </Link>
         </div>

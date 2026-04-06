@@ -163,7 +163,23 @@
       "operations": "Betrieb & Verwaltung",
       "fundraising": "Spendenakquise",
       "reserve": "Reservefonds"
-    }
+    },
+    "governance": [
+      { "role": "Geschäftsführer", "name": "Ahmed Al-Rashid", "responsibility": "Gesamtleitung und strategische Ausrichtung" },
+      { "role": "Finanzleiterin", "name": "Lena Weber", "responsibility": "Finanzaufsicht und Compliance" },
+      { "role": "Programmleiterin", "name": "Sara Müller", "responsibility": "Projektdurchführung und Monitoring" },
+      { "role": "Feldkoordinator", "name": "Omar Hassan", "responsibility": "Vor-Ort-Operationen in Sudan und Jemen" }
+    ],
+    "certifications": [
+      { "name": "Eingetragene NGO in Deutschland", "body": "Amtsgericht Bremen", "year": "2024" },
+      { "name": "Steuerbefreiung", "body": "Finanzamt Bremen", "year": "2024" },
+      { "name": "DZI-Zertifizierung (ausstehend)", "body": "Deutsches Zentralinstitut für soziale Fragen", "year": "2026" }
+    ],
+    "reports": [
+      { "year": "2025", "title": "Jahresfinanzbericht 2025", "size": "2.4 MB" },
+      { "year": "2024", "title": "Jahresfinanzbericht 2024", "size": "1.8 MB" },
+      { "year": "2023", "title": "Jahresfinanzbericht 2023", "size": "1.2 MB" }
+    ]
   },
   "jobs": {
   "heroTitle": "Offene Stellen",
