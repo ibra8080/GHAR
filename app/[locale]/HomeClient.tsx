@@ -82,16 +82,24 @@ type Stat = {
   labelDe: string;
 };
 
+type HomeContent = {
+  quote: string;
+  quoteAr: string;
+  quoteDe: string;
+} | null;
+
 export default function HomeClient({
   projects,
   news,
   heroSlides,
   stats,
+  homeContent,
 }: {
   projects: Project[];
   news: NewsItem[];
   heroSlides: HeroSlide[];
   stats: Stat[];
+  homeContent: HomeContent;
 }) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const t = useTranslations("home");
@@ -118,6 +126,11 @@ export default function HomeClient({
   const getSlideTitle = (s: HeroSlide) => locale === "ar" ? s.titleAr : locale === "de" ? s.titleDe : s.title;
   const getSlideSubtitle = (s: HeroSlide) => locale === "ar" ? s.subtitleAr : locale === "de" ? s.subtitleDe : s.subtitle;
   const getStatLabel = (s: Stat) => locale === "ar" ? s.labelAr : locale === "de" ? s.labelDe : s.label;
+
+  const getQuote = () => {
+    if (!homeContent) return t("quote");
+    return locale === "ar" ? homeContent.quoteAr : locale === "de" ? homeContent.quoteDe : homeContent.quote;
+  };
 
   if (slides.length === 0) return null;
 
@@ -217,7 +230,7 @@ export default function HomeClient({
       <section className="py-16 bg-primary/5">
         <div className="max-w-3xl mx-auto text-center px-4">
           <span className="text-6xl text-primary font-serif leading-none">&ldquo;</span>
-          <p className="text-xl md:text-2xl text-dark font-medium italic mt-2">{t("quote")}</p>
+          <p className="text-xl md:text-2xl text-dark font-medium italic mt-2">{getQuote()}</p>
           <span className="text-6xl text-primary font-serif leading-none">&rdquo;</span>
         </div>
       </section>

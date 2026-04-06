@@ -275,3 +275,18 @@ export async function getPrivacyContent() {
     return null;
   }
 }
+
+// ===== HOME CONTENT =====
+export async function getHomeContent() {
+  try {
+    return await client.fetch(`
+      *[_type == "homeContent"][0] {
+        "quote": quote.en,
+        "quoteAr": quote.ar,
+        "quoteDe": quote.de,
+      }
+    `);
+  } catch {
+    return null;
+  }
+}
