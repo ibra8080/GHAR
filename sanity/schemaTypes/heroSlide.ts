@@ -4,6 +4,18 @@ export const heroSlide = defineType({
   name: 'heroSlide',
   title: 'Hero Slide',
   type: 'document',
+  preview: {
+    select: {
+      title: 'title.en',
+      media: 'image',
+    },
+    prepare({ title, media }) {
+      return {
+        title: title || 'Untitled Slide',
+        media,
+      }
+    }
+  },
   fields: [
     defineField({
       name: 'title',

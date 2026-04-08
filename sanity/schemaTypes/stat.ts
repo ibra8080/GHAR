@@ -4,6 +4,18 @@ export const stat = defineType({
   name: 'stat',
   title: 'Statistic',
   type: 'document',
+  preview: {
+    select: {
+      number: 'number',
+      label: 'label.en',
+    },
+    prepare({ number, label }) {
+      return {
+        title: label || 'Untitled Stat',
+        subtitle: number ? `${number.toLocaleString()}+` : '',
+      }
+    }
+  },
   fields: [
     defineField({
       name: 'number',

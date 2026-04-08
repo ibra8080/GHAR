@@ -1,14 +1,33 @@
 import { defineField, defineType } from 'sanity';
 
+const iconOptions = [
+  { title: '❤️ Heart — المحبة', value: 'Heart' },
+  { title: '🛡️ Shield — الحماية', value: 'Shield' },
+  { title: '👁️ Eye — الشفافية', value: 'Eye' },
+  { title: '🤝 Handshake — التعاون', value: 'Handshake' },
+  { title: '⭐ Star — التميز', value: 'Star' },
+  { title: '🌍 Globe — العالمية', value: 'Globe' },
+  { title: '🏠 Home — المأوى', value: 'Home' },
+  { title: '🌱 Leaf — الاستدامة', value: 'Leaf' },
+  { title: '⚖️ Scale — العدالة', value: 'Scale' },
+  { title: '🕊️ Dove — السلام', value: 'Smile' },
+  { title: '💡 Lightbulb — الابتكار', value: 'Lightbulb' },
+  { title: '🙏 Users — المجتمع', value: 'Users' },
+  { title: '🎯 Target — الهدف', value: 'Target' },
+  { title: '💪 Zap — القوة', value: 'Zap' },
+  { title: '🌟 Award — الجائزة', value: 'Award' },
+  { title: '🔒 Lock — الأمان', value: 'Lock' },
+  { title: '📋 Clipboard — المساءلة', value: 'ClipboardList' },
+  { title: '🌐 Network — الشبكة', value: 'Network' },
+]
+
 export const aboutContent = defineType({
   name: 'aboutContent',
   title: 'About Content',
   type: 'document',
   preview: {
     prepare() {
-      return {
-        title: 'About Content',
-      }
+      return { title: 'About Content' }
     }
   },
   fields: [
@@ -95,8 +114,22 @@ export const aboutContent = defineType({
       of: [
         {
           type: 'object',
+          preview: {
+            select: { title: 'title.en', subtitle: 'icon' },
+            prepare({ title, subtitle }) {
+              return { title: title || 'Untitled Value', subtitle }
+            }
+          },
           fields: [
-            { name: 'icon', title: 'Icon Name (lucide)', type: 'string' },
+            {
+              name: 'icon',
+              title: 'Icon',
+              type: 'string',
+              options: {
+                list: iconOptions,
+                layout: 'dropdown',
+              },
+            },
             {
               name: 'title', title: 'Title', type: 'object',
               fields: [
