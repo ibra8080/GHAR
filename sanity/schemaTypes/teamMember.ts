@@ -4,6 +4,20 @@ export const teamMember = defineType({
   name: 'teamMember',
   title: 'Team Member',
   type: 'document',
+  preview: {
+    select: {
+      title: 'name',
+      subtitle: 'role.en',
+      media: 'image',
+    },
+    prepare({ title, subtitle, media }) {
+      return {
+        title: title || 'Untitled Member',
+        subtitle: subtitle || '',
+        media,
+      }
+    }
+  },
   fields: [
     defineField({
       name: 'name',

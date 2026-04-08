@@ -4,6 +4,20 @@ export const news = defineType({
   name: 'news',
   title: 'News',
   type: 'document',
+  preview: {
+    select: {
+      title: 'title.en',
+      subtitle: 'date',
+      media: 'image',
+    },
+    prepare({ title, subtitle, media }) {
+      return {
+        title: title || 'Untitled News',
+        subtitle: subtitle || '',
+        media,
+      }
+    }
+  },
   fields: [
     defineField({
       name: 'title',

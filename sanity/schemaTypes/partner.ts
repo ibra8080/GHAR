@@ -4,6 +4,18 @@ export const partner = defineType({
   name: 'partner',
   title: 'Partner',
   type: 'document',
+  preview: {
+    select: {
+      title: 'name',
+      media: 'logo',
+    },
+    prepare({ title, media }) {
+      return {
+        title: title || 'Untitled Partner',
+        media,
+      }
+    }
+  },
   fields: [
     defineField({
       name: 'name',

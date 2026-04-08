@@ -4,6 +4,19 @@ export const job = defineType({
   name: 'job',
   title: 'Job',
   type: 'document',
+  preview: {
+    select: {
+      title: 'title.en',
+      subtitle: 'type',
+      active: 'isActive',
+    },
+    prepare({ title, subtitle, active }) {
+      return {
+        title: title || 'Untitled Job',
+        subtitle: `${subtitle || ''} ${active ? '✅' : '❌'}`,
+      }
+    }
+  },
   fields: [
     defineField({
       name: 'title',
