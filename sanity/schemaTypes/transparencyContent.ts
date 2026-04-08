@@ -5,6 +5,13 @@ export const transparencyContent = defineType({
   title: 'Transparency Content',
   type: 'document',
   fields: [
+    defineField({
+      name: 'heroImage',
+      title: 'Hero Image',
+      type: 'image',
+      options: { hotspot: true },
+    }),
+
     // ===== ALLOCATIONS =====
     defineField({
       name: 'allocations',

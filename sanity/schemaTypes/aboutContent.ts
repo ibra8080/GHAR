@@ -6,6 +6,12 @@ export const aboutContent = defineType({
   type: 'document',
   fields: [
     defineField({
+      name: 'heroImage',
+      title: 'Hero Image',
+      type: 'image',
+      options: { hotspot: true },
+    }),
+    defineField({
       name: 'story1',
       title: 'Story Paragraph 1',
       type: 'object',

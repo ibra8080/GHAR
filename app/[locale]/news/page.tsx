@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
-import { getNews, getPageSettings } from "@/sanity/lib/queries";
+import { getNews, getNewsPage } from "@/sanity/lib/queries";
 import NewsClient from "./NewsClient";
 
 export default async function NewsPage({
@@ -10,12 +10,12 @@ export default async function NewsPage({
 }) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "news" });
-  const [news, pageSettings] = await Promise.all([
+  const [news, newsPage] = await Promise.all([
     getNews(),
-    getPageSettings(),
+    getNewsPage(),
   ]);
 
-  const heroImage = pageSettings?.heroNews || "/images/NewsSection1.png";
+  const heroImage = newsPage?.heroImage || "/images/NewsSection1.png";
 
   return (
     <div className="bg-background">

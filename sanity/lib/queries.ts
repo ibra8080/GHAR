@@ -147,6 +147,7 @@ export async function getAboutContent() {
   try {
     return await client.fetch(`
       *[_type == "aboutContent"][0] {
+        "heroImage": heroImage.asset->url,
         "story1": story1.en,
         "story1Ar": story1.ar,
         "story1De": story1.de,
@@ -195,32 +196,12 @@ export async function getJobs() {
   }
 }
 
-// ===== PAGE SETTINGS =====
-export async function getPageSettings() {
-  try {
-    return await client.fetch(`
-      *[_type == "pageSettings"][0] {
-        "heroHome": heroHome.asset->url,
-        "heroAbout": heroAbout.asset->url,
-        "heroProjects": heroProjects.asset->url,
-        "heroNews": heroNews.asset->url,
-        "heroDonate": heroDonate.asset->url,
-        "heroVolunteer": heroVolunteer.asset->url,
-        "heroTransparency": heroTransparency.asset->url,
-        "heroContact": heroContact.asset->url,
-        "heroJobs": heroJobs.asset->url,
-      }
-    `);
-  } catch {
-    return null;
-  }
-}
-
 // ===== TRANSPARENCY CONTENT =====
 export async function getTransparencyContent() {
   try {
     return await client.fetch(`
       *[_type == "transparencyContent"][0] {
+        "heroImage": heroImage.asset->url,
         allocations[] {
           "label": label.en,
           "labelAr": label.ar,
@@ -284,6 +265,84 @@ export async function getHomeContent() {
         "quote": quote.en,
         "quoteAr": quote.ar,
         "quoteDe": quote.de,
+      }
+    `);
+  } catch {
+    return null;
+  }
+}
+
+// ===== PROJECTS PAGE =====
+export async function getProjectsPage() {
+  try {
+    return await client.fetch(`
+      *[_type == "projectsPage"][0] {
+        "heroImage": heroImage.asset->url,
+      }
+    `);
+  } catch {
+    return null;
+  }
+}
+
+// ===== NEWS PAGE =====
+export async function getNewsPage() {
+  try {
+    return await client.fetch(`
+      *[_type == "newsPage"][0] {
+        "heroImage": heroImage.asset->url,
+      }
+    `);
+  } catch {
+    return null;
+  }
+}
+
+// ===== JOBS PAGE =====
+export async function getJobsPage() {
+  try {
+    return await client.fetch(`
+      *[_type == "jobsPage"][0] {
+        "heroImage": heroImage.asset->url,
+      }
+    `);
+  } catch {
+    return null;
+  }
+}
+
+// ===== VOLUNTEER PAGE =====
+export async function getVolunteerPage() {
+  try {
+    return await client.fetch(`
+      *[_type == "volunteerPage"][0] {
+        "heroImage": heroImage.asset->url,
+      }
+    `);
+  } catch {
+    return null;
+  }
+}
+
+// ===== DONATE PAGE =====
+export async function getDonatePage() {
+  try {
+    return await client.fetch(`
+      *[_type == "donatePage"][0] {
+        "heroImage": heroImage.asset->url,
+      }
+    `);
+  } catch {
+    return null;
+  }
+}
+
+// ===== CONTACT PAGE =====
+export async function getContactPage() {
+  try {
+    return await client.fetch(`
+      *[_type == "contactPage"][0] {
+        "heroImage": heroImage.asset->url,
       }
     `);
   } catch {

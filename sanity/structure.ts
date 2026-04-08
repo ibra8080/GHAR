@@ -62,19 +62,103 @@ export const structure: StructureResolver = (S) =>
                 ),
 
               // Projects
-              S.documentTypeListItem('project')
+              S.listItem()
                 .title('Projects')
-                .icon(() => '🗂️'),
+                .icon(() => '🗂️')
+                .child(
+                  S.list()
+                    .id('projects')
+                    .title('Projects')
+                    .items([
+                      S.listItem()
+                        .id('projectsPage')
+                        .title('Page Settings')
+                        .icon(() => '🖼️')
+                        .child(
+                          S.document()
+                            .schemaType('projectsPage')
+                            .documentId('projectsPage')
+                        ),
+                      S.documentTypeListItem('project').title('Projects List'),
+                    ])
+                ),
 
               // News
-              S.documentTypeListItem('news')
+              S.listItem()
                 .title('News')
-                .icon(() => '📰'),
+                .icon(() => '📰')
+                .child(
+                  S.list()
+                    .id('news')
+                    .title('News')
+                    .items([
+                      S.listItem()
+                        .id('newsPage')
+                        .title('Page Settings')
+                        .icon(() => '🖼️')
+                        .child(
+                          S.document()
+                            .schemaType('newsPage')
+                            .documentId('newsPage')
+                        ),
+                      S.documentTypeListItem('news').title('News List'),
+                    ])
+                ),
 
               // Jobs
-              S.documentTypeListItem('job')
+              S.listItem()
                 .title('Jobs')
-                .icon(() => '💼'),
+                .icon(() => '💼')
+                .child(
+                  S.list()
+                    .id('jobs')
+                    .title('Jobs')
+                    .items([
+                      S.listItem()
+                        .id('jobsPage')
+                        .title('Page Settings')
+                        .icon(() => '🖼️')
+                        .child(
+                          S.document()
+                            .schemaType('jobsPage')
+                            .documentId('jobsPage')
+                        ),
+                      S.documentTypeListItem('job').title('Jobs List'),
+                    ])
+                ),
+
+              // Volunteer
+              S.listItem()
+                .id('volunteer')
+                .title('Volunteer')
+                .icon(() => '🤝')
+                .child(
+                  S.document()
+                    .schemaType('volunteerPage')
+                    .documentId('volunteerPage')
+                ),
+
+              // Donate
+              S.listItem()
+                .id('donate')
+                .title('Donate')
+                .icon(() => '💳')
+                .child(
+                  S.document()
+                    .schemaType('donatePage')
+                    .documentId('donatePage')
+                ),
+
+              // Contact
+              S.listItem()
+                .id('contact')
+                .title('Contact')
+                .icon(() => '📬')
+                .child(
+                  S.document()
+                    .schemaType('contactPage')
+                    .documentId('contactPage')
+                ),
 
               // Transparency
               S.listItem()
@@ -119,15 +203,6 @@ export const structure: StructureResolver = (S) =>
                   S.document()
                     .schemaType('siteSettings')
                     .documentId('siteSettings')
-                ),
-              S.listItem()
-                .id('designSettings')
-                .title('Design Settings')
-                .icon(() => '🎨')
-                .child(
-                  S.document()
-                    .schemaType('pageSettings')
-                    .documentId('pageSettings')
                 ),
             ])
         ),

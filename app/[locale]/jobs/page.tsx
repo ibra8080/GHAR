@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { MapPin } from "lucide-react";
-import { getJobs, getPageSettings } from "@/sanity/lib/queries";
+import { getJobs, getJobsPage } from "@/sanity/lib/queries";
 
 type Job = {
   id: string;
@@ -36,12 +36,12 @@ export default async function JobsPage({
 }) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "jobs" });
-  const [jobs, pageSettings] = await Promise.all([
+  const [jobs, jobsPage] = await Promise.all([
     getJobs(),
-    getPageSettings(),
+    getJobsPage(),
   ]);
 
-  const heroImage = pageSettings?.heroJobs || "/images/HeroImage2.png";
+  const heroImage = jobsPage?.heroImage || "/images/HeroImage2.png";
 
   const getTitle = (job: Job) => locale === "ar" ? job.titleAr : locale === "de" ? job.titleDe : job.title;
   const getDesc = (job: Job) => locale === "ar" ? job.descAr : locale === "de" ? job.descDe : job.desc;

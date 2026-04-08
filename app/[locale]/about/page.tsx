@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
-import { getTeam, getPartners, getAboutContent, getPageSettings } from "@/sanity/lib/queries";
+import { getTeam, getPartners, getAboutContent } from "@/sanity/lib/queries";
 import AboutClient from "./AboutClient";
 
 export default async function AboutPage({
@@ -10,14 +10,13 @@ export default async function AboutPage({
 }) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "about" });
-  const [team, partners, aboutContent, pageSettings] = await Promise.all([
+  const [team, partners, aboutContent] = await Promise.all([
     getTeam(),
     getPartners(),
     getAboutContent(),
-    getPageSettings(),
   ]);
 
-  const heroImage = pageSettings?.heroAbout || "/images/HeroImage1.png";
+  const heroImage = aboutContent?.heroImage || "/images/HeroImage1.png";
 
   return (
     <div className="bg-background">

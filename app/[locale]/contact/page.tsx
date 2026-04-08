@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { getSiteSettings, getPageSettings } from "@/sanity/lib/queries";
+import { getSiteSettings, getContactPage } from "@/sanity/lib/queries";
 import Image from "next/image";
 import ContactClient from "./ContactClient";
 
@@ -10,12 +10,12 @@ export default async function ContactPage({
 }) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "contact" });
-  const [siteSettings, pageSettings] = await Promise.all([
+  const [siteSettings, contactPage] = await Promise.all([
     getSiteSettings(),
-    getPageSettings(),
+    getContactPage(),
   ]);
 
-  const heroImage = pageSettings?.heroContact || null;
+  const heroImage = contactPage?.heroImage || null;
 
   return (
     <div className="bg-background">

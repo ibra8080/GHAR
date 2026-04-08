@@ -1,12 +1,12 @@
 {
   "navigation": {
     "home": "Home",
-    "about": "About US",
+    "about": "About",
     "projects": "Our Projects",
     "donate": "Donate",
     "transparency": "Transparency",
     "volunteer": "Volunteer",
-    "contact": "Contact US",
+    "contact": "Contact",
     "donateNow": "Donate Now"
   },
   "home": {
