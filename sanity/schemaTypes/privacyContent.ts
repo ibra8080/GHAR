@@ -4,6 +4,11 @@ export const privacyContent = defineType({
   name: 'privacyContent',
   title: 'Privacy Policy',
   type: 'document',
+  preview: {
+    prepare() {
+      return { title: 'Privacy Policy' }
+    }
+  },
   fields: [
     defineField({
       name: 'lastUpdated',

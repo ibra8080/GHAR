@@ -4,6 +4,11 @@ export const homeContent = defineType({
   name: 'homeContent',
   title: 'Home Content',
   type: 'document',
+  preview: {
+    prepare() {
+      return { title: 'Home Content' }
+    }
+  },
   fields: [
     defineField({
       name: 'quote',

@@ -4,6 +4,7 @@ export const donatePage = defineType({
   name: 'donatePage',
   title: 'Donate Page',
   type: 'document',
+  preview: { prepare() { return { title: 'Donate Page' } } },
   fields: [
     defineField({ name: 'heroImage', title: 'Hero Image', type: 'image', options: { hotspot: true } }),
     defineField({ name: 'heroTitle', title: 'Hero Title', type: 'object', fields: [

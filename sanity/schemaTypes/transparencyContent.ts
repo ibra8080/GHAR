@@ -4,6 +4,11 @@ export const transparencyContent = defineType({
   name: 'transparencyContent',
   title: 'Transparency Content',
   type: 'document',
+  preview: {
+    prepare() {
+      return { title: 'Transparency Content' }
+    }
+  },
   fields: [
     defineField({
       name: 'heroImage',

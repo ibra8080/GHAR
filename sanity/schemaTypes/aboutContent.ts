@@ -4,6 +4,13 @@ export const aboutContent = defineType({
   name: 'aboutContent',
   title: 'About Content',
   type: 'document',
+  preview: {
+    prepare() {
+      return {
+        title: 'About Content',
+      }
+    }
+  },
   fields: [
     defineField({
       name: 'heroImage',
