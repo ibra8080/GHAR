@@ -16,6 +16,8 @@ export default async function ContactPage({
   ]);
 
   const heroImage = contactPage?.heroImage || null;
+  const heroTitle = locale === "ar" ? contactPage?.heroTitleAr : locale === "de" ? contactPage?.heroTitleDe : contactPage?.heroTitle;
+  const heroSubtitle = locale === "ar" ? contactPage?.heroSubtitleAr : locale === "de" ? contactPage?.heroSubtitleDe : contactPage?.heroSubtitle;
 
   return (
     <div className="bg-background">
@@ -29,8 +31,8 @@ export default async function ContactPage({
         )}
         <div className="absolute inset-0 bg-black/50" />
         <div className="absolute inset-0 flex flex-col justify-center items-center text-center px-4">
-          <h1 className="text-4xl md:text-6xl font-bold text-white">{t("heroTitle")}</h1>
-          <p className="text-white/80 mt-4 text-lg max-w-2xl">{t("heroSubtitle")}</p>
+          <h1 className="text-4xl md:text-6xl font-bold text-white">{heroTitle || t("heroTitle")}</h1>
+          <p className="text-white/80 mt-4 text-lg max-w-2xl">{heroSubtitle || t("heroSubtitle")}</p>
         </div>
       </section>
 

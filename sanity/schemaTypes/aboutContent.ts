@@ -12,6 +12,26 @@ export const aboutContent = defineType({
       options: { hotspot: true },
     }),
     defineField({
+      name: 'heroTitle',
+      title: 'Hero Title',
+      type: 'object',
+      fields: [
+        { name: 'en', title: 'English', type: 'string' },
+        { name: 'ar', title: 'Arabic', type: 'string' },
+        { name: 'de', title: 'German', type: 'string' },
+      ],
+    }),
+    defineField({
+      name: 'heroSubtitle',
+      title: 'Hero Subtitle',
+      type: 'object',
+      fields: [
+        { name: 'en', title: 'English', type: 'string' },
+        { name: 'ar', title: 'Arabic', type: 'string' },
+        { name: 'de', title: 'German', type: 'string' },
+      ],
+    }),
+    defineField({
       name: 'story1',
       title: 'Story Paragraph 1',
       type: 'object',

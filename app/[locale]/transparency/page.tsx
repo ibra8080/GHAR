@@ -6,14 +6,18 @@ export default async function TransparencyPage({
 }: {
   params: Promise<{ locale: string }>;
 }) {
-  await params;
+  const { locale } = await params;
   const transparencyContent = await getTransparencyContent();
 
   const heroImage = transparencyContent?.heroImage || null;
+  const heroTitle = locale === "ar" ? transparencyContent?.heroTitleAr : locale === "de" ? transparencyContent?.heroTitleDe : transparencyContent?.heroTitle;
+  const heroSubtitle = locale === "ar" ? transparencyContent?.heroSubtitleAr : locale === "de" ? transparencyContent?.heroSubtitleDe : transparencyContent?.heroSubtitle;
 
   return (
     <TransparencyClient
       heroImage={heroImage}
+      heroTitle={heroTitle || null}
+      heroSubtitle={heroSubtitle || null}
       transparencyContent={transparencyContent}
     />
   );

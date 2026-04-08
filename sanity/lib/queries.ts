@@ -148,6 +148,12 @@ export async function getAboutContent() {
     return await client.fetch(`
       *[_type == "aboutContent"][0] {
         "heroImage": heroImage.asset->url,
+        "heroTitle": heroTitle.en,
+        "heroTitleAr": heroTitle.ar,
+        "heroTitleDe": heroTitle.de,
+        "heroSubtitle": heroSubtitle.en,
+        "heroSubtitleAr": heroSubtitle.ar,
+        "heroSubtitleDe": heroSubtitle.de,
         "story1": story1.en,
         "story1Ar": story1.ar,
         "story1De": story1.de,
@@ -202,6 +208,12 @@ export async function getTransparencyContent() {
     return await client.fetch(`
       *[_type == "transparencyContent"][0] {
         "heroImage": heroImage.asset->url,
+        "heroTitle": heroTitle.en,
+        "heroTitleAr": heroTitle.ar,
+        "heroTitleDe": heroTitle.de,
+        "heroSubtitle": heroSubtitle.en,
+        "heroSubtitleAr": heroSubtitle.ar,
+        "heroSubtitleDe": heroSubtitle.de,
         allocations[] {
           "label": label.en,
           "labelAr": label.ar,
@@ -278,6 +290,12 @@ export async function getProjectsPage() {
     return await client.fetch(`
       *[_type == "projectsPage"][0] {
         "heroImage": heroImage.asset->url,
+        "heroTitle": heroTitle.en,
+        "heroTitleAr": heroTitle.ar,
+        "heroTitleDe": heroTitle.de,
+        "heroSubtitle": heroSubtitle.en,
+        "heroSubtitleAr": heroSubtitle.ar,
+        "heroSubtitleDe": heroSubtitle.de,
       }
     `);
   } catch {
@@ -291,6 +309,12 @@ export async function getNewsPage() {
     return await client.fetch(`
       *[_type == "newsPage"][0] {
         "heroImage": heroImage.asset->url,
+        "heroTitle": heroTitle.en,
+        "heroTitleAr": heroTitle.ar,
+        "heroTitleDe": heroTitle.de,
+        "heroSubtitle": heroSubtitle.en,
+        "heroSubtitleAr": heroSubtitle.ar,
+        "heroSubtitleDe": heroSubtitle.de,
       }
     `);
   } catch {
@@ -304,6 +328,12 @@ export async function getJobsPage() {
     return await client.fetch(`
       *[_type == "jobsPage"][0] {
         "heroImage": heroImage.asset->url,
+        "heroTitle": heroTitle.en,
+        "heroTitleAr": heroTitle.ar,
+        "heroTitleDe": heroTitle.de,
+        "heroSubtitle": heroSubtitle.en,
+        "heroSubtitleAr": heroSubtitle.ar,
+        "heroSubtitleDe": heroSubtitle.de,
       }
     `);
   } catch {
@@ -317,6 +347,12 @@ export async function getVolunteerPage() {
     return await client.fetch(`
       *[_type == "volunteerPage"][0] {
         "heroImage": heroImage.asset->url,
+        "heroTitle": heroTitle.en,
+        "heroTitleAr": heroTitle.ar,
+        "heroTitleDe": heroTitle.de,
+        "heroSubtitle": heroSubtitle.en,
+        "heroSubtitleAr": heroSubtitle.ar,
+        "heroSubtitleDe": heroSubtitle.de,
       }
     `);
   } catch {
@@ -330,6 +366,12 @@ export async function getDonatePage() {
     return await client.fetch(`
       *[_type == "donatePage"][0] {
         "heroImage": heroImage.asset->url,
+        "heroTitle": heroTitle.en,
+        "heroTitleAr": heroTitle.ar,
+        "heroTitleDe": heroTitle.de,
+        "heroSubtitle": heroSubtitle.en,
+        "heroSubtitleAr": heroSubtitle.ar,
+        "heroSubtitleDe": heroSubtitle.de,
       }
     `);
   } catch {
@@ -343,6 +385,12 @@ export async function getContactPage() {
     return await client.fetch(`
       *[_type == "contactPage"][0] {
         "heroImage": heroImage.asset->url,
+        "heroTitle": heroTitle.en,
+        "heroTitleAr": heroTitle.ar,
+        "heroTitleDe": heroTitle.de,
+        "heroSubtitle": heroSubtitle.en,
+        "heroSubtitleAr": heroSubtitle.ar,
+        "heroSubtitleDe": heroSubtitle.de,
       }
     `);
   } catch {
