@@ -193,7 +193,7 @@
   "volunteerWithUs": "Volunteer With Us"
 },
 "contact": {
-  "heroTitle": "Contact Us",
+  "heroTitle": "Contact",
   "heroSubtitle": "We'd love to hear from you. Get in touch with our team.",
   "infoTitle": "Get In Touch",
   "address": "Address",
@@ -209,15 +209,15 @@
   "errorMessage": "Something went wrong. Please try again."
 },
   "footer": {
-    "description": "German Humanitarian Relief Organization providing aid to crisis-affected regions worldwide.",
-    "aboutUs": "About US",
+    "description": "German Humanitarian Relief Organization providing humanitarian support to crisis-affected regions worldwide.",
+    "aboutUs": "About",
     "volunteer": "Volunteer",
     "jobs": "Jobs",
     "transparency": "Transparency",
     "pressRelease": "News",
     "ourProjects": "Our Projects",
     "others": "Others",
-    "contactUs": "Contact US",
+    "contactUs": "Contact",
     "privacy": "Privacy Policy"
   }
 }
