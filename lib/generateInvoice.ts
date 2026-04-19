@@ -1,4 +1,5 @@
 import jsPDF from 'jspdf';
+import { logoBase64 } from './logoBase64';
 
 type Donor = {
   id: string;
@@ -26,13 +27,12 @@ const ORG = {
   iban: 'BE88 9053 4986 3041',
   bic: 'TRWIBEB1XXX',
   signatory: 'Eman Saad',
-  signatoryRole: '1. Vorsitzende',
 };
 
 const TEXTS = {
   de: {
-    title: 'Zuwendungsbestätigung',
-    subtitle: 'Bestätigung über Geldzuwendungen / Mitgliedsbeiträge',
+    title: 'Zuwendungsbestaetigung',
+    subtitle: 'Bestaetigung ueber Geldzuwendungen',
     invoiceNo: 'Belegnummer',
     date: 'Datum',
     donor: 'Zuwendender',
@@ -44,13 +44,14 @@ const TEXTS = {
     once: 'Einmalige Zahlung',
     monthly: 'Monatliche Zahlung',
     paymentMethod: 'Zahlungsweg',
-    bank: 'Überweisung',
+    bank: 'Ueberweisung',
     paypal: 'PayPal',
     project: 'Verwendungszweck',
-    legalText: 'Wir sind wegen Förderung der Hilfe für Verfolgte, Flüchtlinge sowie Entwicklungszusammenarbeit nach dem Freistellungsbescheid des Finanzamts Bremen vom {date}, Steuernummer {steuernummer}, von der Körperschaftsteuer befreit.',
-    legalText2: 'Es wird bestätigt, dass die Zuwendung nur zur Förderung der gemeinnützigen Zwecke verwendet wird. Keine Gegenleistung wurde erbracht.',
-    signatureLabel: 'Ort, Datum und Unterschrift des Zuwendungsempfängers',
-    footer: 'Diese Bestätigung wird nicht als Nachweis für die steuerliche Berücksichtigung der Zuwendung anerkannt, wenn sie durch eine Geldzuwendung, für die das vereinfachte Verfahren gilt, erbracht wurde.',
+    legalText: 'Wir sind wegen Foerderung der Hilfe fuer Verfolgte, Fluechtlinge sowie Entwicklungszusammenarbeit nach dem Freistellungsbescheid des Finanzamts Bremen vom {date}, Steuernummer {steuernummer}, von der Koerperschaftsteuer befreit.',
+    legalText2: 'Es wird bestaetigt, dass die Zuwendung nur zur Foerderung der gemeinnuetzigen Zwecke verwendet wird. Keine Gegenleistung wurde erbracht.',
+    signatureLabel: 'Ort, Datum und Unterschrift des Zuwendungsempfaengers',
+    signatoryRole: 'Vorsitzende',
+    footerOrg: 'German Humanitarian Relief Organization e.V.',
   },
   en: {
     title: 'Donation Receipt',
@@ -72,13 +73,64 @@ const TEXTS = {
     legalText: 'We are exempt from corporate tax by the decision of Finanzamt Bremen dated {date}, tax number {steuernummer}, for promoting humanitarian aid and development cooperation.',
     legalText2: 'It is confirmed that the donation will be used exclusively for the stated charitable purposes. No goods or services were provided in return.',
     signatureLabel: 'Place, Date and Signature of Recipient',
-    footer: 'This receipt is issued in accordance with § 50 EStDV. German Humanitarian Relief Organization e.V. is recognized as a charitable organization under German law.',
+    signatoryRole: 'Chairperson',
+    footerOrg: 'German Humanitarian Relief Organization e.V.',
   },
 };
 
-function amountInWords(amount: number, lang: string): string {
-  if (lang === 'de') return `Euro ${amount},00 (${amount} Euro)`;
-  return `Euro ${amount}.00 (${amount} Euros only)`;
+function amountToWords(amount: number, lang: 'de' | 'en'): string {
+  const ones = lang === 'de'
+    ? ['', 'ein', 'zwei', 'drei', 'vier', 'fuenf', 'sechs', 'sieben', 'acht', 'neun',
+       'zehn', 'elf', 'zwoelf', 'dreizehn', 'vierzehn', 'fuenfzehn', 'sechzehn',
+       'siebzehn', 'achtzehn', 'neunzehn']
+    : ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine',
+       'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen',
+       'seventeen', 'eighteen', 'nineteen'];
+
+  const tens = lang === 'de'
+    ? ['', '', 'zwanzig', 'dreissig', 'vierzig', 'fuenfzig', 'sechzig', 'siebzig', 'achtzig', 'neunzig']
+    : ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+
+  const hundreds = lang === 'de' ? 'hundert' : 'hundred';
+  const thousand = lang === 'de' ? 'tausend' : 'thousand';
+  const and = lang === 'de' ? 'und' : 'and';
+  const currency = lang === 'de' ? 'Euro' : 'Euros';
+  const cents = lang === 'de' ? 'Cent' : 'cents';
+
+  function convertBelow1000(n: number): string {
+    if (n === 0) return '';
+    if (n < 20) return ones[n];
+    if (n < 100) {
+      const ten = Math.floor(n / 10);
+      const one = n % 10;
+      return one === 0 ? tens[ten] : (lang === 'de' ? `${ones[one]}${and}${tens[ten]}` : `${tens[ten]}-${ones[one]}`);
+    }
+    const h = Math.floor(n / 100);
+    const rest = n % 100;
+    const hundredStr = lang === 'de' ? `${ones[h]}${hundreds}` : `${ones[h]} ${hundreds}`;
+    return rest === 0 ? hundredStr : `${hundredStr} ${and} ${convertBelow1000(rest)}`;
+  }
+
+  const euros = Math.floor(amount);
+  const centVal = Math.round((amount - euros) * 100);
+
+  let result = '';
+  if (euros >= 1000) {
+    const t = Math.floor(euros / 1000);
+    const r = euros % 1000;
+    result = lang === 'de'
+      ? `${convertBelow1000(t)}${thousand}${r > 0 ? convertBelow1000(r) : ''}`
+      : `${convertBelow1000(t)} ${thousand}${r > 0 ? ` ${convertBelow1000(r)}` : ''}`;
+  } else {
+    result = convertBelow1000(euros);
+  }
+
+  let final = `${result} ${currency}`;
+  if (centVal > 0) {
+    final += ` ${and} ${convertBelow1000(centVal)} ${cents}`;
+  }
+
+  return final.charAt(0).toUpperCase() + final.slice(1);
 }
 
 function generateReceiptNumber(donorId: string, date: string): string {
@@ -98,46 +150,54 @@ export function generateInvoice(donor: Donor, lang: 'de' | 'en') {
   const darkColor: [number, number, number] = [42, 42, 42];
   const grayColor: [number, number, number] = [100, 100, 100];
 
-  // ─── HEADER ───────────────────────────────────────────
-  doc.setFillColor(...primaryColor);
-  doc.rect(0, 0, 210, 35, 'F');
+// ─── HEADER — WHITE + LOGO ────────────────────────────
+doc.setFillColor(255, 255, 255);
+doc.rect(0, 0, 210, 32, 'F');
 
-  doc.setTextColor(255, 255, 255);
-  doc.setFontSize(28);
-  doc.setFont('helvetica', 'bold');
-  doc.text('GHAR', 15, 18);
+// GHAR Logo image
+doc.addImage(logoBase64, 'PNG', 12, 4, 40, 20);
 
-  doc.setFontSize(9);
-  doc.setFont('helvetica', 'normal');
-  doc.text('German Humanitarian Relief Organization e.V.', 15, 25);
-  doc.text(`${ORG.address} | ${ORG.email} | ${ORG.website}`, 15, 31);
+// Org name next to logo
+doc.setTextColor(...darkColor);
+doc.setFontSize(10);
+doc.setFont('helvetica', 'bold');
+doc.text('German Humanitarian Relief Organization e.V.', 57, 13);
+doc.setFont('helvetica', 'normal');
+doc.setFontSize(7.5);
+doc.setTextColor(...grayColor);
+doc.text(`Steuernummer: ${ORG.steuernummer} | Vereinsregister: ${ORG.vereinsregister}`, 57, 19);
 
+  // Receipt number top right
   doc.setFontSize(8);
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(255, 255, 255);
-  doc.text(`${t.invoiceNo}: ${receiptNo}`, 195, 12, { align: 'right' });
-  doc.text(`${t.date}: ${issueDate}`, 195, 18, { align: 'right' });
+  doc.setTextColor(...grayColor);
+  doc.text(`${t.invoiceNo}: ${receiptNo}`, 198, 10, { align: 'right' });
+  doc.text(`${t.date}: ${issueDate}`, 198, 16, { align: 'right' });
+
+  // Header bottom border
+  doc.setDrawColor(...primaryColor);
+  doc.setLineWidth(0.8);
+  doc.line(12, 30, 198, 30);
 
   // ─── TITLE ────────────────────────────────────────────
   doc.setTextColor(...primaryColor);
-  doc.setFontSize(16);
+  doc.setFontSize(15);
   doc.setFont('helvetica', 'bold');
-  doc.text(t.title, 105, 50, { align: 'center' });
+  doc.text(t.title, 105, 42, { align: 'center' });
 
   doc.setFontSize(9);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(...grayColor);
-  doc.text(t.subtitle, 105, 57, { align: 'center' });
+  doc.text(t.subtitle, 105, 49, { align: 'center' });
 
-  doc.setDrawColor(...primaryColor);
-  doc.setLineWidth(0.5);
-  doc.line(15, 61, 195, 61);
+  doc.setDrawColor(220, 220, 220);
+  doc.setLineWidth(0.3);
+  doc.line(15, 53, 195, 53);
 
   // ─── DONOR INFO ───────────────────────────────────────
-  let y = 70;
+  let y = 62;
 
   doc.setFillColor(245, 248, 252);
-  doc.roundedRect(15, y - 5, 180, 32, 2, 2, 'F');
+  doc.roundedRect(15, y - 4, 180, 28, 2, 2, 'F');
 
   doc.setFontSize(9);
   doc.setFont('helvetica', 'bold');
@@ -149,49 +209,49 @@ export function generateInvoice(donor: Donor, lang: 'de' | 'en') {
   doc.setFontSize(9);
   doc.text(`${t.name}: ${donor.name}`, 20, y + 9);
   doc.text(`${t.email}: ${donor.email}`, 20, y + 15);
-  doc.text(`${t.date}: ${donationDate}`, 20, y + 21);
+  doc.text(`${t.date}: ${donationDate}`, 110, y + 9);
 
-  // ─── AMOUNT ───────────────────────────────────────────
-  y += 42;
+  // ─── AMOUNT BOX (single box) ──────────────────────────
+  y += 36;
 
   doc.setDrawColor(...primaryColor);
-  doc.setLineWidth(0.4);
-  doc.rect(15, y, 85, 28);
+  doc.setLineWidth(0.5);
+  doc.rect(15, y, 180, 28);
 
+  // Label
   doc.setTextColor(...grayColor);
   doc.setFontSize(8);
   doc.setFont('helvetica', 'normal');
   doc.text(t.amount, 20, y + 7);
 
+  // Amount in numbers
   doc.setTextColor(...darkColor);
-  doc.setFontSize(14);
+  doc.setFontSize(15);
   doc.setFont('helvetica', 'bold');
-  doc.text(`€ ${donor.amount.toLocaleString('de-DE')},00`, 57, y + 20, { align: 'center' });
+  doc.text(`EUR ${donor.amount.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 20, y + 17);
 
-  doc.setDrawColor(...primaryColor);
-  doc.rect(105, y, 90, 28);
+  // Divider line inside box
+  doc.setDrawColor(220, 220, 220);
+  doc.setLineWidth(0.2);
+  doc.line(15, y + 20, 195, y + 20);
 
+  // Amount in words
   doc.setTextColor(...grayColor);
-  doc.setFontSize(8);
+  doc.setFontSize(7.5);
   doc.setFont('helvetica', 'normal');
-  doc.text(`${t.amountWords}:`, 110, y + 7);
-
+  doc.text(`${t.amountWords}: `, 20, y + 26);
   doc.setTextColor(...darkColor);
-  doc.setFontSize(9);
-  doc.setFont('helvetica', 'normal');
-  const words = amountInWords(donor.amount, lang);
-  const splitWords = doc.splitTextToSize(words, 80);
-  doc.text(splitWords, 110, y + 14);
+  doc.setFont('helvetica', 'italic');
+  const words = amountToWords(donor.amount, lang);
+  doc.text(words, 48, y + 26);
 
   // ─── DETAILS TABLE ────────────────────────────────────
-  y += 38;
+  y += 36;
 
   const details = [
     [t.donationType, donor.donation_type === 'monthly' ? t.monthly : t.once],
     [t.paymentMethod, donor.payment_method === 'paypal' ? t.paypal : t.bank],
     [t.project, donor.project],
-    ['Vereinsregister', ORG.vereinsregister],
-    ['Steuernummer', ORG.steuernummer],
     ['Finanzamt', ORG.finanzamt],
     ['Freistellungsbescheid', ORG.freistellung],
   ];
@@ -211,13 +271,13 @@ export function generateInvoice(donor: Donor, lang: 'de' | 'en') {
     y += 8;
   });
 
-  // ─── LEGAL TEXT ───────────────────────────────────────
+  // ─── LEGAL TEXT (mandatory) ───────────────────────────
   y += 8;
 
-  doc.setDrawColor(200, 200, 200);
+  doc.setDrawColor(220, 220, 220);
   doc.setLineWidth(0.3);
   doc.line(15, y, 195, y);
-  y += 8;
+  y += 7;
 
   const legalText = t.legalText
     .replace('{date}', ORG.freistellung)
@@ -237,7 +297,7 @@ export function generateInvoice(donor: Donor, lang: 'de' | 'en') {
   // ─── SIGNATURE ────────────────────────────────────────
   doc.setDrawColor(...grayColor);
   doc.setLineWidth(0.3);
-  doc.line(15, y, 95, y);
+  doc.line(15, y, 90, y);
 
   doc.setFontSize(7.5);
   doc.setTextColor(...grayColor);
@@ -251,7 +311,7 @@ export function generateInvoice(donor: Donor, lang: 'de' | 'en') {
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(...grayColor);
   doc.setFontSize(8);
-  doc.text(ORG.signatoryRole, 15, y + 25);
+  doc.text(t.signatoryRole, 15, y + 25);
 
   // ─── BANK DETAILS ─────────────────────────────────────
   doc.setFillColor(245, 248, 252);
@@ -266,14 +326,16 @@ export function generateInvoice(donor: Donor, lang: 'de' | 'en') {
   doc.text(`IBAN: ${ORG.iban}`, 115, y + 17);
   doc.text(`BIC: ${ORG.bic}`, 115, y + 23);
 
-  // ─── FOOTER ───────────────────────────────────────────
+  // ─── FOOTER — ORG INFO ────────────────────────────────
   doc.setFillColor(...primaryColor);
-  doc.rect(0, 282, 210, 15, 'F');
-  doc.setFontSize(7);
-  doc.setFont('helvetica', 'normal');
+  doc.rect(0, 280, 210, 17, 'F');
+  doc.setFontSize(7.5);
+  doc.setFont('helvetica', 'bold');
   doc.setTextColor(255, 255, 255);
-  const splitFooter = doc.splitTextToSize(t.footer, 175);
-  doc.text(splitFooter, 105, 288, { align: 'center' });
+  doc.text(ORG.name, 105, 286, { align: 'center' });
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7);
+  doc.text(`${ORG.address} | ${ORG.email} | ${ORG.website} | ${ORG.phone}`, 105, 292, { align: 'center' });
 
   return { doc, receiptNo };
 }
