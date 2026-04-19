@@ -68,7 +68,7 @@ export default function ProjectsClient({ projects }: { projects: Project[] }) {
       <section className="pb-16 px-4 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {filtered.map((project, i) => {
-            const progress = Math.round((project.raised / project.goal) * 100);
+            const progress = Math.round(((project.raised || 0) / (project.goal || 1)) * 100);
             return (
               <Link key={i} href={`/${locale}/projects/${project.id}`} className="rounded-xl overflow-hidden shadow-md bg-white flex flex-col hover:shadow-lg transition-shadow group">
                 <div className="relative h-52">
@@ -92,8 +92,8 @@ export default function ProjectsClient({ projects }: { projects: Project[] }) {
 
                   <div className="mt-4">
                     <div className="flex justify-between text-xs text-gray-500 mb-1">
-                      <span>{t("raised")}: €{project.raised.toLocaleString()}</span>
-                      <span>{t("goal")}: €{project.goal.toLocaleString()}</span>
+                      <span>{t("raised")}: €{(project.raised || 0).toLocaleString()}</span>
+                      <span>{t("goal")}: €{(project.goal || 0).toLocaleString()}</span>
                     </div>
                     <div className="w-full bg-gray-100 rounded-full h-2">
                       <div className="bg-secondary h-2 rounded-full transition-all" style={{ width: `${progress}%` }} />

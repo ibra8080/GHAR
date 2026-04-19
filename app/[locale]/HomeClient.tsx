@@ -213,13 +213,12 @@ export default function HomeClient({
                 <span className="mt-2 text-primary text-xs group-hover:underline">
                   {t("readMore")}
                 </span>
-                <Link
-                  href={`/${locale}/donate`}
-                  onClick={(e) => e.stopPropagation()}
-                  className="mt-4 bg-secondary hover:bg-green-700 text-white text-center py-2 rounded font-medium text-sm transition-colors"
+                <button
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.location.href = `/${locale}/donate`; }}
+                  className="mt-4 bg-secondary hover:bg-green-700 text-white text-center py-2 rounded font-medium text-sm transition-colors w-full"
                 >
                   {t("donate")}
-                </Link>
+                </button>
               </div>
             </Link>
           ))}
