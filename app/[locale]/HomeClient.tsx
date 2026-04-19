@@ -199,15 +199,15 @@ export default function HomeClient({
                 <p className="text-gray-500 text-sm flex-grow leading-relaxed group-hover:underline">{getDesc(project)}</p>
                 <div className="mt-3">
                   <div className="flex justify-between text-xs text-gray-500 mb-1">
-                    <span>{t("raised")}: €{project.raised.toLocaleString()}</span>
-                    <span>{t("goal")}: €{project.goal.toLocaleString()}</span>
+                    <span>{t("raised")}: €{(project.raised || 0).toLocaleString()}</span>
+                    <span>{t("goal")}: €{(project.goal || 0).toLocaleString()}</span>
                   </div>
                   <div className="w-full bg-gray-100 rounded-full h-2">
                     <div className="bg-secondary h-2 rounded-full"
-                      style={{ width: `${Math.round((project.raised / project.goal) * 100)}%` }} />
+                      style={{ width: `${Math.round(((project.raised || 0) / (project.goal || 1)) * 100)}%` }} />
                   </div>
                   <p className="text-xs text-primary font-semibold mt-1">
-                    {Math.round((project.raised / project.goal) * 100)}% {t("funded")}
+                    {Math.round(((project.raised || 0) / (project.goal || 1)) * 100)}% {t("funded")}
                   </p>
                 </div>
                 <span className="mt-2 text-primary text-xs group-hover:underline">
