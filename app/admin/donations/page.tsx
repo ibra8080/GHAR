@@ -224,27 +224,20 @@ export default function AdminDonationsPage() {
                         {new Date(donor.created_at).toLocaleDateString()}
                       </td>
                       <td className="px-4 py-3">
-                        <div className="flex gap-2">
-                          {donor.status !== "completed" && (
-                            <button onClick={() => updateStatus(donor.id, "completed")}
-                              className="text-xs bg-green-50 text-green-600 hover:bg-green-100 px-2 py-1 rounded-lg transition-colors">
-                              ✅ Complete
-                            </button>
-                          )}
-                          {donor.status !== "cancelled" && (
-                            <button onClick={() => updateStatus(donor.id, "cancelled")}
-                              className="text-xs bg-red-50 text-red-600 hover:bg-red-100 px-2 py-1 rounded-lg transition-colors">
-                              ❌ Cancel
-                            </button>
-                          )}
-                          {donor.status !== "pending" && (
-                            <button onClick={() => updateStatus(donor.id, "pending")}
-                              className="text-xs bg-yellow-50 text-yellow-600 hover:bg-yellow-100 px-2 py-1 rounded-lg transition-colors">
-                              🕐 Pending
-                            </button>
-                          )}
-                        </div>
-                      </td>
+                      {donor.payment_method === "paypal" ? (
+                        <span className="text-xs text-gray-400 italic">Auto</span>
+                      ) : (
+                        <select
+                          value={donor.status}
+                          onChange={(e) => updateStatus(donor.id, e.target.value)}
+                          className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:border-primary transition-colors cursor-pointer"
+                        >
+                          <option value="pending">🕐 Pending</option>
+                          <option value="completed">✅ Completed</option>
+                          <option value="cancelled">❌ Cancelled</option>
+                        </select>
+                      )}
+                    </td>
                     </tr>
                   ))}
                 </tbody>
