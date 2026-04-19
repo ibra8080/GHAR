@@ -91,6 +91,8 @@
     "selectProject": "Support a Specific Project",
     "yourInfo": "Your Information",
     "namePlaceholder": "Your Name",
+    "firstNamePlaceholder": "First Name",
+    "lastNamePlaceholder": "Last Name",
     "emailPlaceholder": "Your Email",
     "summaryDonation": "Your donation:",
     "summaryType": "Type:",

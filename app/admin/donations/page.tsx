@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { CheckCircle, XCircle, Clock, Download, Search, Filter } from "lucide-react";
+import { generateInvoice } from '@/lib/generateInvoice';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -32,6 +33,7 @@ export default function AdminDonationsPage() {
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterMethod, setFilterMethod] = useState("all");
+  const [invoicePopup, setInvoicePopup] = useState<Donor | null>(null);
 
   const handleLogin = () => {
     if (password === ADMIN_PASSWORD) {
@@ -53,12 +55,36 @@ export default function AdminDonationsPage() {
   };
 
   useEffect(() => {
-    if (authenticated) fetchDonors(); // eslint-disable-line react-hooks/set-state-in-effect
-    }, [authenticated]);
+  if (authenticated) fetchDonors(); // eslint-disable-line react-hooks/set-state-in-effect
+}, [authenticated]);
 
   const updateStatus = async (id: string, newStatus: string) => {
     await supabase.from("donors").update({ status: newStatus }).eq("id", id);
     fetchDonors();
+  };
+
+  const handleDownloadInvoice = (donor: Donor, lang: 'de' | 'en') => {
+    const { doc, receiptNo } = generateInvoice(donor, lang);
+    doc.save(`GHAR-Receipt-${receiptNo}.pdf`);
+  };
+
+  const handleEmailInvoice = async (donor: Donor, lang: 'de' | 'en') => {
+    const { doc, receiptNo } = generateInvoice(donor, lang);
+    const pdfBlob = doc.output('blob');
+    const formData = new FormData();
+    formData.append('pdf', pdfBlob, `GHAR-Receipt-${receiptNo}.pdf`);
+    formData.append('email', donor.email);
+    formData.append('name', donor.name);
+    formData.append('lang', lang);
+    formData.append('receiptNo', receiptNo);
+    formData.append('amount', donor.amount.toString());
+
+    const res = await fetch('/api/send-invoice', { method: 'POST', body: formData });
+    if (res.ok) {
+      alert(`✅ Invoice sent to ${donor.email}`);
+    } else {
+      alert('❌ Failed to send email');
+    }
   };
 
   const filtered = donors.filter((d) => {
@@ -102,7 +128,7 @@ export default function AdminDonationsPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-10 w-full max-w-sm">
           <h1 className="text-2xl font-bold text-dark mb-2 text-center">Admin Access</h1>
-          <p className="text-gray-400 text-sm text-center mb-8">GHAR Foundation — Donations Dashboard</p>
+          <p className="text-gray-400 text-sm text-center mb-8">GHAR Foundation — Admin Panel</p>
           <div className="flex flex-col gap-4">
             <input
               type="password"
@@ -186,6 +212,45 @@ export default function AdminDonationsPage() {
           </div>
         </div>
 
+        {/* Invoice Popup */}
+        {invoicePopup && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-sm">
+              <h3 className="text-lg font-bold text-dark mb-2">📄 Generate Invoice</h3>
+              <p className="text-gray-400 text-sm mb-6">
+                Select language for <strong>{invoicePopup.name}</strong>
+              </p>
+              <div className="flex flex-col gap-3 mb-6">
+                {[
+                  { lang: 'de' as const, label: '🇩🇪 Deutsch' },
+                  { lang: 'en' as const, label: '🇬🇧 English' },
+                ].map(({ lang, label }) => (
+                  <div key={lang} className="flex gap-2">
+                    <button
+                      onClick={() => handleDownloadInvoice(invoicePopup, lang)}
+                      className="flex-1 flex items-center justify-center gap-2 border border-primary text-primary hover:bg-primary hover:text-white py-2 rounded-lg text-sm font-medium transition-colors"
+                    >
+                      ⬇️ {label}
+                    </button>
+                    <button
+                      onClick={() => handleEmailInvoice(invoicePopup, lang)}
+                      className="flex-1 flex items-center justify-center gap-2 border border-secondary text-secondary hover:bg-secondary hover:text-white py-2 rounded-lg text-sm font-medium transition-colors"
+                    >
+                      📧 {label}
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <button
+                onClick={() => setInvoicePopup(null)}
+                className="w-full text-gray-400 hover:text-dark text-sm transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Table */}
         <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
           {loading ? (
@@ -224,20 +289,30 @@ export default function AdminDonationsPage() {
                         {new Date(donor.created_at).toLocaleDateString()}
                       </td>
                       <td className="px-4 py-3">
-                      {donor.payment_method === "paypal" ? (
-                        <span className="text-xs text-gray-400 italic">Auto</span>
-                      ) : (
-                        <select
-                          value={donor.status}
-                          onChange={(e) => updateStatus(donor.id, e.target.value)}
-                          className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:border-primary transition-colors cursor-pointer"
-                        >
-                          <option value="pending">🕐 Pending</option>
-                          <option value="completed">✅ Completed</option>
-                          <option value="cancelled">❌ Cancelled</option>
-                        </select>
-                      )}
-                    </td>
+                        <div className="flex items-center gap-2">
+                          {donor.payment_method === "paypal" ? (
+                            <span className="text-xs text-gray-400 italic">Auto</span>
+                          ) : (
+                            <select
+                              value={donor.status}
+                              onChange={(e) => updateStatus(donor.id, e.target.value)}
+                              className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:border-primary transition-colors cursor-pointer"
+                            >
+                              <option value="pending">🕐 Pending</option>
+                              <option value="completed">✅ Completed</option>
+                              <option value="cancelled">❌ Cancelled</option>
+                            </select>
+                          )}
+                          {donor.status === "completed" && (
+                            <button
+                              onClick={() => setInvoicePopup(donor)}
+                              className="text-xs bg-primary/10 text-primary hover:bg-primary hover:text-white px-2 py-1.5 rounded-lg transition-colors font-medium"
+                            >
+                              📄 Invoice
+                            </button>
+                          )}
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>

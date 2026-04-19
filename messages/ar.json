@@ -91,6 +91,8 @@
     "selectProject": "دعم مشروع محدد",
     "yourInfo": "معلوماتك",
     "namePlaceholder": "اسمك",
+    "firstNamePlaceholder": "الاسم الأول",
+    "lastNamePlaceholder": "اسم العائلة",
     "emailPlaceholder": "بريدك الإلكتروني",
     "summaryDonation": "تبرعك:",
     "summaryType": "النوع:",

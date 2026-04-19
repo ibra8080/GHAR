@@ -39,7 +39,8 @@ export default function DonateClient({
   const [customAmount, setCustomAmount] = useState("");
   const [donationType, setDonationType] = useState<"once" | "monthly">("once");
   const [selectedProject, setSelectedProject] = useState("general");
-  const [name, setName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("paypal");
   const [status, setStatus] = useState<"idle" | "loading" | "success_paypal" | "success_bank" | "error">("idle");
@@ -47,6 +48,7 @@ export default function DonateClient({
   const locale = useLocale();
 
   const finalAmount = customAmount ? parseFloat(customAmount) : selectedAmount;
+  const fullName = `${firstName} ${lastName}`.trim();
 
   const getTitle = (p: Project) => locale === "ar" ? p.titleAr : locale === "de" ? p.titleDe : p.title;
 
@@ -61,14 +63,14 @@ export default function DonateClient({
   const bankBic = siteSettings?.bankBic || 'XXXXXXXX';
   const bankName = siteSettings?.bankName || 'Sparkasse Bremen';
 
-  const isFormValid = name && email && finalAmount;
+  const isFormValid = firstName && lastName && email && finalAmount;
 
   const handleDonate = async () => {
     if (!isFormValid) return;
     setStatus("loading");
 
     const { error } = await supabase.from("donors").insert([{
-      name,
+      name: fullName,
       email: email.toLowerCase(),
       amount: finalAmount,
       donation_type: donationType,
@@ -162,7 +164,7 @@ export default function DonateClient({
                 <span className="text-gray-500 text-sm">
                   {locale === "ar" ? "المرجع:" : locale === "de" ? "Verwendungszweck:" : "Reference:"}
                 </span>
-                <span className="text-dark font-medium text-sm">{name} — {selectedProject}</span>
+                <span className="text-dark font-medium text-sm">{fullName} — {selectedProject}</span>
               </div>
             </div>
           </div>
@@ -233,9 +235,14 @@ export default function DonateClient({
             <div className="mb-8">
               <h3 className="text-dark font-bold text-lg mb-4">{t("yourInfo")}</h3>
               <div className="flex flex-col gap-3">
-                <input type="text" placeholder={t("namePlaceholder")} value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="border border-gray-200 rounded-lg px-4 py-3 text-sm text-dark focus:outline-none focus:border-primary transition-colors" />
+                <div className="flex gap-3">
+                  <input type="text" placeholder={t("firstNamePlaceholder")} value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    className="flex-1 border border-gray-200 rounded-lg px-4 py-3 text-sm text-dark focus:outline-none focus:border-primary transition-colors" />
+                  <input type="text" placeholder={t("lastNamePlaceholder")} value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    className="flex-1 border border-gray-200 rounded-lg px-4 py-3 text-sm text-dark focus:outline-none focus:border-primary transition-colors" />
+                </div>
                 <input type="email" placeholder={t("emailPlaceholder")} value={email}
                   onChange={(e) => setEmail(e.target.value.toLowerCase())}
                   className="border border-gray-200 rounded-lg px-4 py-3 text-sm text-dark focus:outline-none focus:border-primary transition-colors" />
@@ -354,7 +361,6 @@ export default function DonateClient({
               </div>
             </div>
           </div>
-
         </div>
 
       </div>
