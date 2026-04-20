@@ -17,8 +17,8 @@ async function getProject(id: string) {
         "titleDe": title.de,
         countryCode,
         category,
-        raised,
-        goal,
+        "raised": coalesce(raised, 0),
+        "goal": coalesce(goal, 1),
         "details": details.en,
         "detailsAr": details.ar,
         "detailsDe": details.de,
@@ -42,7 +42,7 @@ export default async function ProjectDetailPage({
 
   if (!project) notFound();
 
-  const progress = Math.round((project.raised / project.goal) * 100);
+  const progress = Math.round(((project.raised || 0) / (project.goal || 1)) * 100);
 
   const getTitle = () => locale === "ar" ? project.titleAr : locale === "de" ? project.titleDe : project.title;
   const getDetails = () => locale === "ar" ? project.detailsAr : locale === "de" ? project.detailsDe : project.details;
@@ -112,8 +112,8 @@ export default async function ProjectDetailPage({
               </h3>
               <div className="mb-6">
                 <div className="flex justify-between text-sm text-gray-500 mb-2">
-                  <span>{t("raised")}: €{project.raised.toLocaleString()}</span>
-                  <span>{t("goal")}: €{project.goal.toLocaleString()}</span>
+                  <span>{t("raised")}: €{(project.raised || 0).toLocaleString()}</span>
+                  <span>{t("goal")}: €{(project.goal || 0).toLocaleString()}</span>
                 </div>
                 <div className="w-full bg-gray-100 rounded-full h-3">
                   <div className="bg-secondary h-3 rounded-full" style={{ width: `${progress}%` }} />

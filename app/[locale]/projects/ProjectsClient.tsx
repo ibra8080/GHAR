@@ -104,13 +104,12 @@ export default function ProjectsClient({ projects }: { projects: Project[] }) {
                   <span className="mt-3 text-primary text-xs group-hover:underline text-center block">
                     {t("readMore")}
                   </span>
-                  <Link
-                    href={`/${locale}/donate`}
-                    onClick={(e) => e.stopPropagation()}
-                    className="mt-2 bg-secondary hover:bg-green-700 text-white text-center py-2 rounded font-medium text-sm transition-colors"
+                  <button
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.location.href = `/${locale}/donate`; }}
+                    className="mt-2 bg-secondary hover:bg-green-700 text-white text-center py-2 rounded font-medium text-sm transition-colors w-full"
                   >
                     {t("donateNow")}
-                  </Link>
+                  </button>
                 </div>
               </Link>
             );
