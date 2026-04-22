@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { Eye, Target, Heart, Shield, Award } from "lucide-react";
+import { Eye, Target, Heart, Shield, Award, Handshake, Star, Globe, Home, Leaf, Scale, Smile, Lightbulb, Users, Zap, Lock, ClipboardList } from "lucide-react";
 import { createClient } from "@supabase/supabase-js";
 import { useTranslations, useLocale } from "next-intl";
 
@@ -44,6 +44,19 @@ const iconMap: Record<string, React.ReactNode> = {
   Shield: <Shield size={28} className="text-primary" />,
   Target: <Target size={28} className="text-primary" />,
   Award: <Award size={28} className="text-primary" />,
+  Eye: <Eye size={28} className="text-primary" />,
+  Handshake: <Handshake size={28} className="text-primary" />,
+  Star: <Star size={28} className="text-primary" />,
+  Globe: <Globe size={28} className="text-primary" />,
+  Home: <Home size={28} className="text-primary" />,
+  Leaf: <Leaf size={28} className="text-primary" />,
+  Scale: <Scale size={28} className="text-primary" />,
+  Smile: <Smile size={28} className="text-primary" />,
+  Lightbulb: <Lightbulb size={28} className="text-primary" />,
+  Users: <Users size={28} className="text-primary" />,
+  Zap: <Zap size={28} className="text-primary" />,
+  Lock: <Lock size={28} className="text-primary" />,
+  ClipboardList: <ClipboardList size={28} className="text-primary" />,
 };
 
 export default function AboutClient({
