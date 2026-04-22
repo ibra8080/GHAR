@@ -22,47 +22,17 @@ type Project = {
 };
 
 export default function ProjectsClient({ projects }: { projects: Project[] }) {
-  const [activeFilter, setActiveFilter] = useState("All");
+  
   const t = useTranslations("projects");
   const locale = useLocale();
-
-  const uniqueCountries = [...new Set(projects.map((p) => p.countryCode))];
-
-  const filters = [
-    { key: "All", label: t("filterAll") },
-    ...uniqueCountries.map((code) => ({
-      key: code,
-      label: getCountryName(code, locale),
-    })),
-  ];
-
-  const filtered = activeFilter === "All"
-    ? projects
-    : projects.filter((p) => p.countryCode === activeFilter);
+  const filtered = projects;
 
   const getTitle = (p: Project) => locale === "ar" ? p.titleAr : locale === "de" ? p.titleDe : p.title;
   const getDesc = (p: Project) => locale === "ar" ? p.descAr : locale === "de" ? p.descDe : p.desc;
 
   return (
     <>
-      {/* Filter Bar */}
-      <section className="py-8 px-4 max-w-7xl mx-auto">
-        <div className="flex gap-3 justify-center flex-wrap">
-          {filters.map((filter) => (
-            <button
-              key={filter.key}
-              onClick={() => setActiveFilter(filter.key)}
-              className={`px-6 py-2 rounded-full text-sm font-medium transition-colors ${
-                activeFilter === filter.key
-                  ? "bg-primary text-white"
-                  : "bg-white text-dark border border-gray-200 hover:border-primary hover:text-primary"
-              }`}
-            >
-              {filter.label}
-            </button>
-          ))}
-        </div>
-      </section>
+      
 
       {/* Projects Grid */}
       <section className="pb-16 px-4 max-w-7xl mx-auto">
