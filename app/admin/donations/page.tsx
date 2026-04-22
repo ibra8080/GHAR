@@ -34,6 +34,8 @@ export default function AdminDonationsPage() {
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterMethod, setFilterMethod] = useState("all");
   const [invoicePopup, setInvoicePopup] = useState<Donor | null>(null);
+  const [confirmPopup, setConfirmPopup] = useState<{donor: Donor, newStatus: string} | null>(null);
+  const [sendingInvoice, setSendingInvoice] = useState(false);
 
   const handleLogin = () => {
     if (password === ADMIN_PASSWORD) {
@@ -58,8 +60,33 @@ export default function AdminDonationsPage() {
   if (authenticated) fetchDonors(); // eslint-disable-line react-hooks/set-state-in-effect
 }, [authenticated]);
 
-  const updateStatus = async (id: string, newStatus: string) => {
+  const updateStatus = async (id: string, newStatus: string, donor: Donor) => {
+    if (newStatus === "completed" && donor.payment_method !== "paypal") {
+      setConfirmPopup({ donor, newStatus });
+      return;
+    }
     await supabase.from("donors").update({ status: newStatus }).eq("id", id);
+    fetchDonors();
+  };
+
+  const handleConfirmAndSend = async (lang: 'de' | 'en', sendEmail: boolean) => {
+    if (!confirmPopup) return;
+    setSendingInvoice(true);
+    await supabase.from("donors").update({ status: confirmPopup.newStatus }).eq("id", confirmPopup.donor.id);
+    if (sendEmail) {
+      const { doc, receiptNo } = generateInvoice(confirmPopup.donor, lang);
+      const pdfBlob = doc.output('blob');
+      const formData = new FormData();
+      formData.append('pdf', pdfBlob, `GHAR-Receipt-${receiptNo}.pdf`);
+      formData.append('email', confirmPopup.donor.email);
+      formData.append('name', confirmPopup.donor.name);
+      formData.append('lang', lang);
+      formData.append('receiptNo', receiptNo);
+      formData.append('amount', confirmPopup.donor.amount.toString());
+      await fetch('/api/send-invoice', { method: 'POST', body: formData });
+    }
+    setSendingInvoice(false);
+    setConfirmPopup(null);
     fetchDonors();
   };
 
@@ -212,6 +239,52 @@ export default function AdminDonationsPage() {
           </div>
         </div>
 
+        {/* Confirm & Send Invoice Popup */}
+        {confirmPopup && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-sm">
+              <h3 className="text-lg font-bold text-dark mb-2">✅ Confirm Donation</h3>
+              <p className="text-gray-400 text-sm mb-2">
+                Marking <strong>{confirmPopup.donor.name}</strong> as completed.
+              </p>
+              <p className="text-gray-400 text-sm mb-6">Send a donation receipt by email?</p>
+              {sendingInvoice ? (
+                <div className="text-center text-gray-400 text-sm py-4">Sending...</div>
+              ) : (
+                <>
+                  <p className="text-xs text-gray-400 mb-3 text-center">Select language for receipt:</p>
+                  <div className="flex flex-col gap-3 mb-4">
+                    {[
+                      { lang: 'de' as const, label: '🇩🇪 Deutsch (Standard)' },
+                      { lang: 'en' as const, label: '🇬🇧 English' },
+                    ].map(({ lang, label }) => (
+                      <button
+                        key={lang}
+                        onClick={() => handleConfirmAndSend(lang, true)}
+                        className="flex items-center justify-center gap-2 bg-primary hover:bg-secondary text-white py-2.5 rounded-lg text-sm font-medium transition-colors"
+                      >
+                        📧 {label}
+                      </button>
+                    ))}
+                  </div>
+                  <button
+                    onClick={() => handleConfirmAndSend('de', false)}
+                    className="w-full text-gray-400 hover:text-dark text-sm transition-colors border border-gray-200 rounded-lg py-2"
+                  >
+                    Complete without sending receipt
+                  </button>
+                  <button
+                    onClick={() => setConfirmPopup(null)}
+                    className="w-full text-gray-300 hover:text-dark text-xs transition-colors mt-2"
+                  >
+                    Cancel
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Invoice Popup */}
         {invoicePopup && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -295,7 +368,7 @@ export default function AdminDonationsPage() {
                           ) : (
                             <select
                               value={donor.status}
-                              onChange={(e) => updateStatus(donor.id, e.target.value)}
+                              onChange={(e) => updateStatus(donor.id, e.target.value, donor)}
                               className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:border-primary transition-colors cursor-pointer"
                             >
                               <option value="pending">🕐 Pending</option>
