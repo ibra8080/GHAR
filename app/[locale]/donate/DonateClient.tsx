@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Heart, RefreshCw, Shield, Globe, Building2, CreditCard, CheckCircle } from "lucide-react";
 import { createClient } from "@supabase/supabase-js";
 import { useTranslations, useLocale } from "next-intl";
+import QRCode from "qrcode";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -44,6 +45,7 @@ export default function DonateClient({
   const [email, setEmail] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("paypal");
   const [status, setStatus] = useState<"idle" | "loading" | "success_paypal" | "success_bank" | "error">("idle");
+  const qrCanvasRef = useRef<HTMLCanvasElement>(null);
   const t = useTranslations("donate");
   const locale = useLocale();
 
@@ -59,11 +61,40 @@ export default function DonateClient({
   ];
 
   const paypalEmail = siteSettings?.email || 'info@ghar.de';
-  const bankIban = siteSettings?.bankIban || 'DE00 0000 0000 0000 0000 00';
-  const bankBic = siteSettings?.bankBic || 'XXXXXXXX';
-  const bankName = siteSettings?.bankName || 'Sparkasse Bremen';
+  const bankIban = siteSettings?.bankIban || 'BE88 9053 4986 3041';
+  const bankBic = siteSettings?.bankBic || 'TRWIBEB1XXX';
+  const bankName = siteSettings?.bankName || 'Wise';
 
   const isFormValid = firstName && lastName && email && finalAmount;
+
+  // Generate EPC QR Code after bank transfer success
+  useEffect(() => {
+    if (status === "success_bank" && qrCanvasRef.current) {
+      // EPC QR Code format (GS1 standard for SEPA payments)
+      const epcData = [
+        'BCD',           // Service Tag
+        '002',           // Version
+        '1',             // Encoding (UTF-8)
+        'SCT',           // Identification (SEPA Credit Transfer)
+        bankBic,         // BIC
+        'German Humanitarian Relief Organization e.V.', // Name (max 70 chars)
+        bankIban.replace(/\s/g, ''), // IBAN (no spaces)
+        `EUR${(finalAmount || 0).toFixed(2)}`, // Amount
+        '',              // Purpose (optional)
+        `${fullName} - ${selectedProject}`, // Remittance (reference)
+        '',              // Information
+      ].join('\n');
+
+      QRCode.toCanvas(qrCanvasRef.current, epcData, {
+        width: 180,
+        margin: 1,
+        color: {
+          dark: '#1A6FA0',
+          light: '#FFFFFF',
+        },
+      });
+    }
+  }, [status, bankBic, bankIban, finalAmount, fullName, selectedProject]);
 
   const handleDonate = async () => {
     if (!isFormValid) return;
@@ -141,30 +172,40 @@ export default function DonateClient({
             <h3 className="text-dark font-bold text-base mb-4">
               {locale === "ar" ? "بيانات التحويل البنكي" : locale === "de" ? "Bankverbindung" : "Bank Transfer Details"}
             </h3>
-            <div className="flex flex-col gap-2">
-              <div className="flex justify-between">
-                <span className="text-gray-500 text-sm">Bank:</span>
-                <span className="text-dark font-medium text-sm">{bankName}</span>
+            <div className="flex gap-6 items-start">
+              <div className="flex flex-col gap-2 flex-1">
+                <div className="flex justify-between">
+                  <span className="text-gray-500 text-sm">Bank:</span>
+                  <span className="text-dark font-medium text-sm">{bankName}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500 text-sm">IBAN:</span>
+                  <span className="text-dark font-medium text-sm font-mono">{bankIban}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500 text-sm">BIC:</span>
+                  <span className="text-dark font-medium text-sm font-mono">{bankBic}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500 text-sm">
+                    {locale === "ar" ? "المبلغ:" : locale === "de" ? "Betrag:" : "Amount:"}
+                  </span>
+                  <span className="text-primary font-bold text-lg">€{finalAmount}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500 text-sm">
+                    {locale === "ar" ? "المرجع:" : locale === "de" ? "Verwendungszweck:" : "Reference:"}
+                  </span>
+                  <span className="text-dark font-medium text-sm">{fullName} — {selectedProject}</span>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500 text-sm">IBAN:</span>
-                <span className="text-dark font-medium text-sm font-mono">{bankIban}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500 text-sm">BIC:</span>
-                <span className="text-dark font-medium text-sm font-mono">{bankBic}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500 text-sm">
-                  {locale === "ar" ? "المبلغ:" : locale === "de" ? "Betrag:" : "Amount:"}
-                </span>
-                <span className="text-primary font-bold text-lg">€{finalAmount}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500 text-sm">
-                  {locale === "ar" ? "المرجع:" : locale === "de" ? "Verwendungszweck:" : "Reference:"}
-                </span>
-                <span className="text-dark font-medium text-sm">{fullName} — {selectedProject}</span>
+
+              {/* QR Code */}
+              <div className="flex flex-col items-center gap-2 shrink-0">
+                <canvas ref={qrCanvasRef} className="rounded-lg" />
+                <p className="text-xs text-gray-400 text-center max-w-[120px]">
+                  {locale === "ar" ? "امسح للدفع" : locale === "de" ? "QR scannen" : "Scan to pay"}
+                </p>
               </div>
             </div>
           </div>
