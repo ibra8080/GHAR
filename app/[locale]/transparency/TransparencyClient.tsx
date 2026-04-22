@@ -75,11 +75,11 @@ export default function TransparencyClient({
   const t = useTranslations("transparency");
   const locale = useLocale();
 
-  const allocations = transparencyContent?.allocations || defaultAllocations;
-  const reports = transparencyContent?.reports || defaultReports;
-  const governance = transparencyContent?.governance || defaultGovernance;
-  const certifications = transparencyContent?.certifications || defaultCertifications;
-  const efficiencyPercentage = transparencyContent?.efficiencyPercentage || 75;
+  const allocations = transparencyContent?.allocations?.length ? transparencyContent.allocations : defaultAllocations;
+  const reports = transparencyContent?.reports?.length ? transparencyContent.reports : [];
+  const governance = transparencyContent?.governance?.length ? transparencyContent.governance : defaultGovernance;
+  const certifications = transparencyContent?.certifications?.length ? transparencyContent.certifications : defaultCertifications;
+  const efficiencyPercentage = transparencyContent?.efficiencyPercentage || [];
 
   const getAllocationLabel = (a: Allocation) => locale === "ar" ? a.labelAr : locale === "de" ? a.labelDe : a.label;
   const getReportTitle = (r: Report) => locale === "ar" ? r.titleAr : locale === "de" ? r.titleDe : r.title;
@@ -106,13 +106,14 @@ export default function TransparencyClient({
       </section>
 
       {/* Financial Reports */}
-      <section className="py-16 px-4 max-w-7xl mx-auto">
-        <div className="flex items-center gap-3 mb-10">
-          <FileText size={28} className="text-primary" />
-          <h2 className="text-3xl font-bold text-dark">{t("reportsTitle")}</h2>
-        </div>
-        <div className="flex flex-col gap-4">
-          {reports.map((report, i) => (
+      {reports.length > 0 && (
+        <section className="py-16 px-4 max-w-7xl mx-auto">
+          <div className="flex items-center gap-3 mb-10">
+            <FileText size={28} className="text-primary" />
+            <h2 className="text-3xl font-bold text-dark">{t("reportsTitle")}</h2>
+          </div>
+          <div className="flex flex-col gap-4">
+            {reports.map((report, i) => (
             <div key={i} className="flex items-center justify-between bg-white rounded-xl border border-gray-100 shadow-sm p-5 hover:shadow-md transition-shadow">
               <div className="flex items-center gap-4">
                 <div className="bg-primary/10 text-primary font-bold text-sm px-3 py-1 rounded-lg">{report.year}</div>
@@ -137,7 +138,7 @@ export default function TransparencyClient({
           ))}
         </div>
       </section>
-
+      )}
       {/* How We Use Donations */}
       <section className="py-16 bg-primary/5">
         <div className="max-w-7xl mx-auto px-4">
