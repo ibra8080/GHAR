@@ -266,13 +266,13 @@ export default function HomeClient({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {news.slice(0, 4).map((item, i) => (
             <Link key={i} href={`/${locale}/news`} className="flex gap-4 bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition-shadow group">
-              <div className="relative w-36 shrink-0">
+              <div className="relative w-36 h-full min-h-[100px] shrink-0">
                 <Image src={item.image || "/images/NewsSection1.png"} alt={getNewsTitle(item)} fill className="object-cover" />
               </div>
               <div className="p-4 flex flex-col justify-center">
                 <span className="text-xs text-primary font-semibold mb-2">{item.date}</span>
                 <h3 className="text-dark font-semibold text-sm leading-snug mb-2 group-hover:underline">{getNewsTitle(item)}</h3>
-                <p className="text-gray-500 text-xs leading-relaxed">{getNewsExcerpt(item)}</p>
+                <p className="text-gray-500 text-xs leading-relaxed line-clamp-2">{getNewsExcerpt(item)}</p>
                 <span className="text-primary text-xs mt-3 group-hover:underline">{t("readMore")}</span>
               </div>
             </Link>

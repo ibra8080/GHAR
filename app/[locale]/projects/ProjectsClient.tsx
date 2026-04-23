@@ -35,7 +35,7 @@ export default function ProjectsClient({ projects }: { projects: Project[] }) {
       
 
       {/* Projects Grid */}
-      <section className="pb-16 px-4 max-w-7xl mx-auto">
+      <section className="py-16 px-4 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {filtered.map((project, i) => {
             const progress = Math.round(((project.raised || 0) / (project.goal || 1)) * 100);

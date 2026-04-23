@@ -81,7 +81,7 @@ export default function NewsClient({ news }: { news: NewsItem[] }) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {paginated.map((item) => (
             <Link key={item.id} href={`/${locale}/news`} className="flex gap-4 bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition-shadow group">
-              <div className="relative w-40 shrink-0">
+              <div className="relative w-40 h-full min-h-[120px] shrink-0">
                 <Image src={item.image || "/images/NewsSection1.png"} alt={getTitle(item)} fill className="object-cover" />
               </div>
               <div className="p-4 flex flex-col justify-between">
@@ -90,7 +90,7 @@ export default function NewsClient({ news }: { news: NewsItem[] }) {
                     <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">{item.category}</span>
                   </div>
                   <h3 className="text-dark font-semibold text-sm leading-snug mb-2 group-hover:underline">{getTitle(item)}</h3>
-                  <p className="text-gray-500 text-xs leading-relaxed">{getExcerpt(item)}</p>
+                  <p className="text-gray-500 text-xs leading-relaxed line-clamp-2">{getExcerpt(item)}</p>
                 </div>
                 <div className="flex items-center justify-between mt-3">
                   <div className="flex items-center gap-1 text-gray-400 text-xs">
