@@ -4,6 +4,46 @@ import { ArrowLeft } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { client } from "@/sanity/lib/client";
 import { notFound } from "next/navigation";
+import { PortableText } from "@portabletext/react";
+
+const portableTextComponents = {
+  types: {
+    image: ({ value }: { value: { url: string; alt?: string; caption?: string } }) => (
+      <figure className="my-8">
+        <div className="relative w-full h-80 rounded-xl overflow-hidden">
+          <Image src={value.url} alt={value.alt || ""} fill className="object-cover" />
+        </div>
+        {value.caption && (
+          <figcaption className="text-center text-gray-400 text-sm mt-2">{value.caption}</figcaption>
+        )}
+      </figure>
+    ),
+  },
+  block: {
+    normal: ({ children }: { children?: React.ReactNode }) => (
+      <p className="text-gray-600 leading-relaxed mb-4">{children}</p>
+    ),
+    h2: ({ children }: { children?: React.ReactNode }) => (
+      <h2 className="text-2xl font-bold text-dark mt-8 mb-4">{children}</h2>
+    ),
+    h3: ({ children }: { children?: React.ReactNode }) => (
+      <h3 className="text-xl font-bold text-dark mt-6 mb-3">{children}</h3>
+    ),
+    blockquote: ({ children }: { children?: React.ReactNode }) => (
+      <blockquote className="border-l-4 border-primary pl-4 italic text-gray-600 my-6">{children}</blockquote>
+    ),
+  },
+  marks: {
+    strong: ({ children }: { children?: React.ReactNode }) => <strong className="font-bold text-dark">{children}</strong>,
+    em: ({ children }: { children?: React.ReactNode }) => <em className="italic">{children}</em>,
+    underline: ({ children }: { children?: React.ReactNode }) => <span className="underline">{children}</span>,
+    link: ({ children, value }: { children: React.ReactNode; value?: { href: string } }) => (
+      <a href={value?.href} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+        {children}
+      </a>
+    ),
+  },
+};
 
 async function getNewsItem(id: string) {
   try {
@@ -17,9 +57,27 @@ async function getNewsItem(id: string) {
         "excerpt": excerpt.en,
         "excerptAr": excerpt.ar,
         "excerptDe": excerpt.de,
-        "content": content.en,
-        "contentAr": content.ar,
-        "contentDe": content.de,
+        "content": content.en[]{
+          ...,
+          _type == "image" => {
+            ...,
+            "url": asset->url
+          }
+        },
+        "contentAr": content.ar[]{
+          ...,
+          _type == "image" => {
+            ...,
+            "url": asset->url
+          }
+        },
+        "contentDe": content.de[]{
+          ...,
+          _type == "image" => {
+            ...,
+            "url": asset->url
+          }
+        },
         "date": date,
         category,
       }
@@ -49,11 +107,13 @@ export default async function NewsDetailPage({
 
       {/* Hero */}
       <section className="relative h-[50vh]">
-        {item.image && (
+        {item.image ? (
           <>
             <Image src={item.image} alt={getTitle()} fill className="object-cover" priority />
             <div className="absolute inset-0 bg-black/50" />
           </>
+        ) : (
+          <div className="absolute inset-0 bg-primary/90" />
         )}
         <div className="absolute inset-0 flex flex-col justify-center px-8 md:px-20">
           <Link href={`/${locale}/news`} className="flex items-center gap-2 text-white/80 hover:text-white text-sm mb-4 transition-colors w-fit">
@@ -74,16 +134,9 @@ export default async function NewsDetailPage({
             {getExcerpt()}
           </p>
         )}
-        {getContent() ? (
-          <div className="prose max-w-none">
-            {getContent()?.split('\n').map((paragraph: string, i: number) => (
-              paragraph.trim() && (
-                <p key={i} className="text-gray-600 leading-relaxed mb-4">
-                  {paragraph}
-                </p>
-              )
-            ))}
-          </div>
+
+        {getContent()?.length > 0 ? (
+          <PortableText value={getContent()} components={portableTextComponents} />
         ) : (
           <p className="text-gray-400 text-center py-8">
             {locale === "ar" ? "المحتوى قيد الإعداد" : locale === "de" ? "Inhalt wird vorbereitet" : "Content coming soon"}

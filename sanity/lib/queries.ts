@@ -41,9 +41,27 @@ export async function getNews() {
         "excerpt": excerpt.en,
         "excerptAr": excerpt.ar,
         "excerptDe": excerpt.de,
-        "content": content.en,
-        "contentAr": content.ar,
-        "contentDe": content.de,
+        "content": content.en[]{
+          ...,
+          _type == "image" => {
+            ...,
+            "url": asset->url
+          }
+        },
+        "contentAr": content.ar[]{
+          ...,
+          _type == "image" => {
+            ...,
+            "url": asset->url
+          }
+        },
+        "contentDe": content.de[]{
+          ...,
+          _type == "image" => {
+            ...,
+            "url": asset->url
+          }
+        },
         "date": date,
         category,
       }

@@ -53,9 +53,123 @@ export const news = defineType({
       title: 'Full Content',
       type: 'object',
       fields: [
-        { name: 'en', title: 'English', type: 'text', rows: 10 },
-        { name: 'ar', title: 'Arabic', type: 'text', rows: 10 },
-        { name: 'de', title: 'German', type: 'text', rows: 10 },
+        {
+          name: 'en',
+          title: 'English',
+          type: 'array',
+          of: [
+            {
+              type: 'block',
+              styles: [
+                { title: 'Normal', value: 'normal' },
+                { title: 'Heading 2', value: 'h2' },
+                { title: 'Heading 3', value: 'h3' },
+                { title: 'Quote', value: 'blockquote' },
+              ],
+              marks: {
+                decorators: [
+                  { title: 'Bold', value: 'strong' },
+                  { title: 'Italic', value: 'em' },
+                  { title: 'Underline', value: 'underline' },
+                ],
+                annotations: [
+                  {
+                    name: 'link',
+                    type: 'object',
+                    title: 'Link',
+                    fields: [{ name: 'href', type: 'url', title: 'URL' }],
+                  },
+                ],
+              },
+            },
+            {
+              type: 'image',
+              options: { hotspot: true },
+              fields: [
+                { name: 'alt', type: 'string', title: 'Alt text' },
+                { name: 'caption', type: 'string', title: 'Caption' },
+              ],
+            },
+          ],
+        },
+        {
+          name: 'ar',
+          title: 'Arabic',
+          type: 'array',
+          of: [
+            {
+              type: 'block',
+              styles: [
+                { title: 'Normal', value: 'normal' },
+                { title: 'Heading 2', value: 'h2' },
+                { title: 'Heading 3', value: 'h3' },
+                { title: 'Quote', value: 'blockquote' },
+              ],
+              marks: {
+                decorators: [
+                  { title: 'Bold', value: 'strong' },
+                  { title: 'Italic', value: 'em' },
+                  { title: 'Underline', value: 'underline' },
+                ],
+                annotations: [
+                  {
+                    name: 'link',
+                    type: 'object',
+                    title: 'Link',
+                    fields: [{ name: 'href', type: 'url', title: 'URL' }],
+                  },
+                ],
+              },
+            },
+            {
+              type: 'image',
+              options: { hotspot: true },
+              fields: [
+                { name: 'alt', type: 'string', title: 'Alt text' },
+                { name: 'caption', type: 'string', title: 'Caption' },
+              ],
+            },
+          ],
+        },
+        {
+          name: 'de',
+          title: 'German',
+          type: 'array',
+          of: [
+            {
+              type: 'block',
+              styles: [
+                { title: 'Normal', value: 'normal' },
+                { title: 'Heading 2', value: 'h2' },
+                { title: 'Heading 3', value: 'h3' },
+                { title: 'Quote', value: 'blockquote' },
+              ],
+              marks: {
+                decorators: [
+                  { title: 'Bold', value: 'strong' },
+                  { title: 'Italic', value: 'em' },
+                  { title: 'Underline', value: 'underline' },
+                ],
+                annotations: [
+                  {
+                    name: 'link',
+                    type: 'object',
+                    title: 'Link',
+                    fields: [{ name: 'href', type: 'url', title: 'URL' }],
+                  },
+                ],
+              },
+            },
+            {
+              type: 'image',
+              options: { hotspot: true },
+              fields: [
+                { name: 'alt', type: 'string', title: 'Alt text' },
+                { name: 'caption', type: 'string', title: 'Caption' },
+              ],
+            },
+          ],
+        },
       ],
     }),
     defineField({
