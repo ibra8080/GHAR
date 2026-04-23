@@ -80,7 +80,7 @@ export default function NewsClient({ news }: { news: NewsItem[] }) {
       <section className="pb-8 px-4 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {paginated.map((item) => (
-            <Link key={item.id} href={`/${locale}/news`} className="flex gap-4 bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition-shadow group">
+            <Link key={item.id} href={`/${locale}/news/${item.id}`} className="flex gap-4 bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition-shadow group">
               <div className="relative w-40 h-full min-h-[120px] shrink-0">
                 <Image src={item.image || "/images/NewsSection1.png"} alt={getTitle(item)} fill className="object-cover" />
               </div>

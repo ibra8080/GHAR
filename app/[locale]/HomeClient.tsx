@@ -265,7 +265,7 @@ export default function HomeClient({
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {news.slice(0, 4).map((item, i) => (
-            <Link key={i} href={`/${locale}/news`} className="flex gap-4 bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition-shadow group">
+            <Link key={i} href={`/${locale}/news/${item.id}`} className="flex gap-4 bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition-shadow group">
               <div className="relative w-36 h-full min-h-[100px] shrink-0">
                 <Image src={item.image || "/images/NewsSection1.png"} alt={getNewsTitle(item)} fill className="object-cover" />
               </div>

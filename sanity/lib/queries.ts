@@ -33,7 +33,7 @@ export async function getNews() {
   try {
     return await client.fetch(`
       *[_type == "news"] | order(date desc) {
-        "id": _id,
+        "id": coalesce(slug.current, _id),
         "image": image.asset->url,
         "title": title.en,
         "titleAr": title.ar,
@@ -41,6 +41,9 @@ export async function getNews() {
         "excerpt": excerpt.en,
         "excerptAr": excerpt.ar,
         "excerptDe": excerpt.de,
+        "content": content.en,
+        "contentAr": content.ar,
+        "contentDe": content.de,
         "date": date,
         category,
       }

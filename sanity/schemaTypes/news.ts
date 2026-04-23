@@ -1,5 +1,4 @@
 import { defineField, defineType } from 'sanity';
-
 export const news = defineType({
   name: 'news',
   title: 'News',
@@ -30,6 +29,16 @@ export const news = defineType({
       ],
     }),
     defineField({
+      name: 'slug',
+      title: 'Slug',
+      type: 'slug',
+      options: {
+        source: 'title.en',
+        maxLength: 96,
+      },
+      validation: Rule => Rule.required(),
+    }),
+    defineField({
       name: 'excerpt',
       title: 'Excerpt',
       type: 'object',
@@ -37,6 +46,16 @@ export const news = defineType({
         { name: 'en', title: 'English', type: 'text' },
         { name: 'ar', title: 'Arabic', type: 'text' },
         { name: 'de', title: 'German', type: 'text' },
+      ],
+    }),
+    defineField({
+      name: 'content',
+      title: 'Full Content',
+      type: 'object',
+      fields: [
+        { name: 'en', title: 'English', type: 'text', rows: 10 },
+        { name: 'ar', title: 'Arabic', type: 'text', rows: 10 },
+        { name: 'de', title: 'German', type: 'text', rows: 10 },
       ],
     }),
     defineField({
