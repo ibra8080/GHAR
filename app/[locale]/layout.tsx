@@ -7,7 +7,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import CookieBanner from '@/components/layout/CookieBanner';
-import { getSiteSettings, getProjects } from '@/sanity/lib/queries';
+import { getSiteSettings, getProjects, getHeroSlides } from '@/sanity/lib/queries';
 
 
 const locales = ['en', 'ar', 'de'];
@@ -28,19 +28,19 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  const heroSlides = await getHeroSlides();
+  const ogImage = heroSlides?.[0]?.image || 'https://www.ghar-ngo.com/images/HeroImage1.png';
 
   const titles: Record<string, string> = {
     en: 'GHAR Organization — German Humanitarian Relief Organization',
     ar: 'منظمة غار — منظمة إنسانية ألمانية',
     de: 'GHAR Organization — Deutsche Humanitäre Hilfsorganisation',
   };
-
   const descriptions: Record<string, string> = {
     en: 'GHAR Organization provides humanitarian support to crisis-affected regions. Donate, volunteer, or partner with us.',
     ar: 'منظمة غار تقدم المساعدات الإنسانية للمناطق المنكوبة. تبرع، تطوع، أو كن شريكاً معنا.',
     de: 'Die GHAR Organization leistet humanitäre Hilfe in Krisenregionen. Spenden, ehrenamtlich tätig sein oder Partner werden.',
   };
-
   return {
     title: {
       default: titles[locale] || titles.en,
@@ -57,7 +57,7 @@ export async function generateMetadata({
       description: descriptions[locale] || descriptions.en,
       url: `https://www.ghar-ngo.com/${locale}`,
       siteName: 'GHAR Organization',
-      images: [{ url: '/images/HeroImage1.png', width: 1200, height: 630, alt: 'GHAR Organization' }],
+      images: [{ url: ogImage, width: 1200, height: 630, alt: 'GHAR Organization' }],
       locale: locale,
       type: 'website',
     },
@@ -65,7 +65,7 @@ export async function generateMetadata({
       card: 'summary_large_image',
       title: titles[locale] || titles.en,
       description: descriptions[locale] || descriptions.en,
-      images: ['/images/HeroImage1.png'],
+      images: [ogImage],
     },
     robots: { index: true, follow: true },
   };
