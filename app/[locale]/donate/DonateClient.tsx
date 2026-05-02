@@ -315,8 +315,8 @@ export default function DonateClient({
     <PayPalScriptProvider options={{
       clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || '',
       currency: "EUR",
-      intent: isMonthlyPayPal ? "subscription" : "capture",
-      vault: isMonthlyPayPal,
+      intent: "subscription",
+      vault: true,
     }}>
       <section className="py-16 px-4 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
