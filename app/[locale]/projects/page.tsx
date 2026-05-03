@@ -7,7 +7,12 @@ import ProjectsClient from "./ProjectsClient";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  {
+    global: {
+      fetch: (url, options) => fetch(url, { ...options, cache: 'no-store' }),
+    },
+  }
 );
 
 export default async function ProjectsPage({
@@ -27,11 +32,16 @@ export default async function ProjectsPage({
       .eq("status", "completed"),
   ]);
 
-  // مجموع التبرعات المكتملة لكل مشروع
+  // مجموع التبرعات المكتملة من Supabase لكل مشروع
   const raisedByProject: Record<string, number> = {};
   for (const donor of donors || []) {
     if (!donor.project || donor.project === "general" || donor.project === "zakat") continue;
     raisedByProject[donor.project] = (raisedByProject[donor.project] || 0) + (donor.amount || 0);
+  }
+
+  // إضافة الـ raised اليدوي من Sanity
+  for (const project of projects) {
+    raisedByProject[project.id] = (raisedByProject[project.id] || 0) + (project.raised || 0);
   }
 
   const heroImage = projectsPage?.heroImage || "/images/ProjectCards1.png";
