@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { Heart, RefreshCw, Shield, Globe, Building2, CreditCard, CheckCircle } from "lucide-react";
 import { createClient } from "@supabase/supabase-js";
 import { useTranslations, useLocale } from "next-intl";
+import { useSearchParams } from "next/navigation";
 import QRCode from "qrcode";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
@@ -44,10 +45,13 @@ export default function DonateClient({
   projects: Project[];
   siteSettings: SiteSettings;
 }) {
+  const searchParams = useSearchParams();
   const [selectedAmount, setSelectedAmount] = useState<number | null>(25);
   const [customAmount, setCustomAmount] = useState("");
   const [donationType, setDonationType] = useState<"once" | "monthly">("once");
-  const [selectedProject, setSelectedProject] = useState("general");
+  const [selectedProject, setSelectedProject] = useState(() => {
+    return searchParams.get("project") || "general";
+  });
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");

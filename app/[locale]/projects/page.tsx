@@ -2,7 +2,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { getProjects, getProjectsPage } from "@/sanity/lib/queries";
+import { createClient } from "@supabase/supabase-js";
 import ProjectsClient from "./ProjectsClient";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export default async function ProjectsPage({
   params,
@@ -11,10 +17,22 @@ export default async function ProjectsPage({
 }) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "projects" });
-  const [projects, projectsPage] = await Promise.all([
+
+  const [projects, projectsPage, { data: donors }] = await Promise.all([
     getProjects(),
     getProjectsPage(),
+    supabase
+      .from("donors")
+      .select("project, amount")
+      .eq("status", "completed"),
   ]);
+
+  // مجموع التبرعات المكتملة لكل مشروع
+  const raisedByProject: Record<string, number> = {};
+  for (const donor of donors || []) {
+    if (!donor.project || donor.project === "general" || donor.project === "zakat") continue;
+    raisedByProject[donor.project] = (raisedByProject[donor.project] || 0) + (donor.amount || 0);
+  }
 
   const heroImage = projectsPage?.heroImage || "/images/ProjectCards1.png";
   const heroTitle = locale === "ar" ? projectsPage?.heroTitleAr : locale === "de" ? projectsPage?.heroTitleDe : projectsPage?.heroTitle;
@@ -22,8 +40,6 @@ export default async function ProjectsPage({
 
   return (
     <div className="bg-background">
-
-      {/* Hero */}
       <section className="relative h-[40vh]">
         <Image src={heroImage} alt="Our Projects" fill className="object-cover" priority />
         <div className="absolute inset-0 bg-black/50" />
@@ -33,9 +49,8 @@ export default async function ProjectsPage({
         </div>
       </section>
 
-      <ProjectsClient projects={projects} />
+      <ProjectsClient projects={projects} raisedByProject={raisedByProject} />
 
-      {/* CTA */}
       <section className="py-16 bg-primary text-white text-center">
         <div className="max-w-3xl mx-auto px-4">
           <h2 className="text-3xl font-bold mb-4">{t("ctaTitle")}</h2>
@@ -45,7 +60,6 @@ export default async function ProjectsPage({
           </Link>
         </div>
       </section>
-
     </div>
   );
 }
