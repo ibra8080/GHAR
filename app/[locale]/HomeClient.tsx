@@ -94,12 +94,14 @@ export default function HomeClient({
   heroSlides,
   stats,
   homeContent,
+  raisedByProject,
 }: {
   projects: Project[];
   news: NewsItem[];
   heroSlides: HeroSlide[];
   stats: Stat[];
   homeContent: HomeContent;
+  raisedByProject: Record<string, number>;
 }) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const t = useTranslations("home");
@@ -199,22 +201,22 @@ export default function HomeClient({
                 <p className="text-gray-500 text-sm flex-grow leading-relaxed group-hover:underline">{getDesc(project)}</p>
                 <div className="mt-3">
                   <div className="flex justify-between text-xs text-gray-500 mb-1">
-                    <span>{t("raised")}: €{(project.raised || 0).toLocaleString()}</span>
+                    <span>{t("raised")}: €{(raisedByProject[project.id] || 0).toLocaleString()}</span>
                     <span>{t("goal")}: €{(project.goal || 0).toLocaleString()}</span>
                   </div>
                   <div className="w-full bg-gray-100 rounded-full h-2">
                     <div className="bg-secondary h-2 rounded-full"
-                      style={{ width: `${Math.round(((project.raised || 0) / (project.goal || 1)) * 100)}%` }} />
+                      style={{ width: `${Math.min(Math.round(((raisedByProject[project.id] || 0) / (project.goal || 1)) * 100), 100)}%` }} />
                   </div>
                   <p className="text-xs text-primary font-semibold mt-1">
-                    {Math.round(((project.raised || 0) / (project.goal || 1)) * 100)}% {t("funded")}
+                    {Math.min(Math.round(((raisedByProject[project.id] || 0) / (project.goal || 1)) * 100), 100)}% {t("funded")}
                   </p>
                 </div>
                 <span className="mt-2 text-primary text-xs group-hover:underline">
                   {t("readMore")}
                 </span>
                 <button
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.location.href = `/${locale}/donate`; }}
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.location.href = `/${locale}/donate?project=${project.id}`; }}
                   className="mt-4 bg-secondary hover:bg-green-700 text-white text-center py-2 rounded font-medium text-sm transition-colors w-full"
                 >
                   {t("donate")}
