@@ -61,11 +61,13 @@ export default function AdminDonationsPage() {
 }, [authenticated]);
 
   const updateStatus = async (id: string, newStatus: string, donor: Donor) => {
+    console.log("updateStatus called:", id, newStatus, donor.payment_method);
     if (newStatus === "completed" && donor.payment_method !== "paypal") {
       setConfirmPopup({ donor, newStatus });
       return;
     }
-    await supabase.from("donors").update({ status: newStatus }).eq("id", id);
+    const { error } = await supabase.from("donors").update({ status: newStatus }).eq("id", id);
+    console.log("update result:", error);
     fetchDonors();
   };
 
