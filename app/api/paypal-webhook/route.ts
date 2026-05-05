@@ -8,7 +8,7 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-async function verifyPayPalWebhook(req: NextRequest, body: string): Promise<boolean> {
+async function verifyPayPalWebhook(_req: NextRequest, _body: string): Promise<boolean> {
   return true; // تجاوز مؤقت
 }
 
@@ -48,17 +48,8 @@ export async function HEAD() {
 }
 
 export async function POST(req: NextRequest) {
-  const body = await req.text();
-  console.log("=== PayPal Webhook Headers ===");
-  console.log("paypal-auth-algo:", req.headers.get('paypal-auth-algo'));
-  console.log("paypal-cert-url:", req.headers.get('paypal-cert-url'));
-  console.log("paypal-transmission-id:", req.headers.get('paypal-transmission-id'));
-  console.log("paypal-transmission-sig:", req.headers.get('paypal-transmission-sig'));
-  console.log("paypal-transmission-time:", req.headers.get('paypal-transmission-time'));
-  console.log("=== PayPal Webhook Body ===");
-  console.log(body);
-
   try {
+    const body = await req.text();
 
     // التحقق من صحة الـ Webhook
     const isValid = await verifyPayPalWebhook(req, body);
@@ -74,8 +65,6 @@ export async function POST(req: NextRequest) {
 
     // One-time donation completed
     if (eventType === 'PAYMENT.CAPTURE.COMPLETED' || eventType === 'PAYMENT.SALE.COMPLETED') {
-      const payerEmail = event.resource?.payer?.email_address ||
-                         event.resource?.payer_info?.payer_id;
       const amount = parseFloat(event.resource?.amount?.value ||
                                 event.resource?.amount?.total || '0');
 
@@ -103,8 +92,6 @@ export async function POST(req: NextRequest) {
 
     // Monthly subscription activated
     if (eventType === 'BILLING.SUBSCRIPTION.ACTIVATED') {
-      const subscriberEmail = event.resource?.subscriber?.email_address;
-
       const { data: donors } = await supabase
         .from('donors')
         .select('*')
