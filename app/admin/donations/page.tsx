@@ -62,7 +62,7 @@ export default function AdminDonationsPage() {
 
   const updateStatus = async (id: string, newStatus: string, donor: Donor) => {
     console.log("updateStatus called:", id, newStatus, donor.payment_method);
-    if (newStatus === "completed" && donor.payment_method !== "paypal") {
+    if (newStatus === "completed" && (donor.payment_method !== "paypal" || donor.donation_type === "once")) {
       setConfirmPopup({ donor, newStatus });
       return;
     }
