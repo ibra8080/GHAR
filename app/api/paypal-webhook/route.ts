@@ -55,6 +55,10 @@ async function sendInvoiceEmail(donor: {
   }
 }
 
+export async function HEAD() {
+  return new NextResponse(null, { status: 200 });
+}
+
 export async function POST(req: NextRequest) {
   const body = await req.text();
   console.log("=== PayPal Webhook Headers ===");
