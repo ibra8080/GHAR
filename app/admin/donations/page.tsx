@@ -365,10 +365,7 @@ export default function AdminDonationsPage() {
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
-                          {donor.payment_method === "paypal" ? (
-                            <span className="text-xs text-gray-400 italic">Auto</span>
-                          ) : (
-                            <select
+                          <select
                               value={donor.status}
                               onChange={(e) => updateStatus(donor.id, e.target.value, donor)}
                               className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:border-primary transition-colors cursor-pointer"
@@ -377,7 +374,6 @@ export default function AdminDonationsPage() {
                               <option value="completed">✅ Completed</option>
                               <option value="cancelled">❌ Cancelled</option>
                             </select>
-                          )}
                           {donor.status === "completed" && (
                             <button
                               onClick={() => setInvoicePopup(donor)}
