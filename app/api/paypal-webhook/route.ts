@@ -9,7 +9,8 @@ const supabase = createClient(
 );
 
 async function verifyPayPalWebhook(req: NextRequest, _body: string): Promise<boolean> {
-  const secret = req.nextUrl.searchParams.get('secret');
+  const url = new URL(req.url);
+  const secret = url.searchParams.get('secret');
   return secret === process.env.PAYPAL_WEBHOOK_SECRET;
 }
 
