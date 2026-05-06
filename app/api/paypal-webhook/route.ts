@@ -8,8 +8,9 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-async function verifyPayPalWebhook(_req: NextRequest, _body: string): Promise<boolean> {
-  return true; // تجاوز مؤقت
+async function verifyPayPalWebhook(req: NextRequest, _body: string): Promise<boolean> {
+  const secret = req.nextUrl.searchParams.get('secret');
+  return secret === process.env.PAYPAL_WEBHOOK_SECRET;
 }
 
 async function sendInvoiceEmail(donor: {
