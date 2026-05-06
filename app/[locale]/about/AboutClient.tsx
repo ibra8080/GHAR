@@ -27,6 +27,8 @@ type Partner = {
 };
 
 type AboutContent = {
+  heroImage?: string;
+  storyImage?: string;
   story1: string; story1Ar: string; story1De: string;
   story2: string; story2Ar: string; story2De: string;
   story3: string; story3Ar: string; story3De: string;
@@ -115,7 +117,7 @@ export default function AboutClient({
             <p className="text-gray-600 leading-relaxed">{story3}</p>
           </div>
           <div className="relative h-80 rounded-2xl overflow-hidden shadow-lg">
-            <Image src="/images/HeroImage2.png" alt="Our Story" fill className="object-cover" />
+            <Image src={aboutContent?.storyImage || "/images/HeroImage2.png"} alt="Our Story" fill className="object-cover" />
           </div>
         </div>
       </section>

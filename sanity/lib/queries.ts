@@ -169,6 +169,7 @@ export async function getAboutContent() {
     return await client.fetch(`
       *[_type == "aboutContent"][0] {
         "heroImage": heroImage.asset->url,
+        "storyImage": storyImage.asset->url,
         "heroTitle": heroTitle.en,
         "heroTitleAr": heroTitle.ar,
         "heroTitleDe": heroTitle.de,
