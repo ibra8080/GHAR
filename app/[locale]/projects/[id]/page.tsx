@@ -5,6 +5,17 @@ import { getTranslations } from "next-intl/server";
 import { client } from "@/sanity/lib/client";
 import { notFound } from "next/navigation";
 import { getCountryName } from "@/lib/utils";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  {
+    global: {
+      fetch: (url, options) => fetch(url, { ...options, cache: 'no-store' }),
+    },
+  }
+);
 
 async function getProject(id: string) {
   try {
@@ -42,7 +53,16 @@ export default async function ProjectDetailPage({
 
   if (!project) notFound();
 
-  const progress = Math.round(((project.raised || 0) / (project.goal || 1)) * 100);
+  // جلب التبرعات المكتملة من Supabase لهذا المشروع
+  const { data: donors } = await supabase
+    .from("donors")
+    .select("amount")
+    .eq("project", id)
+    .eq("status", "completed");
+
+  const supabaseRaised = (donors || []).reduce((sum, d) => sum + (d.amount || 0), 0);
+  const totalRaised = (project.raised || 0) + supabaseRaised;
+  const progress = Math.min(Math.round((totalRaised / (project.goal || 1)) * 100), 100);
 
   const getTitle = () => locale === "ar" ? project.titleAr : locale === "de" ? project.titleDe : project.title;
   const getDetails = () => locale === "ar" ? project.detailsAr : locale === "de" ? project.detailsDe : project.details;
@@ -112,7 +132,7 @@ export default async function ProjectDetailPage({
               </h3>
               <div className="mb-6">
                 <div className="flex justify-between text-sm text-gray-500 mb-2">
-                  <span>{t("raised")}: €{(project.raised || 0).toLocaleString()}</span>
+                  <span>{t("raised")}: €{totalRaised.toLocaleString()}</span>
                   <span>{t("goal")}: €{(project.goal || 0).toLocaleString()}</span>
                 </div>
                 <div className="w-full bg-gray-100 rounded-full h-3">
@@ -120,7 +140,7 @@ export default async function ProjectDetailPage({
                 </div>
                 <p className="text-primary font-bold mt-2">{progress}% {t("funded")}</p>
               </div>
-              <Link href={`/${locale}/donate`} className="block bg-secondary hover:bg-green-700 text-white text-center py-3 rounded-lg font-semibold transition-colors mb-3">
+              <Link href={`/${locale}/donate?project=${project.id}`} className="block bg-secondary hover:bg-green-700 text-white text-center py-3 rounded-lg font-semibold transition-colors mb-3">
                 {t("donateNow")}
               </Link>
               <Link href={`/${locale}/projects`} className="block text-primary text-center py-3 rounded-lg font-semibold transition-colors border border-primary hover:bg-primary/5">
