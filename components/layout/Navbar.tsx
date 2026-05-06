@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { Search, User, Menu, X, ChevronDown } from "lucide-react";
+import { Search, Menu, X, ChevronDown } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter, usePathname } from "next/navigation";
 
@@ -52,8 +52,6 @@ export default function Navbar() {
           {/* Desktop Right Side */}
           <div className="hidden md:flex items-center gap-3">
             <button className="text-primary hover:text-[#2A2A2A] transition-colors p-1"><Search size={18} /></button>
-            <span className="text-gray-300">|</span>
-            <button className="text-primary hover:text-[#2A2A2A] transition-colors p-1"><User size={18} /></button>
             <span className="text-gray-300">|</span>
 
             {/* Language Switcher */}
