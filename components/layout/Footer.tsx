@@ -71,6 +71,7 @@ const youtube = siteSettings?.youtube || `/${locale}/contact`;
               <li><Link href={`/${locale}/transparency`} className="text-white/80 hover:text-white text-sm transition-colors">{t("transparency")}</Link></li>
               <li><Link href={`/${locale}/news`} className="text-white/80 hover:text-white text-sm transition-colors">{t("pressRelease")}</Link></li>
               <li><Link href={`/${locale}/privacy`} className="text-white/80 hover:text-white text-sm transition-colors">{t("privacy")}</Link></li>
+              <li><Link href={`/${locale}/impressum`} className="text-white/80 hover:text-white text-sm transition-colors">{t("impressum")}</Link></li>
             </ul>
           </div>
 
