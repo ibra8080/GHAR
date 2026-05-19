@@ -134,7 +134,9 @@ export default async function ImpressumPage({
           <p className="text-gray-600 text-sm leading-relaxed">
             {isAr
               ? "تم إعداد محتوى هذا الموقع بعناية فائقة. ومع ذلك، لا نتحمل أي مسؤولية عن دقة المحتوى أو اكتماله أو حداثته. وفقاً للمادة 7 الفقرة 1 من قانون TMG، نحن كمزودي خدمة مسؤولون عن محتوياتنا الخاصة على هذه الصفحات وفقاً للقوانين العامة."
-              : "Die Inhalte unserer Seiten wurden mit größter Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte können wir jedoch keine Gewähr übernehmen. Als Diensteanbieter sind wir gemäß § 7 Abs.1 TMG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich."
+              : isDe
+              ? "Die Inhalte unserer Seiten wurden mit größter Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte können wir jedoch keine Gewähr übernehmen. Als Diensteanbieter sind wir gemäß § 7 Abs.1 TMG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich."
+              : "The contents of our pages have been created with the utmost care. However, we cannot guarantee the accuracy, completeness or timeliness of the content. As a service provider, we are responsible for our own content on these pages in accordance with general laws pursuant to § 7 Abs.1 TMG."
             }
           </p>
         </div>
