@@ -65,6 +65,9 @@ export async function generateMetadata({
       images: ['https://www.ghar-ngo.com/og-image.png'],
     },
     robots: { index: true, follow: true },
+    verification: {
+      google: 'sWC7-eEp4EOw9NVWMDt8yAJkgh_7B7PJc0QSekqfaro',
+    },
   };
 }
 
