@@ -7,6 +7,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import CookieBanner from '@/components/layout/CookieBanner';
+import Script from 'next/script';
 import { getSiteSettings, getProjects } from '@/sanity/lib/queries';
 
 
@@ -93,6 +94,18 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} dir={isRTL ? 'rtl' : 'ltr'} suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`} suppressHydrationWarning>
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-CKHM7ZYE7F"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-CKHM7ZYE7F');
+          `}
+        </Script>
         <NextIntlClientProvider messages={messages}>
           <Navbar />
           <main className="flex-grow">
