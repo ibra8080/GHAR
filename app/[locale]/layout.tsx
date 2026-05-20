@@ -93,6 +93,60 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} dir={isRTL ? 'rtl' : 'ltr'} suppressHydrationWarning>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "NGO",
+                  "@id": "https://www.ghar-ngo.com/#organization",
+                  "name": "German Humanitarian Relief Organization e.V.",
+                  "alternateName": "GHAR",
+                  "url": "https://www.ghar-ngo.com",
+                  "logo": "https://www.ghar-ngo.com/images/GahrLogo.svg",
+                  "foundingDate": "2025",
+                  "description": "German humanitarian NGO providing aid to crisis-affected regions. Registered in Bremen, Germany.",
+                  "address": {
+                    "@type": "PostalAddress",
+                    "streetAddress": "Kulenkampffallee 193",
+                    "addressLocality": "Bremen",
+                    "postalCode": "28213",
+                    "addressCountry": "DE"
+                  },
+                  "contactPoint": {
+                    "@type": "ContactPoint",
+                    "telephone": "+4901772839465",
+                    "email": "info@ghar-ngo.com",
+                    "contactType": "customer support"
+                  },
+                  "sameAs": [
+                    "https://www.facebook.com/share/1D3frCWUJj/",
+                    "https://www.instagram.com/ghar_ngo",
+                    "https://www.linkedin.com/company/ghar-organization/"
+                  ],
+                  "areaServed": ["Sudan", "Egypt"],
+                  "nonprofitStatus": "Registered Nonprofit",
+                  "legalName": "German Humanitarian Relief Organization e.V."
+                },
+                {
+                  "@type": "WebSite",
+                  "@id": "https://www.ghar-ngo.com/#website",
+                  "url": "https://www.ghar-ngo.com",
+                  "name": "GHAR Organization",
+                  "description": "German Humanitarian Relief Organization providing aid to crisis-affected regions.",
+                  "publisher": {
+                    "@id": "https://www.ghar-ngo.com/#organization"
+                  },
+                  "inLanguage": ["en", "ar", "de"]
+                }
+              ]
+            })
+          }}
+        />
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`} suppressHydrationWarning>
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-CKHM7ZYE7F"
