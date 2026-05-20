@@ -128,7 +128,7 @@ export default async function LocaleLayout({
                     "https://www.linkedin.com/company/ghar-organization/"
                   ],
                   "areaServed": ["Sudan", "Egypt"],
-                  "nonprofitStatus": "Registered Nonprofit",
+                  "nonprofitStatus": "https://schema.org/DERegisteredAssociationCharity",
                   "legalName": "German Humanitarian Relief Organization e.V."
                 },
                 {
