@@ -22,6 +22,7 @@ type Donor = {
   payment_method: string;
   status: string;
   created_at: string;
+  country: string;
 };
 
 export default function AdminDonationsPage() {
@@ -132,10 +133,10 @@ export default function AdminDonationsPage() {
   };
 
   const exportCSV = () => {
-    const headers = ["Name", "Email", "Amount", "Type", "Project", "Payment Method", "Status", "Date"];
+    const headers = ["Name", "Email", "Amount", "Type", "Country", "Project", "Payment Method", "Status", "Date"];
     const rows = filtered.map(d => [
-      d.name, d.email, d.amount, d.donation_type, d.project,
-      d.payment_method, d.status, new Date(d.created_at).toLocaleDateString()
+      d.name, d.email, d.amount, d.donation_type, d.country || '',
+      d.project, d.payment_method, d.status, new Date(d.created_at).toLocaleDateString()
     ]);
     const csv = [headers, ...rows].map(r => r.join(",")).join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
@@ -342,6 +343,8 @@ export default function AdminDonationsPage() {
                     <th className="text-left text-xs text-gray-400 font-medium px-4 py-3">Amount</th>
                     <th className="text-left text-xs text-gray-400 font-medium px-4 py-3">Project</th>
                     <th className="text-left text-xs text-gray-400 font-medium px-4 py-3">Method</th>
+                    <th className="text-left text-xs text-gray-400 font-medium px-4 py-3">Type</th>
+                    <th className="text-left text-xs text-gray-400 font-medium px-4 py-3">Country</th>
                     <th className="text-left text-xs text-gray-400 font-medium px-4 py-3">Status</th>
                     <th className="text-left text-xs text-gray-400 font-medium px-4 py-3">Date</th>
                     <th className="text-left text-xs text-gray-400 font-medium px-4 py-3">Actions</th>
@@ -359,6 +362,12 @@ export default function AdminDonationsPage() {
                           {donor.payment_method || 'paypal'}
                         </span>
                       </td>
+                      <td className="px-4 py-3">
+                        <span className={`text-xs px-2 py-1 rounded-full ${donor.donation_type === 'monthly' ? 'bg-purple-50 text-purple-600' : 'bg-blue-50 text-blue-600'}`}>
+                          {donor.donation_type === 'monthly' ? '🔄 Monthly' : '1️⃣ Once'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-xs text-gray-500">{donor.country || '—'}</td>
                       <td className="px-4 py-3">{statusBadge(donor.status)}</td>
                       <td className="px-4 py-3 text-xs text-gray-400">
                         {new Date(donor.created_at).toLocaleDateString()}
