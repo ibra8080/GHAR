@@ -57,6 +57,7 @@ export default function DonateClient({
   const [email, setEmail] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("paypal");
   const [status, setStatus] = useState<"idle" | "loading" | "success_paypal" | "success_bank" | "success_subscription" | "error">("idle");
+  const [geoData, setGeoData] = useState<{ country: string; city: string } | null>(null);
   const qrCanvasRef = useRef<HTMLCanvasElement>(null);
   const t = useTranslations("donate");
   const locale = useLocale();
@@ -85,6 +86,16 @@ export default function DonateClient({
   const bankName = siteSettings?.bankName || 'Wise';
 
   const isFormValid = firstName && lastName && email && finalAmount;
+
+  useEffect(() => {
+    fetch('https://ipapi.co/json/')
+      .then(res => res.json())
+      .then(data => setGeoData({
+        country: data.country_name || '',
+        city: data.city || '',
+      }))
+      .catch(() => null);
+  }, []);
 
   // EPC QR Code
   useEffect(() => {
@@ -116,6 +127,8 @@ export default function DonateClient({
       project: selectedProject,
       payment_method: paymentMethod,
       status: "pending",
+      country: geoData?.country || '',
+      city: geoData?.city || '',
     }]);
     return !error;
   };
