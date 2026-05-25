@@ -7,6 +7,10 @@ import { useTranslations, useLocale } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import QRCode from "qrcode";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -38,6 +42,52 @@ type SiteSettings = {
 
 type PaymentMethod = "paypal" | "bank" | "card";
 
+function StripePaymentForm({
+  clientSecret,
+  onSuccess,
+  onError,
+  locale
+}: {
+  clientSecret: string;
+  onSuccess: () => void;
+  onError: () => void;
+  locale: string;
+}) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async () => {
+    if (!stripe || !elements) return;
+    setLoading(true);
+    const { error } = await stripe.confirmPayment({
+      elements,
+      confirmParams: { return_url: window.location.href },
+      redirect: "if_required",
+    });
+    if (error) {
+      onError();
+    } else {
+      onSuccess();
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div className="flex flex-col gap-4">
+      <PaymentElement />
+      <button
+        onClick={handleSubmit}
+        disabled={loading || !stripe}
+        className="w-full bg-primary hover:bg-secondary text-white py-4 rounded-xl font-bold text-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+      >
+        {loading ? <RefreshCw size={20} className="animate-spin" /> : <CreditCard size={20} />}
+        {locale === "ar" ? "ادفع الآن" : locale === "de" ? "Jetzt bezahlen" : "Pay Now"}
+      </button>
+    </div>
+  );
+}
+
 export default function DonateClient({
   projects,
   siteSettings,
@@ -58,6 +108,8 @@ export default function DonateClient({
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("paypal");
   const [status, setStatus] = useState<"idle" | "loading" | "success_paypal" | "success_bank" | "success_subscription" | "error">("idle");
   const [geoData, setGeoData] = useState<{ country: string; city: string } | null>(null);
+  const [stripeClientSecret, setStripeClientSecret] = useState<string | null>(null);
+  const [stripeLoading, setStripeLoading] = useState(false);
   const qrCanvasRef = useRef<HTMLCanvasElement>(null);
   const t = useTranslations("donate");
   const locale = useLocale();
@@ -154,6 +206,44 @@ export default function DonateClient({
     }
   };
 
+  const handleStripePayment = async () => {
+    if (!isFormValid) return;
+    setStripeLoading(true);
+
+    const { data, error } = await supabase.from("donors").insert([{
+      name: fullName,
+      email: email.toLowerCase(),
+      amount: finalAmount,
+      donation_type: donationType,
+      project: selectedProject,
+      payment_method: "card",
+      status: "pending",
+      country: geoData?.country || '',
+      city: geoData?.city || '',
+    }]).select().single();
+
+    if (error || !data) { setStripeLoading(false); return; }
+
+    const endpoint = donationType === "monthly"
+      ? "/api/stripe-subscription"
+      : "/api/stripe-payment-intent";
+
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        amount: finalAmount,
+        email: email.toLowerCase(),
+        name: fullName,
+        donorId: data.id
+      }),
+    });
+
+    const { clientSecret } = await res.json();
+    setStripeClientSecret(clientSecret);
+    setStripeLoading(false);
+  };
+
   const paymentMethods = [
     {
       id: "paypal" as PaymentMethod,
@@ -175,10 +265,10 @@ export default function DonateClient({
     },
     {
       id: "card" as PaymentMethod,
-      label: locale === "ar" ? "بطاقة ائتمان (قريباً)" : locale === "de" ? "Kreditkarte (Demnächst)" : "Credit Card (Soon)",
+      label: locale === "ar" ? "بطاقة ائتمان" : locale === "de" ? "Kreditkarte" : "Credit Card",
       icon: <CreditCard size={20} />,
-      available: false,
-      color: "bg-gray-400",
+      available: true,
+      color: "bg-gray-700",
     },
   ];
 
@@ -491,29 +581,61 @@ export default function DonateClient({
                   </p>
                 </div>
               ) : !isMonthlyPayPal && (
-                <button
-                  onClick={handleDonate}
-                  disabled={status === "loading" || !isFormValid}
-                  className={`w-full text-white py-4 rounded-xl font-bold text-lg transition-colors flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed ${
-                    paymentMethod === "paypal" ? "bg-[#0070BA] hover:bg-[#005EA6]" : "bg-primary hover:bg-secondary"
-                  }`}
-                >
-                  {status === "loading" ? (
-                    <RefreshCw size={20} className="animate-spin" />
-                  ) : paymentMethod === "paypal" ? (
-                    <>
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-                        <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 2.72a.641.641 0 0 1 .633-.537h7.66c2.589 0 4.377.592 5.314 1.76.434.548.712 1.12.825 1.699.118.61.098 1.32-.064 2.11l-.007.038v.52l.233.132c.196.108.376.234.537.374.292.252.509.567.641.933.136.38.18.826.135 1.323-.055.611-.229 1.163-.514 1.638-.258.434-.594.8-.998 1.084-.388.274-.843.48-1.353.613-.493.13-1.053.196-1.664.196h-.396c-.283 0-.557.102-.773.286a1.154 1.154 0 0 0-.39.726l-.03.159-.476 3.02-.022.11a.641.641 0 0 1-.632.537H7.076z"/>
-                      </svg>
-                      {t("donatePayPal")}
-                    </>
-                  ) : (
-                    <>
-                      <Building2 size={20} />
-                      {locale === "ar" ? "تأكيد التبرع بالتحويل البنكي" : locale === "de" ? "Spende per Banküberweisung bestätigen" : "Confirm Bank Transfer Donation"}
-                    </>
+                <>
+                  {/* Stripe Card Payment */}
+                  {paymentMethod === "card" && isFormValid && (
+                    <div className="mb-4">
+                      {stripeClientSecret ? (
+                        <Elements stripe={stripePromise} options={{ clientSecret: stripeClientSecret }}>
+                          <StripePaymentForm
+                            clientSecret={stripeClientSecret}
+                            locale={locale}
+                            onSuccess={() => setStatus("success_subscription")}
+                            onError={() => setStatus("error")}
+                          />
+                        </Elements>
+                      ) : (
+                        <button
+                          onClick={handleStripePayment}
+                          disabled={stripeLoading}
+                          className="w-full bg-gray-800 hover:bg-gray-900 text-white py-4 rounded-xl font-bold text-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                        >
+                          {stripeLoading
+                            ? <RefreshCw size={20} className="animate-spin" />
+                            : <CreditCard size={20} />}
+                          {locale === "ar" ? "الدفع بالبطاقة" : locale === "de" ? "Mit Karte bezahlen" : "Pay with Card"}
+                        </button>
+                      )}
+                    </div>
                   )}
-                </button>
+
+                  {/* PayPal & Bank buttons */}
+                  {paymentMethod !== "card" && (
+                    <button
+                      onClick={handleDonate}
+                      disabled={status === "loading" || !isFormValid}
+                      className={`w-full text-white py-4 rounded-xl font-bold text-lg transition-colors flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed ${
+                        paymentMethod === "paypal" ? "bg-[#0070BA] hover:bg-[#005EA6]" : "bg-primary hover:bg-secondary"
+                      }`}
+                    >
+                      {status === "loading" ? (
+                        <RefreshCw size={20} className="animate-spin" />
+                      ) : paymentMethod === "paypal" ? (
+                        <>
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+                            <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 2.72a.641.641 0 0 1 .633-.537h7.66c2.589 0 4.377.592 5.314 1.76.434.548.712 1.12.825 1.699.118.61.098 1.32-.064 2.11l-.007.038v.52l.233.132c.196.108.376.234.537.374.292.252.509.567.641.933.136.38.18.826.135 1.323-.055.611-.229 1.163-.514 1.638-.258.434-.594.8-.998 1.084-.388.274-.843.48-1.353.613-.493.13-1.053.196-1.664.196h-.396c-.283 0-.557.102-.773.286a1.154 1.154 0 0 0-.39.726l-.03.159-.476 3.02-.022.11a.641.641 0 0 1-.632.537H7.076z"/>
+                          </svg>
+                          {t("donatePayPal")}
+                        </>
+                      ) : (
+                        <>
+                          <Building2 size={20} />
+                          {locale === "ar" ? "تأكيد التبرع بالتحويل البنكي" : locale === "de" ? "Spende per Banküberweisung bestätigen" : "Confirm Bank Transfer Donation"}
+                        </>
+                      )}
+                    </button>
+                  )}
+                </>
               )}
 
               {paymentMethod === "paypal" && !isMonthlyPayPal && (
