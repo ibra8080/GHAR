@@ -17,6 +17,16 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
+// ─── كشف In-App Browser ────────────────────────────────
+const isInAppBrowser = (): boolean => {
+  if (typeof window === "undefined") return false;
+  const ua = navigator.userAgent || "";
+  return (
+    /FBAN|FBAV|FB_IAB|Instagram|WhatsApp|Telegram|Line\/|MicroMessenger/i.test(ua) ||
+    (ua.includes("wv") && ua.includes("Android"))
+  );
+};
+
 const amounts = [10, 25, 50, 100];
 
 const PAYPAL_PLANS: Record<number, string> = {
@@ -107,7 +117,7 @@ export default function DonateClient({
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("paypal");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("card");
   const [status, setStatus] = useState<"idle" | "loading" | "success_paypal" | "success_bank" | "success_subscription" | "success_stripe" | "error">("idle");
   const [geoData, setGeoData] = useState<{ country: string; city: string } | null>(null);
   const [stripeClientSecret, setStripeClientSecret] = useState<string | null>(null);
@@ -199,10 +209,12 @@ export default function DonateClient({
 
     if (paymentMethod === "paypal") {
       setStatus("success_paypal");
-      window.open(
-        `https://www.paypal.com/donate?business=${paypalEmail}&amount=${finalAmount}&currency_code=EUR`,
-        "_blank"
-      );
+      const paypalUrl = `https://www.paypal.com/donate?business=${paypalEmail}&amount=${finalAmount}&currency_code=EUR`;
+      if (isInAppBrowser()) {
+        window.location.href = paypalUrl;
+      } else {
+        window.open(paypalUrl, "_blank");
+      }
     } else if (paymentMethod === "bank") {
       setStatus("success_bank");
     }
@@ -248,15 +260,11 @@ export default function DonateClient({
 
   const paymentMethods = [
     {
-      id: "paypal" as PaymentMethod,
-      label: "PayPal",
-      icon: (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 2.72a.641.641 0 0 1 .633-.537h7.66c2.589 0 4.377.592 5.314 1.76.434.548.712 1.12.825 1.699.118.61.098 1.32-.064 2.11l-.007.038v.52l.233.132c.196.108.376.234.537.374.292.252.509.567.641.933.136.38.18.826.135 1.323-.055.611-.229 1.163-.514 1.638-.258.434-.594.8-.998 1.084-.388.274-.843.48-1.353.613-.493.13-1.053.196-1.664.196h-.396c-.283 0-.557.102-.773.286a1.154 1.154 0 0 0-.39.726l-.03.159-.476 3.02-.022.11a.641.641 0 0 1-.632.537H7.076z"/>
-        </svg>
-      ),
+      id: "card" as PaymentMethod,
+      label: locale === "ar" ? "بطاقة ائتمان" : locale === "de" ? "Kreditkarte" : "Credit Card",
+      icon: <CreditCard size={20} />,
       available: true,
-      color: "bg-[#0070BA]",
+      color: "bg-gray-700",
     },
     {
       id: "bank" as PaymentMethod,
@@ -266,11 +274,15 @@ export default function DonateClient({
       color: "bg-primary",
     },
     {
-      id: "card" as PaymentMethod,
-      label: locale === "ar" ? "بطاقة ائتمان" : locale === "de" ? "Kreditkarte" : "Credit Card",
-      icon: <CreditCard size={20} />,
+      id: "paypal" as PaymentMethod,
+      label: "PayPal",
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 2.72a.641.641 0 0 1 .633-.537h7.66c2.589 0 4.377.592 5.314 1.76.434.548.712 1.12.825 1.699.118.61.098 1.32-.064 2.11l-.007.038v.52l.233.132c.196.108.376.234.537.374.292.252.509.567.641.933.136.38.18.826.135 1.323-.055.611-.229 1.163-.514 1.638-.258.434-.594.8-.998 1.084-.388.274-.843.48-1.353.613-.493.13-1.053.196-1.664.196h-.396c-.283 0-.557.102-.773.286a1.154 1.154 0 0 0-.39.726l-.03.159-.476 3.02-.022.11a.641.641 0 0 1-.632.537H7.076z"/>
+        </svg>
+      ),
       available: true,
-      color: "bg-gray-700",
+      color: "bg-[#0070BA]",
     },
   ];
 
@@ -546,6 +558,30 @@ export default function DonateClient({
                 <h3 className="text-dark font-bold text-lg mb-4">
                   {locale === "ar" ? "طريقة الدفع" : locale === "de" ? "Zahlungsmethode" : "Payment Method"}
                 </h3>
+
+                {/* In-App Browser Warning — يظهر فقط عند اختيار PayPal */}
+                {paymentMethod === "paypal" && isInAppBrowser() && (
+                  <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4 flex gap-3 items-start">
+                    <span className="text-amber-500 text-lg shrink-0">⚠️</span>
+                    <div>
+                      <p className="text-amber-800 font-semibold text-sm mb-1">
+                        {locale === "ar"
+                          ? "لإتمام الدفع عبر PayPal"
+                          : locale === "de"
+                          ? "Um mit PayPal zu bezahlen"
+                          : "To complete payment via PayPal"}
+                      </p>
+                      <p className="text-amber-700 text-xs leading-relaxed">
+                        {locale === "ar"
+                          ? "يرجى فتح الموقع في متصفح Chrome أو Safari خارج هذا التطبيق."
+                          : locale === "de"
+                          ? "Bitte öffnen Sie die Website in Chrome oder Safari außerhalb dieser App."
+                          : "Please open the website in Chrome or Safari outside of this app."}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
                 <div className="flex flex-col gap-3">
                   {paymentMethods.map((method) => (
                     <button
