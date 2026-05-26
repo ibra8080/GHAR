@@ -523,7 +523,7 @@ export default function DonateClient({
               <div className="mb-8">
                 <h3 className="text-dark font-bold text-lg mb-4">{t("yourInfo")}</h3>
                 <div className="flex flex-col gap-3">
-                  <div className="flex gap-3">
+                  <div className="flex flex-col sm:flex-row gap-3">
                     <input type="text" placeholder={t("firstNamePlaceholder")} value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
                       className="flex-1 border border-gray-200 rounded-lg px-4 py-3 text-sm text-dark focus:outline-none focus:border-primary transition-colors" />
