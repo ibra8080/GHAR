@@ -46,12 +46,14 @@ function StripePaymentForm({
   clientSecret,
   onSuccess,
   onError,
-  locale
+  locale,
+  donationType,
 }: {
   clientSecret: string;
-  onSuccess: () => void;
+  onSuccess: (type: "once" | "monthly") => void;
   onError: () => void;
   locale: string;
+  donationType: "once" | "monthly";
 }) {
   const stripe = useStripe();
   const elements = useElements();
@@ -68,7 +70,7 @@ function StripePaymentForm({
     if (error) {
       onError();
     } else {
-      onSuccess();
+      onSuccess(donationType);
     }
     setLoading(false);
   };
@@ -106,7 +108,7 @@ export default function DonateClient({
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("paypal");
-  const [status, setStatus] = useState<"idle" | "loading" | "success_paypal" | "success_bank" | "success_subscription" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "loading" | "success_paypal" | "success_bank" | "success_subscription" | "success_stripe" | "error">("idle");
   const [geoData, setGeoData] = useState<{ country: string; city: string } | null>(null);
   const [stripeClientSecret, setStripeClientSecret] = useState<string | null>(null);
   const [stripeLoading, setStripeLoading] = useState(false);
@@ -288,6 +290,26 @@ export default function DonateClient({
               : locale === "de"
               ? `Vielen Dank ${fullName}! €${finalAmount} werden monatlich automatisch von Ihrem Konto abgebucht. Sie können das Abonnement jederzeit über Ihr PayPal-Konto kündigen.`
               : `Thank you ${fullName}! €${finalAmount} will be automatically charged monthly. You can cancel anytime from your PayPal account.`}
+          </p>
+        </div>
+      </section>
+    );
+  }
+
+  if (status === "success_stripe") {
+    return (
+      <section className="py-16 px-4 max-w-3xl mx-auto">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-10 text-center">
+          <CheckCircle size={64} className="text-secondary mx-auto mb-6" />
+          <h2 className="text-2xl font-bold text-dark mb-3">
+            {locale === "ar" ? "شكراً لك!" : locale === "de" ? "Vielen Dank!" : "Thank You!"}
+          </h2>
+          <p className="text-gray-600 leading-relaxed">
+            {locale === "ar"
+              ? `شكراً ${fullName}! تم استلام تبرعك بمبلغ €${finalAmount} بنجاح. سيتم إرسال إيصال إلى ${email}.`
+              : locale === "de"
+              ? `Vielen Dank ${fullName}! Ihre Spende von €${finalAmount} wurde erfolgreich bearbeitet. Eine Quittung wird an ${email} gesendet.`
+              : `Thank you ${fullName}! Your donation of €${finalAmount} was successfully processed. A receipt will be sent to ${email}.`}
           </p>
         </div>
       </section>
@@ -590,7 +612,8 @@ export default function DonateClient({
                           <StripePaymentForm
                             clientSecret={stripeClientSecret}
                             locale={locale}
-                            onSuccess={() => setStatus("success_subscription")}
+                            donationType={donationType}
+                            onSuccess={(type) => setStatus(type === "monthly" ? "success_subscription" : "success_stripe")}
                             onError={() => setStatus("error")}
                           />
                         </Elements>
