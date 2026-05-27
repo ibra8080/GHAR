@@ -129,6 +129,7 @@ export default function AdminDonationsPage() {
     total: donors.length,
     pending: donors.filter(d => d.status === "pending").length,
     completed: donors.filter(d => d.status === "completed").length,
+    abandoned: donors.filter(d => d.status === "abandoned").length,
     totalAmount: donors.filter(d => d.status === "completed").reduce((sum, d) => sum + (d.amount || 0), 0),
   };
 
@@ -150,6 +151,7 @@ export default function AdminDonationsPage() {
   const statusBadge = (status: string) => {
     if (status === "completed") return <span className="flex items-center gap-1 text-xs text-green-600 bg-green-50 px-2 py-1 rounded-full"><CheckCircle size={12} />Completed</span>;
     if (status === "cancelled") return <span className="flex items-center gap-1 text-xs text-red-600 bg-red-50 px-2 py-1 rounded-full"><XCircle size={12} />Cancelled</span>;
+    if (status === "abandoned") return <span className="flex items-center gap-1 text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full"><Clock size={12} />Abandoned</span>;
     return <span className="flex items-center gap-1 text-xs text-yellow-600 bg-yellow-50 px-2 py-1 rounded-full"><Clock size={12} />Pending</span>;
   };
 
@@ -197,7 +199,7 @@ export default function AdminDonationsPage() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
           <div className="bg-white rounded-xl border border-gray-100 p-5">
             <p className="text-gray-400 text-xs mb-1">Total Donations</p>
             <p className="text-2xl font-bold text-dark">{stats.total}</p>
@@ -209,6 +211,10 @@ export default function AdminDonationsPage() {
           <div className="bg-white rounded-xl border border-gray-100 p-5">
             <p className="text-gray-400 text-xs mb-1">Completed</p>
             <p className="text-2xl font-bold text-green-500">{stats.completed}</p>
+          </div>
+          <div className="bg-white rounded-xl border border-gray-100 p-5">
+            <p className="text-gray-400 text-xs mb-1">Abandoned</p>
+            <p className="text-2xl font-bold text-gray-400">{stats.abandoned}</p>
           </div>
           <div className="bg-white rounded-xl border border-gray-100 p-5">
             <p className="text-gray-400 text-xs mb-1">Total Received</p>
@@ -232,6 +238,7 @@ export default function AdminDonationsPage() {
               <option value="pending">Pending</option>
               <option value="completed">Completed</option>
               <option value="cancelled">Cancelled</option>
+              <option value="abandoned">Abandoned</option>
             </select>
             <select value={filterMethod} onChange={(e) => setFilterMethod(e.target.value)}
               className="text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none">
@@ -382,6 +389,7 @@ export default function AdminDonationsPage() {
                               <option value="pending">🕐 Pending</option>
                               <option value="completed">✅ Completed</option>
                               <option value="cancelled">❌ Cancelled</option>
+                              <option value="abandoned">🚫 Abandoned</option>
                             </select>
                           {donor.status === "completed" && (
                             <button
