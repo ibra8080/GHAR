@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Heart, RefreshCw, Shield, Globe, Building2, CreditCard, CheckCircle } from "lucide-react";
 import { createClient } from "@supabase/supabase-js";
 import { useTranslations, useLocale } from "next-intl";
@@ -50,8 +50,20 @@ type SiteSettings = {
   email: string;
 } | null;
 
-type PaymentMethod = "paypal" | "bank" | "card";
+// ─── فاصل "أو" ─────────────────────────────────────────
+function OrDivider({ locale }: { locale: string }) {
+  return (
+    <div className="flex items-center gap-3 my-5">
+      <div className="flex-1 h-px bg-gray-200" />
+      <span className="text-gray-400 text-sm font-medium">
+        {locale === "ar" ? "أو" : locale === "de" ? "oder" : "or"}
+      </span>
+      <div className="flex-1 h-px bg-gray-200" />
+    </div>
+  );
+}
 
+// ─── نموذج Stripe ───────────────────────────────────────
 function StripePaymentForm({
   clientSecret,
   onSuccess,
@@ -117,22 +129,24 @@ export default function DonateClient({
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("card");
   const [status, setStatus] = useState<"idle" | "loading" | "success_paypal" | "success_bank" | "success_subscription" | "success_stripe" | "error">("idle");
   const [geoData, setGeoData] = useState<{ country: string; city: string } | null>(null);
   const [stripeClientSecret, setStripeClientSecret] = useState<string | null>(null);
   const [stripeLoading, setStripeLoading] = useState(false);
+  const [stripeDonorId, setStripeDonorId] = useState<string | null>(null);
+  const [showBankDetails, setShowBankDetails] = useState(false);
   const qrCanvasRef = useRef<HTMLCanvasElement>(null);
+  const stripeInitRef = useRef(false);
   const t = useTranslations("donate");
   const locale = useLocale();
 
   const finalAmount = customAmount ? parseFloat(customAmount) : selectedAmount;
   const fullName = `${firstName} ${lastName}`.trim();
+  const isFormValid = !!(firstName && lastName && email && finalAmount);
 
-  const isMonthlyPayPal = donationType === "monthly" && paymentMethod === "paypal";
-  const isMonthlyBank = donationType === "monthly" && paymentMethod === "bank";
+  const isMonthlyPayPal = donationType === "monthly";
+  const isMonthlyBank = donationType === "monthly" && showBankDetails;
 
-  // للاشتراك الشهري PayPal — نحتاج مبلغ محدد من القائمة
   const monthlyPlanId = selectedAmount ? PAYPAL_PLANS[selectedAmount] : null;
   const hasMonthlyPlan = isMonthlyPayPal && !!monthlyPlanId;
 
@@ -149,8 +163,6 @@ export default function DonateClient({
   const bankBic = siteSettings?.bankBic || 'TRWIBEB1XXX';
   const bankName = siteSettings?.bankName || 'Wise';
 
-  const isFormValid = firstName && lastName && email && finalAmount;
-
   useEffect(() => {
     fetch('https://ipapi.co/json/')
       .then(res => res.json())
@@ -161,7 +173,7 @@ export default function DonateClient({
       .catch(() => null);
   }, []);
 
-  // EPC QR Code
+  // ─── EPC QR Code ───────────────────────────────────────
   useEffect(() => {
     if (status === "success_bank" && qrCanvasRef.current) {
       const epcData = [
@@ -182,46 +194,10 @@ export default function DonateClient({
     }
   }, [status, bankBic, bankIban, finalAmount, fullName, selectedProject]);
 
-  const saveDonorToSupabase = async () => {
-    const { error } = await supabase.from("donors").insert([{
-      name: fullName,
-      email: email.toLowerCase(),
-      amount: finalAmount,
-      donation_type: donationType,
-      project: selectedProject,
-      payment_method: paymentMethod,
-      status: "pending",
-      country: geoData?.country || '',
-      city: geoData?.city || '',
-    }]);
-    return !error;
-  };
-
-  const handleDonate = async () => {
-    if (!isFormValid) return;
-
-    // للاشتراك الشهري عبر PayPal — PayPalButtons يتولى الأمر
-    if (isMonthlyPayPal) return;
-
-    setStatus("loading");
-    const saved = await saveDonorToSupabase();
-    if (!saved) { setStatus("error"); return; }
-
-    if (paymentMethod === "paypal") {
-      setStatus("success_paypal");
-      const paypalUrl = `https://www.paypal.com/donate?business=${paypalEmail}&amount=${finalAmount}&currency_code=EUR`;
-      if (isInAppBrowser()) {
-        window.location.href = paypalUrl;
-      } else {
-        window.open(paypalUrl, "_blank");
-      }
-    } else if (paymentMethod === "bank") {
-      setStatus("success_bank");
-    }
-  };
-
-  const handleStripePayment = async () => {
-    if (!isFormValid) return;
+  // ─── Payment Intent تلقائي عند اكتمال البيانات ─────────
+  const initStripePayment = useCallback(async () => {
+    if (!isFormValid || stripeInitRef.current) return;
+    stripeInitRef.current = true;
     setStripeLoading(true);
 
     const { data, error } = await supabase.from("donors").insert([{
@@ -236,7 +212,9 @@ export default function DonateClient({
       city: geoData?.city || '',
     }]).select().single();
 
-    if (error || !data) { setStripeLoading(false); return; }
+    if (error || !data) { setStripeLoading(false); stripeInitRef.current = false; return; }
+
+    setStripeDonorId(data.id);
 
     const endpoint = donationType === "monthly"
       ? "/api/stripe-subscription"
@@ -249,42 +227,68 @@ export default function DonateClient({
         amount: finalAmount,
         email: email.toLowerCase(),
         name: fullName,
-        donorId: data.id
+        donorId: data.id,
       }),
     });
 
     const { clientSecret } = await res.json();
     setStripeClientSecret(clientSecret);
     setStripeLoading(false);
+  }, [isFormValid, fullName, email, finalAmount, donationType, selectedProject, geoData]);
+
+  // تشغيل Payment Intent تلقائياً عند اكتمال البيانات
+  useEffect(() => {
+    if (isFormValid && !stripeClientSecret && !stripeLoading && donationType === "once") {
+      stripeInitRef.current = false;
+      initStripePayment();
+    }
+  }, [isFormValid, finalAmount, donationType]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // إعادة تهيئة Stripe عند تغيير المبلغ بعد الإنشاء
+  useEffect(() => {
+    if (stripeClientSecret) {
+      setStripeClientSecret(null);
+      setStripeDonorId(null);
+      stripeInitRef.current = false;
+    }
+  }, [finalAmount, donationType]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const saveDonorToSupabase = async (method: string) => {
+    const { error } = await supabase.from("donors").insert([{
+      name: fullName,
+      email: email.toLowerCase(),
+      amount: finalAmount,
+      donation_type: donationType,
+      project: selectedProject,
+      payment_method: method,
+      status: "pending",
+      country: geoData?.country || '',
+      city: geoData?.city || '',
+    }]);
+    return !error;
   };
 
-  const paymentMethods = [
-    {
-      id: "card" as PaymentMethod,
-      label: locale === "ar" ? "بطاقة ائتمان" : locale === "de" ? "Kreditkarte" : "Credit Card",
-      icon: <CreditCard size={20} />,
-      available: true,
-      color: "bg-gray-700",
-    },
-    {
-      id: "bank" as PaymentMethod,
-      label: locale === "ar" ? "تحويل بنكي" : locale === "de" ? "Banküberweisung" : "Bank Transfer",
-      icon: <Building2 size={20} />,
-      available: true,
-      color: "bg-primary",
-    },
-    {
-      id: "paypal" as PaymentMethod,
-      label: "PayPal",
-      icon: (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 2.72a.641.641 0 0 1 .633-.537h7.66c2.589 0 4.377.592 5.314 1.76.434.548.712 1.12.825 1.699.118.61.098 1.32-.064 2.11l-.007.038v.52l.233.132c.196.108.376.234.537.374.292.252.509.567.641.933.136.38.18.826.135 1.323-.055.611-.229 1.163-.514 1.638-.258.434-.594.8-.998 1.084-.388.274-.843.48-1.353.613-.493.13-1.053.196-1.664.196h-.396c-.283 0-.557.102-.773.286a1.154 1.154 0 0 0-.39.726l-.03.159-.476 3.02-.022.11a.641.641 0 0 1-.632.537H7.076z"/>
-        </svg>
-      ),
-      available: true,
-      color: "bg-[#0070BA]",
-    },
-  ];
+  const handlePayPalOnce = async () => {
+    if (!isFormValid) return;
+    setStatus("loading");
+    const saved = await saveDonorToSupabase("paypal");
+    if (!saved) { setStatus("error"); return; }
+    setStatus("success_paypal");
+    const paypalUrl = `https://www.paypal.com/donate?business=${paypalEmail}&amount=${finalAmount}&currency_code=EUR`;
+    if (isInAppBrowser()) {
+      window.location.href = paypalUrl;
+    } else {
+      window.open(paypalUrl, "_blank");
+    }
+  };
+
+  const handleBankTransfer = async () => {
+    if (!isFormValid) return;
+    setStatus("loading");
+    const saved = await saveDonorToSupabase("bank");
+    if (!saved) { setStatus("error"); return; }
+    setStatus("success_bank");
+  };
 
   // ─── Success Screens ───────────────────────────────────
 
@@ -350,7 +354,6 @@ export default function DonateClient({
                 : "We have received your donation request. Please complete the bank transfer using the details below.")}
           </p>
 
-          {/* Dauerauftrag instructions */}
           {isMonthlyBank && (
             <div className="bg-secondary/10 rounded-xl p-4 mb-6 text-left">
               <h4 className="text-secondary font-bold text-sm mb-2">
@@ -427,8 +430,6 @@ export default function DonateClient({
                   <span className="text-dark font-medium text-sm">{fullName} — {selectedProject}</span>
                 </div>
               </div>
-
-              {/* QR Code */}
               <div className="flex flex-col items-center gap-2 shrink-0">
                 <canvas ref={qrCanvasRef} className="rounded-lg" />
                 <p className="text-xs text-gray-400 text-center max-w-[120px]">
@@ -496,16 +497,9 @@ export default function DonateClient({
                     </button>
                   ))}
                 </div>
-                {!isMonthlyPayPal && (
-                  <input type="number" placeholder={t("customAmount")} value={customAmount}
-                    onChange={(e) => { setCustomAmount(e.target.value); setSelectedAmount(null); }}
-                    className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm text-dark focus:outline-none focus:border-primary transition-colors" />
-                )}
-                {isMonthlyPayPal && (
-                  <p className="text-xs text-gray-400 mt-2">
-                    {locale === "ar" ? "* الاشتراك الشهري عبر PayPal متاح للمبالغ المحددة أعلاه فقط" : locale === "de" ? "* Das monatliche PayPal-Abonnement ist nur für die oben genannten Beträge verfügbar" : "* Monthly PayPal subscription available for fixed amounts above only"}
-                  </p>
-                )}
+                <input type="number" placeholder={t("customAmount")} value={customAmount}
+                  onChange={(e) => { setCustomAmount(e.target.value); setSelectedAmount(null); }}
+                  className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm text-dark focus:outline-none focus:border-primary transition-colors" />
               </div>
 
               {/* Project */}
@@ -538,7 +532,7 @@ export default function DonateClient({
               </div>
 
               {/* Summary */}
-              <div className="bg-primary/5 rounded-xl p-4 mb-6">
+              <div className="bg-primary/5 rounded-xl p-4 mb-8">
                 <div className="flex justify-between items-center">
                   <span className="text-dark font-medium text-sm">{t("summaryDonation")}</span>
                   <span className="text-primary font-bold text-xl">€{finalAmount || 0}</span>
@@ -553,153 +547,157 @@ export default function DonateClient({
                 </div>
               </div>
 
-              {/* Payment Method */}
-              <div className="mb-6">
-                <h3 className="text-dark font-bold text-lg mb-4">
-                  {locale === "ar" ? "طريقة الدفع" : locale === "de" ? "Zahlungsmethode" : "Payment Method"}
-                </h3>
+              {/* ─── Payment Methods ─────────────────────────── */}
+              <h3 className="text-dark font-bold text-lg mb-6">
+                {locale === "ar" ? "طريقة الدفع" : locale === "de" ? "Zahlungsmethode" : "Payment Method"}
+              </h3>
 
-                {/* In-App Browser Warning — يظهر فقط عند اختيار PayPal */}
-                {paymentMethod === "paypal" && isInAppBrowser() && (
-                  <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4 flex gap-3 items-start">
-                    <span className="text-amber-500 text-lg shrink-0">⚠️</span>
-                    <div>
-                      <p className="text-amber-800 font-semibold text-sm mb-1">
-                        {locale === "ar"
-                          ? "لإتمام الدفع عبر PayPal"
-                          : locale === "de"
-                          ? "Um mit PayPal zu bezahlen"
-                          : "To complete payment via PayPal"}
-                      </p>
-                      <p className="text-amber-700 text-xs leading-relaxed">
-                        {locale === "ar"
-                          ? "يرجى فتح الموقع في متصفح Chrome أو Safari خارج هذا التطبيق."
-                          : locale === "de"
-                          ? "Bitte öffnen Sie die Website in Chrome oder Safari außerhalb dieser App."
-                          : "Please open the website in Chrome or Safari outside of this app."}
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                <div className="flex flex-col gap-3">
-                  {paymentMethods.map((method) => (
-                    <button
-                      key={method.id}
-                      onClick={() => method.available && setPaymentMethod(method.id)}
-                      disabled={!method.available}
-                      className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-colors text-left ${
-                        !method.available
-                          ? "border-gray-100 bg-gray-50 cursor-not-allowed opacity-50"
-                          : paymentMethod === method.id
-                          ? "border-primary bg-primary/5"
-                          : "border-gray-200 hover:border-primary/50"
-                      }`}
-                    >
-                      <div className={`w-8 h-8 rounded-lg ${method.color} text-white flex items-center justify-center shrink-0`}>
-                        {method.icon}
-                      </div>
-                      <span className="text-dark font-medium text-sm">{method.label}</span>
-                      {paymentMethod === method.id && method.available && (
-                        <CheckCircle size={16} className="text-primary ml-auto" />
-                      )}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {status === "success_paypal" && (
-                <p className="text-secondary text-sm text-center mb-4">{t("successMessage")}</p>
-              )}
               {status === "error" && (
                 <p className="text-amber-600 text-sm text-center mb-4">{t("errorMessage")}</p>
               )}
 
-              {/* PayPal Subscription Buttons */}
-              {isMonthlyPayPal && isFormValid && hasMonthlyPlan ? (
-                <div className="mt-2">
-                  <PayPalButtons
-                    style={{ layout: "vertical", color: "blue", shape: "rect" }}
-                    createSubscription={(_data, actions) => {
-                      return actions.subscription.create({
-                        plan_id: monthlyPlanId!,
-                      });
-                    }}
-                    onApprove={async () => {
-                      await saveDonorToSupabase();
-                      setStatus("success_subscription");
-                    }}
-                    onError={() => setStatus("error")}
-                  />
-                </div>
-              ) : isMonthlyPayPal && isFormValid && !hasMonthlyPlan ? (
-                <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center">
-                  <p className="text-amber-700 text-sm">
-                    {locale === "ar" ? "يرجى اختيار أحد المبالغ المحددة للاشتراك الشهري" : locale === "de" ? "Bitte wählen Sie einen der festgelegten Beträge für das monatliche Abonnement" : "Please select one of the fixed amounts for monthly subscription"}
-                  </p>
-                </div>
-              ) : !isMonthlyPayPal && (
-                <>
-                  {/* Stripe Card Payment */}
-                  {paymentMethod === "card" && isFormValid && (
-                    <div className="mb-4">
-                      {stripeClientSecret ? (
-                        <Elements stripe={stripePromise} options={{ clientSecret: stripeClientSecret }}>
-                          <StripePaymentForm
-                            clientSecret={stripeClientSecret}
-                            locale={locale}
-                            donationType={donationType}
-                            onSuccess={(type) => setStatus(type === "monthly" ? "success_subscription" : "success_stripe")}
-                            onError={() => setStatus("error")}
-                          />
-                        </Elements>
-                      ) : (
-                        <button
-                          onClick={handleStripePayment}
-                          disabled={stripeLoading}
-                          className="w-full bg-gray-800 hover:bg-gray-900 text-white py-4 rounded-xl font-bold text-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-                        >
-                          {stripeLoading
-                            ? <RefreshCw size={20} className="animate-spin" />
-                            : <CreditCard size={20} />}
-                          {locale === "ar" ? "الدفع بالبطاقة" : locale === "de" ? "Mit Karte bezahlen" : "Pay with Card"}
-                        </button>
-                      )}
+              {/* 1. نموذج البطاقة (Stripe) — دائماً أولاً */}
+              {donationType === "once" ? (
+                <div>
+                  {stripeLoading && (
+                    <div className="flex items-center justify-center gap-2 py-8 text-gray-400">
+                      <RefreshCw size={18} className="animate-spin" />
+                      <span className="text-sm">
+                        {locale === "ar" ? "جاري التحضير..." : locale === "de" ? "Wird vorbereitet..." : "Preparing..."}
+                      </span>
                     </div>
                   )}
-
-                  {/* PayPal & Bank buttons */}
-                  {paymentMethod !== "card" && (
-                    <button
-                      onClick={handleDonate}
-                      disabled={status === "loading" || !isFormValid}
-                      className={`w-full text-white py-4 rounded-xl font-bold text-lg transition-colors flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed ${
-                        paymentMethod === "paypal" ? "bg-[#0070BA] hover:bg-[#005EA6]" : "bg-primary hover:bg-secondary"
-                      }`}
+                  {stripeClientSecret && !stripeLoading && (
+                    <Elements
+                      stripe={stripePromise}
+                      options={{
+                        clientSecret: stripeClientSecret,
+                        wallets: { googlePay: "always", applePay: "always" },
+                      }}
                     >
-                      {status === "loading" ? (
-                        <RefreshCw size={20} className="animate-spin" />
-                      ) : paymentMethod === "paypal" ? (
-                        <>
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-                            <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 2.72a.641.641 0 0 1 .633-.537h7.66c2.589 0 4.377.592 5.314 1.76.434.548.712 1.12.825 1.699.118.61.098 1.32-.064 2.11l-.007.038v.52l.233.132c.196.108.376.234.537.374.292.252.509.567.641.933.136.38.18.826.135 1.323-.055.611-.229 1.163-.514 1.638-.258.434-.594.8-.998 1.084-.388.274-.843.48-1.353.613-.493.13-1.053.196-1.664.196h-.396c-.283 0-.557.102-.773.286a1.154 1.154 0 0 0-.39.726l-.03.159-.476 3.02-.022.11a.641.641 0 0 1-.632.537H7.076z"/>
-                          </svg>
-                          {t("donatePayPal")}
-                        </>
-                      ) : (
-                        <>
-                          <Building2 size={20} />
-                          {locale === "ar" ? "تأكيد التبرع بالتحويل البنكي" : locale === "de" ? "Spende per Banküberweisung bestätigen" : "Confirm Bank Transfer Donation"}
-                        </>
-                      )}
-                    </button>
+                      <StripePaymentForm
+                        clientSecret={stripeClientSecret}
+                        locale={locale}
+                        donationType={donationType}
+                        onSuccess={(type) => setStatus(type === "monthly" ? "success_subscription" : "success_stripe")}
+                        onError={() => setStatus("error")}
+                      />
+                    </Elements>
                   )}
+                  {!stripeClientSecret && !stripeLoading && !isFormValid && (
+                    <div className="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center">
+                      <CreditCard size={32} className="text-gray-300 mx-auto mb-2" />
+                      <p className="text-gray-400 text-sm">
+                        {locale === "ar"
+                          ? "أكمل بياناتك أعلاه لتظهر خيارات الدفع"
+                          : locale === "de"
+                          ? "Füllen Sie Ihre Daten aus, um die Zahlungsoptionen anzuzeigen"
+                          : "Complete your details above to see payment options"}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                /* Monthly — PayPal Subscription */
+                <div>
+                  {isFormValid && hasMonthlyPlan ? (
+                    <PayPalButtons
+                      style={{ layout: "vertical", color: "blue", shape: "rect" }}
+                      createSubscription={(_data, actions) => {
+                        return actions.subscription.create({ plan_id: monthlyPlanId! });
+                      }}
+                      onApprove={async () => {
+                        await saveDonorToSupabase("paypal");
+                        setStatus("success_subscription");
+                      }}
+                      onError={() => setStatus("error")}
+                    />
+                  ) : isFormValid && !hasMonthlyPlan ? (
+                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center">
+                      <p className="text-amber-700 text-sm">
+                        {locale === "ar" ? "يرجى اختيار أحد المبالغ المحددة للاشتراك الشهري" : locale === "de" ? "Bitte wählen Sie einen der festgelegten Beträge für das monatliche Abonnement" : "Please select one of the fixed amounts for monthly subscription"}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center">
+                      <RefreshCw size={32} className="text-gray-300 mx-auto mb-2" />
+                      <p className="text-gray-400 text-sm">
+                        {locale === "ar"
+                          ? "أكمل بياناتك أعلاه لتظهر خيارات الدفع"
+                          : locale === "de"
+                          ? "Füllen Sie Ihre Daten aus, um die Zahlungsoptionen anzuzeigen"
+                          : "Complete your details above to see payment options"}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* ─── أو ─── */}
+              <OrDivider locale={locale} />
+
+              {/* 2. PayPal One-time (للدفع مرة واحدة فقط) */}
+              {donationType === "once" && (
+                <>
+                  {/* In-App Browser Warning */}
+                  {isInAppBrowser() && (
+                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4 flex gap-3 items-start">
+                      <span className="text-amber-500 text-lg shrink-0">⚠️</span>
+                      <div>
+                        <p className="text-amber-800 font-semibold text-sm mb-1">
+                          {locale === "ar" ? "لإتمام الدفع عبر PayPal" : locale === "de" ? "Um mit PayPal zu bezahlen" : "To complete payment via PayPal"}
+                        </p>
+                        <p className="text-amber-700 text-xs leading-relaxed">
+                          {locale === "ar"
+                            ? "يرجى فتح الموقع في متصفح Chrome أو Safari خارج هذا التطبيق."
+                            : locale === "de"
+                            ? "Bitte öffnen Sie die Website in Chrome oder Safari außerhalb dieser App."
+                            : "Please open the website in Chrome or Safari outside of this app."}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  <button
+                    onClick={handlePayPalOnce}
+                    disabled={status === "loading" || !isFormValid}
+                    className="w-full bg-[#0070BA] hover:bg-[#005EA6] text-white py-4 rounded-xl font-bold text-lg transition-colors flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {status === "loading" ? (
+                      <RefreshCw size={20} className="animate-spin" />
+                    ) : (
+                      <>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+                          <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 2.72a.641.641 0 0 1 .633-.537h7.66c2.589 0 4.377.592 5.314 1.76.434.548.712 1.12.825 1.699.118.61.098 1.32-.064 2.11l-.007.038v.52l.233.132c.196.108.376.234.537.374.292.252.509.567.641.933.136.38.18.826.135 1.323-.055.611-.229 1.163-.514 1.638-.258.434-.594.8-.998 1.084-.388.274-.843.48-1.353.613-.493.13-1.053.196-1.664.196h-.396c-.283 0-.557.102-.773.286a1.154 1.154 0 0 0-.39.726l-.03.159-.476 3.02-.022.11a.641.641 0 0 1-.632.537H7.076z" />
+                        </svg>
+                        {t("donatePayPal")}
+                      </>
+                    )}
+                  </button>
+                  {status === "success_paypal" && (
+                    <p className="text-secondary text-sm text-center mt-3">{t("successMessage")}</p>
+                  )}
+                  <p className="text-center text-gray-400 text-xs mt-2">{t("redirectMessage")}</p>
+
+                  <OrDivider locale={locale} />
                 </>
               )}
 
-              {paymentMethod === "paypal" && !isMonthlyPayPal && (
-                <p className="text-center text-gray-400 text-xs mt-3">{t("redirectMessage")}</p>
-              )}
+              {/* 3. تحويل بنكي */}
+              <button
+                onClick={handleBankTransfer}
+                disabled={status === "loading" || !isFormValid}
+                className="w-full bg-primary hover:bg-secondary text-white py-4 rounded-xl font-bold text-lg transition-colors flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {status === "loading" ? (
+                  <RefreshCw size={20} className="animate-spin" />
+                ) : (
+                  <>
+                    <Building2 size={20} />
+                    {locale === "ar" ? "تأكيد التبرع بالتحويل البنكي" : locale === "de" ? "Spende per Banküberweisung bestätigen" : "Confirm Bank Transfer Donation"}
+                  </>
+                )}
+              </button>
+
             </div>
           </div>
 
