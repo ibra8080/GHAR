@@ -131,6 +131,7 @@ export default function DonateClient({
   const [geoData, setGeoData] = useState<{ country: string; city: string } | null>(null);
   const [stripeClientSecret, setStripeClientSecret] = useState<string | null>(null);
   const [stripeLoading, setStripeLoading] = useState(false);
+  const [donorId, setDonorId] = useState<string | null>(null);
   const qrCanvasRef = useRef<HTMLCanvasElement>(null);
   const t = useTranslations("donate");
   const locale = useLocale();
@@ -190,34 +191,46 @@ export default function DonateClient({
 
   // ─── Payment Intent تلقائي عند اكتمال البيانات ─────────
   useEffect(() => {
-    if (!isFormValid || stripeClientSecret || stripeLoading || donationType !== "once") return;
+    if (!isFormValid || stripeLoading || donationType !== "once") return;
 
     let cancelled = false;
 
     const run = async () => {
       setStripeLoading(true);
+      setStripeClientSecret(null);
 
-      const { data, error } = await supabase.from("donors").insert([{
-        name: fullName,
-        email: email.toLowerCase(),
-        amount: finalAmount,
-        donation_type: donationType,
-        project: selectedProject,
-        payment_method: "card",
-        status: "pending",
-        country: geoData?.country || '',
-        city: geoData?.city || '',
-      }]).select().single();
+      let currentDonorId = donorId;
 
-      if (cancelled || error || !data) {
-        if (!cancelled) setStripeLoading(false);
-        return;
+      if (currentDonorId) {
+        await supabase.from("donors").update({
+          amount: finalAmount,
+          donation_type: donationType,
+        }).eq("id", currentDonorId);
+      } else {
+        const { data, error } = await supabase.from("donors").insert([{
+          name: fullName,
+          email: email.toLowerCase(),
+          amount: finalAmount,
+          donation_type: donationType,
+          project: selectedProject,
+          payment_method: "card",
+          status: "abandoned",
+          country: geoData?.country || '',
+          city: geoData?.city || '',
+        }]).select().single();
+
+        if (cancelled || error || !data) {
+          if (!cancelled) setStripeLoading(false);
+          return;
+        }
+        currentDonorId = data.id;
+        if (!cancelled) setDonorId(data.id);
       }
 
       const res = await fetch("/api/stripe-payment-intent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: finalAmount, email: email.toLowerCase(), name: fullName, donorId: data.id }),
+        body: JSON.stringify({ amount: finalAmount, email: email.toLowerCase(), name: fullName, donorId: currentDonorId }),
       });
 
       const { clientSecret } = await res.json();
@@ -228,13 +241,46 @@ export default function DonateClient({
     };
 
     run();
-    return () => {
-      cancelled = true;
-      setStripeClientSecret(null);
-    };
+    return () => { cancelled = true; setStripeClientSecret(null); };
   }, [isFormValid, finalAmount, donationType]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // ─── حفظ abandoned للاشتراك الشهري ────────────────────
+  useEffect(() => {
+    if (!isFormValid || donationType !== "monthly") return;
+    if (donorId) return;
+
+    let cancelled = false;
+
+    const run = async () => {
+      const { data, error } = await supabase.from("donors").insert([{
+        name: fullName,
+        email: email.toLowerCase(),
+        amount: finalAmount,
+        donation_type: donationType,
+        project: selectedProject,
+        payment_method: "paypal",
+        status: "abandoned",
+        country: geoData?.country || '',
+        city: geoData?.city || '',
+      }]).select().single();
+
+      if (!cancelled && !error && data) {
+        setDonorId(data.id);
+      }
+    };
+
+    run();
+    return () => { cancelled = true; };
+  }, [isFormValid, donationType]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const saveDonorToSupabase = async (method: string) => {
+    if (donorId) {
+      const { error } = await supabase.from("donors").update({
+        payment_method: method,
+        status: "pending",
+      }).eq("id", donorId);
+      return !error;
+    }
     const { error } = await supabase.from("donors").insert([{
       name: fullName,
       email: email.toLowerCase(),
