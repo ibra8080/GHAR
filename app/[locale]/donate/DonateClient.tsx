@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Heart, RefreshCw, Shield, Globe, Building2, CreditCard, CheckCircle } from "lucide-react";
 import { createClient } from "@supabase/supabase-js";
 import { useTranslations, useLocale } from "next-intl";
@@ -133,10 +133,8 @@ export default function DonateClient({
   const [geoData, setGeoData] = useState<{ country: string; city: string } | null>(null);
   const [stripeClientSecret, setStripeClientSecret] = useState<string | null>(null);
   const [stripeLoading, setStripeLoading] = useState(false);
-  const [stripeDonorId, setStripeDonorId] = useState<string | null>(null);
   const [showBankDetails, setShowBankDetails] = useState(false);
   const qrCanvasRef = useRef<HTMLCanvasElement>(null);
-  const stripeInitRef = useRef(false);
   const t = useTranslations("donate");
   const locale = useLocale();
 
@@ -195,63 +193,50 @@ export default function DonateClient({
   }, [status, bankBic, bankIban, finalAmount, fullName, selectedProject]);
 
   // ─── Payment Intent تلقائي عند اكتمال البيانات ─────────
-  const initStripePayment = useCallback(async () => {
-    if (!isFormValid || stripeInitRef.current) return;
-    stripeInitRef.current = true;
-    setStripeLoading(true);
+  useEffect(() => {
+    if (!isFormValid || stripeClientSecret || stripeLoading || donationType !== "once") return;
 
-    const { data, error } = await supabase.from("donors").insert([{
-      name: fullName,
-      email: email.toLowerCase(),
-      amount: finalAmount,
-      donation_type: donationType,
-      project: selectedProject,
-      payment_method: "card",
-      status: "pending",
-      country: geoData?.country || '',
-      city: geoData?.city || '',
-    }]).select().single();
+    let cancelled = false;
 
-    if (error || !data) { setStripeLoading(false); stripeInitRef.current = false; return; }
+    const run = async () => {
+      setStripeLoading(true);
 
-    setStripeDonorId(data.id);
-
-    const endpoint = donationType === "monthly"
-      ? "/api/stripe-subscription"
-      : "/api/stripe-payment-intent";
-
-    const res = await fetch(endpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        amount: finalAmount,
-        email: email.toLowerCase(),
+      const { data, error } = await supabase.from("donors").insert([{
         name: fullName,
-        donorId: data.id,
-      }),
-    });
+        email: email.toLowerCase(),
+        amount: finalAmount,
+        donation_type: donationType,
+        project: selectedProject,
+        payment_method: "card",
+        status: "pending",
+        country: geoData?.country || '',
+        city: geoData?.city || '',
+      }]).select().single();
 
-    const { clientSecret } = await res.json();
-    setStripeClientSecret(clientSecret);
-    setStripeLoading(false);
-  }, [isFormValid, fullName, email, finalAmount, donationType, selectedProject, geoData]);
+      if (cancelled || error || !data) {
+        if (!cancelled) setStripeLoading(false);
+        return;
+      }
 
-  // تشغيل Payment Intent تلقائياً عند اكتمال البيانات
-  useEffect(() => {
-    if (isFormValid && !stripeClientSecret && !stripeLoading && donationType === "once") {
-      stripeInitRef.current = false;
-      initStripePayment();
-    }
-  }, [isFormValid, finalAmount, donationType]); // eslint-disable-line react-hooks/exhaustive-deps
+      const res = await fetch("/api/stripe-payment-intent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: finalAmount, email: email.toLowerCase(), name: fullName, donorId: data.id }),
+      });
 
-  // إعادة تهيئة Stripe عند تغيير المبلغ بعد الإنشاء
-  useEffect(() => {
-    if (stripeClientSecret) {
+      const { clientSecret } = await res.json();
+      if (!cancelled) {
+        setStripeClientSecret(clientSecret);
+        setStripeLoading(false);
+      }
+    };
+
+    run();
+    return () => {
+      cancelled = true;
       setStripeClientSecret(null);
-      setStripeDonorId(null);
-      stripeInitRef.current = false;
-    }
-  }, [finalAmount, donationType]); // eslint-disable-line react-hooks/exhaustive-deps
+    };
+  }, [isFormValid, finalAmount, donationType]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const saveDonorToSupabase = async (method: string) => {
     const { error } = await supabase.from("donors").insert([{
