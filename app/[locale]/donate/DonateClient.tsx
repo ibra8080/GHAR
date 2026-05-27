@@ -65,13 +65,11 @@ function OrDivider({ locale }: { locale: string }) {
 
 // ─── نموذج Stripe ───────────────────────────────────────
 function StripePaymentForm({
-  clientSecret,
   onSuccess,
   onError,
   locale,
   donationType,
 }: {
-  clientSecret: string;
   onSuccess: (type: "once" | "monthly") => void;
   onError: () => void;
   locale: string;
@@ -99,7 +97,7 @@ function StripePaymentForm({
 
   return (
     <div className="flex flex-col gap-4">
-      <PaymentElement />
+      <PaymentElement options={{ wallets: { googlePay: "auto", applePay: "auto" } }} />
       <button
         onClick={handleSubmit}
         disabled={loading || !stripe}
@@ -133,7 +131,6 @@ export default function DonateClient({
   const [geoData, setGeoData] = useState<{ country: string; city: string } | null>(null);
   const [stripeClientSecret, setStripeClientSecret] = useState<string | null>(null);
   const [stripeLoading, setStripeLoading] = useState(false);
-  const [showBankDetails, setShowBankDetails] = useState(false);
   const qrCanvasRef = useRef<HTMLCanvasElement>(null);
   const t = useTranslations("donate");
   const locale = useLocale();
@@ -142,11 +139,10 @@ export default function DonateClient({
   const fullName = `${firstName} ${lastName}`.trim();
   const isFormValid = !!(firstName && lastName && email && finalAmount);
 
-  const isMonthlyPayPal = donationType === "monthly";
-  const isMonthlyBank = donationType === "monthly" && showBankDetails;
+  const isMonthly = donationType === "monthly";
 
   const monthlyPlanId = selectedAmount ? PAYPAL_PLANS[selectedAmount] : null;
-  const hasMonthlyPlan = isMonthlyPayPal && !!monthlyPlanId;
+  const hasMonthlyPlan = isMonthly && !!monthlyPlanId;
 
   const getTitle = (p: Project) => locale === "ar" ? p.titleAr : locale === "de" ? p.titleDe : p.title;
 
@@ -326,7 +322,7 @@ export default function DonateClient({
             {locale === "ar" ? "شكراً لك!" : locale === "de" ? "Vielen Dank!" : "Thank You!"}
           </h2>
           <p className="text-gray-600 mb-8 leading-relaxed">
-            {isMonthlyBank
+            {isMonthly
               ? (locale === "ar"
                 ? "لإتمام التبرع الشهري، يرجى إنشاء أمر دائم (Dauerauftrag) في تطبيق بنكك باستخدام البيانات التالية."
                 : locale === "de"
@@ -339,7 +335,7 @@ export default function DonateClient({
                 : "We have received your donation request. Please complete the bank transfer using the details below.")}
           </p>
 
-          {isMonthlyBank && (
+          {isMonthly && (
             <div className="bg-secondary/10 rounded-xl p-4 mb-6 text-left">
               <h4 className="text-secondary font-bold text-sm mb-2">
                 {locale === "ar" ? "كيف تنشئ أمر دائم؟" : locale === "de" ? "Wie richte ich einen Dauerauftrag ein?" : "How to set up a standing order?"}
@@ -398,7 +394,7 @@ export default function DonateClient({
                   </span>
                   <span className="text-primary font-bold text-lg">€{finalAmount}</span>
                 </div>
-                {isMonthlyBank && (
+                {isMonthly && (
                   <div className="flex justify-between">
                     <span className="text-gray-500 text-sm">
                       {locale === "ar" ? "التكرار:" : locale === "de" ? "Rhythmus:" : "Frequency:"}
@@ -555,13 +551,9 @@ export default function DonateClient({
                   {stripeClientSecret && !stripeLoading && (
                     <Elements
                       stripe={stripePromise}
-                      options={{
-                        clientSecret: stripeClientSecret,
-                        wallets: { googlePay: "always", applePay: "always" },
-                      }}
+                      options={{ clientSecret: stripeClientSecret }}
                     >
                       <StripePaymentForm
-                        clientSecret={stripeClientSecret}
                         locale={locale}
                         donationType={donationType}
                         onSuccess={(type) => setStatus(type === "monthly" ? "success_subscription" : "success_stripe")}
