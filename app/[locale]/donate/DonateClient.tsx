@@ -277,7 +277,7 @@ export default function DonateClient({
     if (donorId) {
       const { error } = await supabase.from("donors").update({
         payment_method: method,
-        status: "pending",
+        status: "abandoned",
       }).eq("id", donorId);
       return !error;
     }
@@ -288,7 +288,7 @@ export default function DonateClient({
       donation_type: donationType,
       project: selectedProject,
       payment_method: method,
-      status: "pending",
+      status: "abandoned",
       country: geoData?.country || '',
       city: geoData?.city || '',
     }]);

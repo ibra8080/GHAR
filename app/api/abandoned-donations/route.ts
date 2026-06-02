@@ -10,9 +10,9 @@ const supabase = createClient(
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 const REMINDER_INTERVALS = [
-  { hours: 48, reminderNumber: 1 },
-  { hours: 72, reminderNumber: 2 },
-  { hours: 168, reminderNumber: 3 }, // 7 days
+  { hours: 24, reminderNumber: 1, fromStatus: "abandoned", toStatus: "abandoned2" },
+  { hours: 72, reminderNumber: 2, fromStatus: "abandoned2", toStatus: "abandoned2" },
+  { hours: 168, reminderNumber: 3, fromStatus: "abandoned2", toStatus: "expired" },
 ];
 
 function getEmailContent(donor: {
@@ -85,7 +85,7 @@ function getEmailContent(donor: {
               Did you know? €${donor.amount} can provide a family with food for an entire week 
               in Sudan or Yemen.
             </p>
-            <div style="background: #EF8800/10; border-left: 4px solid #EF8800; padding: 16px; margin: 24px 0; border-radius: 4px;">
+            <div style="background: #fff8ee; border-left: 4px solid #EF8800; padding: 16px; margin: 24px 0; border-radius: 4px;">
               <p style="color: #2A2A2A; margin: 0; font-weight: bold;">
                 Every euro counts. Every family matters.
               </p>
@@ -142,7 +142,7 @@ function getEmailContent(donor: {
         </div>
         <div style="background: #f5f5f5; padding: 16px; text-align: center;">
           <p style="color: #888; font-size: 12px; margin: 0;">
-            German Humanitarian Relief Organization e.V. | Kullenkampffallee 193, 28217 Bremen
+            German Humanitarian Relief Organization e.V. | Kullenkampffallee 193, 28217 bremen
           </p>
         </div>
       </div>
@@ -156,14 +156,12 @@ export async function GET() {
 
     for (const interval of REMINDER_INTERVALS) {
       const fromTime = new Date(now.getTime() - interval.hours * 60 * 60 * 1000);
-      const toTime = new Date(
-        now.getTime() - (interval.hours - 24) * 60 * 60 * 1000
-      );
+      const toTime = new Date(now.getTime() - (interval.hours - 24) * 60 * 60 * 1000);
 
       const { data: donors } = await supabase
         .from("donors")
         .select("*")
-        .eq("status", "pending")
+        .eq("status", interval.fromStatus)
         .gte("created_at", fromTime.toISOString())
         .lt("created_at", toTime.toISOString());
 
@@ -185,13 +183,10 @@ export async function GET() {
           html,
         });
 
-        // بعد الإيميل الثالث — غير الـ status لـ expired
-        if (interval.reminderNumber === 3) {
-          await supabase
-            .from("donors")
-            .update({ status: "expired" })
-            .eq("id", donor.id);
-        }
+        await supabase
+          .from("donors")
+          .update({ status: interval.toStatus })
+          .eq("id", donor.id);
       }
     }
 
