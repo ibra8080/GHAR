@@ -158,12 +158,18 @@ export async function GET() {
       const fromTime = new Date(now.getTime() - interval.hours * 60 * 60 * 1000);
       const toTime = new Date(now.getTime() - (interval.hours - 24) * 60 * 60 * 1000);
 
-      const { data: donors } = await supabase
+      let query = supabase
         .from("donors")
         .select("*")
         .eq("status", interval.fromStatus)
         .gte("created_at", fromTime.toISOString())
         .lt("created_at", toTime.toISOString());
+
+      if (interval.reminderNumber === 1) {
+        query = query.neq("payment_method", "bank");
+      }
+
+const { data: donors } = await query;
 
       if (!donors || donors.length === 0) continue;
 
