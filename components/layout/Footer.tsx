@@ -38,7 +38,7 @@ export default function Footer({
   const t = useTranslations("footer");
   const locale = useLocale();
 
-  const email = siteSettings?.email || 'info@ghar.de';
+  const email = siteSettings?.email || 'info@ghar-ngo.com';
   const address = siteSettings?.address || 'Kullenkampffallee 193';
   const city = siteSettings?.city || '28217 Bremen, Germany';
   const facebook = siteSettings?.facebook || `/${locale}/contact`;

@@ -49,7 +49,7 @@ const siteSettings = {
   _id: 'siteSettings',
   address: 'Kullenkampffallee 193',
   city: '28217 Bremen, Germany',
-  email: 'info@ghar.de',
+  email: 'info@ghar-ngo.com',
   phone: '',
   bankIban: 'DE00 0000 0000 0000 0000 00',
   bankBic: 'XXXXXXXX',

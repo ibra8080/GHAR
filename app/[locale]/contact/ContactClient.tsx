@@ -24,7 +24,7 @@ export default function ContactClient({ siteSettings }: { siteSettings: SiteSett
 
   const address = siteSettings?.address || "Kullenkampffallee 193";
   const city = siteSettings?.city || "28217 Bremen, Germany";
-  const email = siteSettings?.email || "info@ghar.de";
+  const email = siteSettings?.email || "info@ghar-ngo.com";
   const phone = siteSettings?.phone || "";
 
   const handleSubmit = async () => {

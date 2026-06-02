@@ -8,7 +8,7 @@ export async function POST(request: Request) {
 
   try {
     await resend.emails.send({
-      from: "GHAR Foundation <onboarding@resend.dev>",
+      from: "GHAR Foundation <info@ghar-ngo.com>",
       to: email,
       subject: "Your Volunteer Application has been Received",
       html: `
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
             </p>
             
             <div style="text-align: center; margin: 30px 0;">
-              <a href="https://ghar-seven.vercel.app/projects" 
+              <a href="https://www.ghar-ngo.com/en/projects"
                  style="background-color: #2D8F16; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
                 View Our Projects
               </a>
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
             
             <p style="color: #4B5563; line-height: 1.6;">
               If you have any questions, please don&apos;t hesitate to contact us at 
-              <a href="mailto:info@ghar.de" style="color: #1A6FA0;">info@ghar.de</a>
+              <a href="mailto:info@ghar-ngo.com" style="color: #1A6FA0;">info@ghar-ngo.com</a>
             </p>
             
             <p style="color: #4B5563; margin-bottom: 0;">
