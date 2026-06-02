@@ -517,6 +517,15 @@ export default function AdminVolunteersPage() {
                               </button>
                             </>
                           )}
+                          {volunteer.status === "rejected" && (
+                            <button onClick={async () => {
+                              await supabase.from("volunteers").update({ status: "pending" }).eq("id", volunteer.id);
+                              fetchVolunteers();
+                            }}
+                              className="text-xs bg-yellow-50 text-yellow-600 hover:bg-yellow-100 px-2 py-1.5 rounded-lg transition-colors">
+                              🔄 Reconsider
+                            </button>
+                          )}
                           {volunteer.status === "invited" && (
                             <>
                               <button onClick={() => setAcceptPopup(volunteer)}
