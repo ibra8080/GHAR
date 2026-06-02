@@ -8,13 +8,13 @@ export async function POST(request: Request) {
 
   try {
     await resend.emails.send({
-      from: "GHAR Foundation <info@ghar-ngo.com>",
+      from: "GHAR Organization <info@ghar-ngo.com>",
       to: email,
       subject: "Your Volunteer Application has been Received",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
           <div style="background-color: #1A6FA0; padding: 20px; text-align: center; border-radius: 8px 8px 0 0;">
-            <h1 style="color: white; margin: 0; font-size: 24px;">GHAR Foundation</h1>
+            <h1 style="color: white; margin: 0; font-size: 24px;">GHAR Organization</h1>
             <p style="color: rgba(255,255,255,0.8); margin: 5px 0 0 0;">German Humanitarian Relief Organization</p>
           </div>
           
@@ -22,7 +22,7 @@ export async function POST(request: Request) {
             <h2 style="color: #2A2A2A; margin-top: 0;">Dear ${name},</h2>
             
             <p style="color: #4B5563; line-height: 1.6;">
-              Thank you for applying to volunteer with GHAR Foundation! We have received your application and are truly grateful for your willingness to contribute to our humanitarian mission.
+              Thank you for applying to volunteer with GHAR Organization! We have received your application and are truly grateful for your willingness to contribute to our humanitarian mission.
             </p>
             
             <div style="background-color: #f0f9ff; border-left: 4px solid #1A6FA0; padding: 15px; margin: 20px 0; border-radius: 0 8px 8px 0;">
@@ -51,12 +51,12 @@ export async function POST(request: Request) {
             
             <p style="color: #4B5563; margin-bottom: 0;">
               With gratitude,<br/>
-              <strong>The GHAR Foundation Team</strong>
+              <strong>The GHAR Organization Team</strong>
             </p>
           </div>
           
           <div style="text-align: center; padding: 20px; color: #9CA3AF; font-size: 12px;">
-            <p style="margin: 0;">© 2026 GHAR Foundation · Bremen, Germany</p>
+            <p style="margin: 0;">© 2026 GHAR Organization · Bremen, Germany</p>
             <p style="margin: 5px 0 0 0;">Kullenkampffallee 193, 28217 Bremen</p>
           </div>
         </div>

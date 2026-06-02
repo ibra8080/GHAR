@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
       : `Kind regards,\nGerman Humanitarian Relief Organization e.V.\ninfo@ghar-ngo.com`;
 
     await resend.emails.send({
-      from: 'GHAR Foundation <info@ghar-ngo.com>',
+      from: 'GHAR Organization <info@ghar-ngo.com>',
       to: email,
       subject,
       text: `${greeting}\n\n${body}\n\n${closing}`,

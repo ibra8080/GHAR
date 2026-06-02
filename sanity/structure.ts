@@ -2,7 +2,7 @@ import type { StructureResolver } from 'sanity/structure'
 
 export const structure: StructureResolver = (S) =>
   S.list()
-    .title('GHAR Foundation')
+    .title('GHAR Organization')
     .items([
 
       // ─── PAGES ───────────────────────────────────────────

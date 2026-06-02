@@ -8,19 +8,19 @@ export async function POST(req: NextRequest) {
     const { name, email } = await req.json();
 
     await resend.emails.send({
-      from: "GHAR Foundation <info@ghar-ngo.com>",
+      from: "GHAR Organization <info@ghar-ngo.com>",
       to: email,
       replyTo: "info@ghar-ngo.com",
-      subject: "🎉 Welcome to GHAR Foundation Volunteer Team!",
+      subject: "🎉 Welcome to GHAR Organization Volunteer Team!",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="background: #1A6FA0; padding: 24px; text-align: center;">
-            <h1 style="color: white; margin: 0; font-size: 24px;">GHAR Foundation</h1>
+            <h1 style="color: white; margin: 0; font-size: 24px;">GHAR Organization</h1>
           </div>
           <div style="padding: 32px; background: #ffffff;">
             <h2 style="color: #2A2A2A;">Dear ${name},</h2>
             <p style="color: #555; line-height: 1.6;">
-              We are thrilled to welcome you to the <strong>GHAR Foundation Volunteer Team!</strong> 🎉
+              We are thrilled to welcome you to the <strong>GHAR Organization Volunteer Team!</strong> 🎉
             </p>
             <p style="color: #555; line-height: 1.6;">
               After a careful review of your application and our interview, we are delighted 

@@ -193,7 +193,7 @@ export default function AdminVolunteersPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-10 w-full max-w-sm">
           <h1 className="text-2xl font-bold text-dark mb-2 text-center">Admin Access</h1>
-          <p className="text-gray-400 text-sm text-center mb-8">GHAR Foundation — Admin Panel</p>
+          <p className="text-gray-400 text-sm text-center mb-8">GHAR Organization — Admin Panel</p>
           <div className="flex flex-col gap-4">
             <input type="password" placeholder="Enter admin password" value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -218,7 +218,7 @@ export default function AdminVolunteersPage() {
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-2xl font-bold text-dark">Volunteers Dashboard</h1>
-            <p className="text-gray-400 text-sm mt-1">GHAR Foundation — Admin Panel</p>
+            <p className="text-gray-400 text-sm mt-1">GHAR Organization — Admin Panel</p>
           </div>
           <button onClick={exportCSV}
             className="flex items-center gap-2 bg-primary hover:bg-secondary text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">

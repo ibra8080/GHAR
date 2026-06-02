@@ -1,15 +1,15 @@
 import type { Metadata } from 'next';
 
 const titles: Record<string, string> = {
-  en: 'About Us | GHAR Foundation',
+  en: 'About Us | GHAR Organization',
   ar: 'من نحن | مؤسسة غار',
-  de: 'Über uns | GHAR Foundation',
+  de: 'Über uns | GHAR Organization',
 };
 
 const descriptions: Record<string, string> = {
-  en: 'Learn about GHAR Foundation — our story, mission, vision, values, and team dedicated to humanitarian aid in Sudan and Yemen.',
+  en: 'Learn about GHAR Organization — our story, mission, vision, values, and team dedicated to humanitarian aid in Sudan and Yemen.',
   ar: 'تعرف على مؤسسة غار — قصتنا، مهمتنا، رؤيتنا، قيمنا، وفريقنا المكرس للعمل الإنساني في السودان واليمن.',
-  de: 'Erfahren Sie mehr über die GHAR Foundation — unsere Geschichte, Mission, Vision, Werte und unser Team.',
+  de: 'Erfahren Sie mehr über die GHAR Organization — unsere Geschichte, Mission, Vision, Werte und unser Team.',
 };
 
 export async function generateMetadata({

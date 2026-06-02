@@ -11,7 +11,7 @@ const client = createClient({
 const news = [
   {
     _type: 'news',
-    title: { en: 'GHAR Foundation launches new water project in Sudan', ar: 'مؤسسة غار تطلق مشروع مياه جديد في السودان', de: 'GHAR Foundation startet neues Wasserprojekt im Sudan' },
+    title: { en: 'GHAR Organization launches new water project in Sudan', ar: 'مؤسسة غار تطلق مشروع مياه جديد في السودان', de: 'GHAR Organization startet neues Wasserprojekt im Sudan' },
     excerpt: { en: 'The new water project aims to provide clean drinking water to over 5,000 families in rural Sudan through solar-powered pumping stations.', ar: 'يهدف مشروع المياه الجديد إلى توفير مياه شرب نظيفة لأكثر من 5000 أسرة في السودان الريفي من خلال محطات ضخ تعمل بالطاقة الشمسية.', de: 'Das neue Wasserprojekt zielt darauf ab, über 5.000 Familien im ländlichen Sudan mit sauberem Trinkwasser zu versorgen.' },
     date: '2026-03-15',
     category: 'Water',
@@ -26,7 +26,7 @@ const news = [
   {
     _type: 'news',
     title: { en: 'Medical camp serves 800 patients in refugee camp', ar: 'مخيم طبي يخدم 800 مريض في مخيم للاجئين', de: 'Medizinisches Lager versorgt 800 Patienten in Flüchtlingslager' },
-    excerpt: { en: 'GHAR Foundation\'s mobile medical team provided free consultations, medicines and emergency care to hundreds of patients.', ar: 'قدّم الفريق الطبي المتنقل لمؤسسة غار استشارات مجانية وأدوية ورعاية طارئة لمئات المرضى.', de: 'Das mobile Medizinteam der GHAR Foundation bot Hunderten von Patienten kostenlose Beratung, Medikamente und Notfallversorgung.' },
+    excerpt: { en: 'GHAR Organization\'s mobile medical team provided free consultations, medicines and emergency care to hundreds of patients.', ar: 'قدّم الفريق الطبي المتنقل لمؤسسة غار استشارات مجانية وأدوية ورعاية طارئة لمئات المرضى.', de: 'Das mobile Medizinteam der GHAR Organization bot Hunderten von Patienten kostenlose Beratung, Medikamente und Notfallversorgung.' },
     date: '2026-01-10',
     category: 'Medical',
   },
@@ -40,20 +40,20 @@ const news = [
   {
     _type: 'news',
     title: { en: 'Emergency shelter project completed in Sudan', ar: 'مشروع المأوى الطارئ يكتمل في السودان', de: 'Notunterkunftsprojekt im Sudan abgeschlossen' },
-    excerpt: { en: 'GHAR Foundation has successfully completed the construction of 50 permanent homes for displaced families in Sudan.', ar: 'أتمّت مؤسسة غار بنجاح بناء 50 منزلاً دائماً للأسر النازحة في السودان.', de: 'Die GHAR Foundation hat erfolgreich den Bau von 50 Dauerhäusern für vertriebene Familien im Sudan abgeschlossen.' },
+    excerpt: { en: 'GHAR Organization has successfully completed the construction of 50 permanent homes for displaced families in Sudan.', ar: 'أتمّت مؤسسة غار بنجاح بناء 50 منزلاً دائماً للأسر النازحة في السودان.', de: 'Die GHAR Organization hat erfolgreich den Bau von 50 Dauerhäusern für vertriebene Familien im Sudan abgeschlossen.' },
     date: '2025-11-18',
     category: 'Shelter',
   },
   {
     _type: 'news',
     title: { en: 'Winter aid campaign kicks off in Yemen', ar: 'حملة المساعدات الشتوية تنطلق في اليمن', de: 'Winterhilfskampagne startet im Jemen' },
-    excerpt: { en: 'As temperatures drop, GHAR Foundation begins distributing winter kits to vulnerable families across three governorates in Yemen.', ar: 'مع انخفاض درجات الحرارة، تبدأ مؤسسة غار في توزيع مجموعات الشتاء على الأسر الضعيفة في ثلاث محافظات في اليمن.', de: 'Mit sinkenden Temperaturen beginnt die GHAR Foundation, Winterpakete an gefährdete Familien in drei Gouvernoraten im Jemen zu verteilen.' },
+    excerpt: { en: 'As temperatures drop, GHAR Organization begins distributing winter kits to vulnerable families across three governorates in Yemen.', ar: 'مع انخفاض درجات الحرارة، تبدأ مؤسسة غار في توزيع مجموعات الشتاء على الأسر الضعيفة في ثلاث محافظات في اليمن.', de: 'Mit sinkenden Temperaturen beginnt die GHAR Organization, Winterpakete an gefährdete Familien in drei Gouvernoraten im Jemen zu verteilen.' },
     date: '2025-10-30',
     category: 'Aid',
   },
   {
     _type: 'news',
-    title: { en: 'GHAR Foundation receives recognition from German authorities', ar: 'مؤسسة غار تحصل على اعتراف من السلطات الألمانية', de: 'GHAR Foundation erhält Anerkennung von deutschen Behörden' },
+    title: { en: 'GHAR Organization receives recognition from German authorities', ar: 'مؤسسة غار تحصل على اعتراف من السلطات الألمانية', de: 'GHAR Organization erhält Anerkennung von deutschen Behörden' },
     excerpt: { en: 'The foundation has been officially recognized by German humanitarian authorities for its transparent operations and effective aid delivery.', ar: 'حصلت المؤسسة على اعتراف رسمي من السلطات الإنسانية الألمانية لعملياتها الشفافة وتقديم المساعدات الفعّال.', de: 'Die Stiftung wurde von deutschen humanitären Behörden für ihren transparenten Betrieb und effektive Hilfsleistung offiziell anerkannt.' },
     date: '2025-09-12',
     category: 'News',
@@ -68,14 +68,14 @@ const news = [
   {
     _type: 'news',
     title: { en: 'Clean water project phase 2 begins', ar: 'المرحلة الثانية من مشروع المياه النظيفة تبدأ', de: 'Phase 2 des Sauberwasserprojekts beginnt' },
-    excerpt: { en: 'Following the success of phase 1, GHAR Foundation has launched phase 2 of the clean water project, targeting 8 additional villages.', ar: 'في أعقاب نجاح المرحلة الأولى، أطلقت مؤسسة غار المرحلة الثانية من مشروع المياه النظيفة، مستهدفةً 8 قرى إضافية.', de: 'Nach dem Erfolg von Phase 1 hat die GHAR Foundation Phase 2 des Sauberwasserprojekts gestartet.' },
+    excerpt: { en: 'Following the success of phase 1, GHAR Organization has launched phase 2 of the clean water project, targeting 8 additional villages.', ar: 'في أعقاب نجاح المرحلة الأولى، أطلقت مؤسسة غار المرحلة الثانية من مشروع المياه النظيفة، مستهدفةً 8 قرى إضافية.', de: 'Nach dem Erfolg von Phase 1 hat die GHAR Organization Phase 2 des Sauberwasserprojekts gestartet.' },
     date: '2025-07-20',
     category: 'Water',
   },
   {
     _type: 'news',
     title: { en: 'Ramadan food campaign distributes 2,000 packages', ar: 'حملة رمضان الغذائية توزع 2000 حزمة', de: 'Ramadan-Lebensmittelkampagne verteilt 2.000 Pakete' },
-    excerpt: { en: 'During Ramadan 2025, GHAR Foundation distributed 2,000 food packages to families in Sudan and Yemen.', ar: 'خلال رمضان 2025، وزّعت مؤسسة غار 2000 حزمة غذائية على الأسر في السودان واليمن.', de: 'Während des Ramadan 2025 verteilte die GHAR Foundation 2.000 Lebensmittelpakete an Familien im Sudan und Jemen.' },
+    excerpt: { en: 'During Ramadan 2025, GHAR Organization distributed 2,000 food packages to families in Sudan and Yemen.', ar: 'خلال رمضان 2025، وزّعت مؤسسة غار 2000 حزمة غذائية على الأسر في السودان واليمن.', de: 'Während des Ramadan 2025 verteilte die GHAR Organization 2.000 Lebensmittelpakete an Familien im Sudan und Jemen.' },
     date: '2025-03-25',
     category: 'Food',
   },
@@ -88,8 +88,8 @@ const news = [
   },
   {
     _type: 'news',
-    title: { en: 'GHAR Foundation celebrates its first anniversary', ar: 'مؤسسة غار تحتفل بذكراها السنوية الأولى', de: 'GHAR Foundation feiert ihren ersten Jahrestag' },
-    excerpt: { en: 'One year after its founding, GHAR Foundation reflects on its achievements and looks ahead to an ambitious year of growth and impact.', ar: 'بعد عام من تأسيسها، تتأمل مؤسسة غار إنجازاتها وتتطلع إلى عام طموح من النمو والتأثير.', de: 'Ein Jahr nach ihrer Gründung blickt die GHAR Foundation auf ihre Erfolge zurück.' },
+    title: { en: 'GHAR Organization celebrates its first anniversary', ar: 'مؤسسة غار تحتفل بذكراها السنوية الأولى', de: 'GHAR Organization feiert ihren ersten Jahrestag' },
+    excerpt: { en: 'One year after its founding, GHAR Organization reflects on its achievements and looks ahead to an ambitious year of growth and impact.', ar: 'بعد عام من تأسيسها، تتأمل مؤسسة غار إنجازاتها وتتطلع إلى عام طموح من النمو والتأثير.', de: 'Ein Jahr nach ihrer Gründung blickt die GHAR Organization auf ihre Erfolge zurück.' },
     date: '2025-01-01',
     category: 'News',
   },

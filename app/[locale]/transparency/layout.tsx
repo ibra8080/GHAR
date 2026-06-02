@@ -1,15 +1,15 @@
 import type { Metadata } from 'next';
 
 const titles: Record<string, string> = {
-  en: 'Transparency | GHAR Foundation',
+  en: 'Transparency | GHAR Organization',
   ar: 'الشفافية | مؤسسة غار',
-  de: 'Transparenz | GHAR Foundation',
+  de: 'Transparenz | GHAR Organization',
 };
 
 const descriptions: Record<string, string> = {
-  en: 'GHAR Foundation financial reports, donation allocation, governance structure, and certifications. Full transparency guaranteed.',
+  en: 'GHAR Organization financial reports, donation allocation, governance structure, and certifications. Full transparency guaranteed.',
   ar: 'التقارير المالية لمؤسسة غار، توزيع التبرعات، هيكل الحوكمة، والشهادات. شفافية كاملة مضمونة.',
-  de: 'Finanzberichte, Spendenverwendung, Governance-Struktur und Zertifizierungen der GHAR Foundation. Volle Transparenz garantiert.',
+  de: 'Finanzberichte, Spendenverwendung, Governance-Struktur und Zertifizierungen der GHAR Organization. Volle Transparenz garantiert.',
 };
 
 export async function generateMetadata({

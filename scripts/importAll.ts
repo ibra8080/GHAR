@@ -70,9 +70,9 @@ const aboutContent = {
   _type: 'aboutContent',
   _id: 'aboutContent',
   story1: {
-    en: 'GHAR Foundation was established in Bremen, Germany, by a group of dedicated individuals who witnessed firsthand the devastating humanitarian crises in Sudan and Yemen. Driven by compassion and a sense of responsibility, they came together to create an organization that bridges the gap between those who want to help and those who need it most.',
+    en: 'GHAR Organization was established in Bremen, Germany, by a group of dedicated individuals who witnessed firsthand the devastating humanitarian crises in Sudan and Yemen. Driven by compassion and a sense of responsibility, they came together to create an organization that bridges the gap between those who want to help and those who need it most.',
     ar: 'تأسست مؤسسة غار في بريمن، ألمانيا، على يد مجموعة من الأفراد المتفانين الذين شهدوا عن كثب الأزمات الإنسانية المدمرة في السودان واليمن.',
-    de: 'Die GHAR Foundation wurde in Bremen, Deutschland, von einer Gruppe engagierter Menschen gegründet, die die verheerenden humanitären Krisen in Sudan und Jemen hautnah miterlebt haben.',
+    de: 'Die GHAR Organization wurde in Bremen, Deutschland, von einer Gruppe engagierter Menschen gegründet, die die verheerenden humanitären Krisen in Sudan und Jemen hautnah miterlebt haben.',
   },
   story2: {
     en: 'The name "GHAR" — meaning "cave" in Arabic — symbolizes shelter and protection, reflecting our core mission to provide refuge and hope to those displaced by conflict and disaster.',

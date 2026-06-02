@@ -56,7 +56,7 @@ const youtube = siteSettings?.youtube || `/${locale}/contact`;
 
           {/* Column 1: Logo + Description */}
           <div className="col-span-2 md:col-span-1 flex flex-col items-center md:items-start text-center md:text-left">
-            <Image src="/images/GahrLogoW.svg" alt="GHAR Foundation" width={100} height={50} />
+            <Image src="/images/GahrLogoW.svg" alt="GHAR Organization" width={100} height={50} />
             <p className="mt-4 text-white/70 text-sm leading-relaxed max-w-[180px]">
               {t("description")}
             </p>

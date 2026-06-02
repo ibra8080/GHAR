@@ -23,7 +23,7 @@ const projects = [
       de: 'Lieferung von Lebensmittelpaketen an gefährdete Familien im Jemen.',
     },
     details: {
-      en: 'Yemen is facing one of the world\'s worst humanitarian crises, with millions of people on the brink of famine. GHAR Foundation\'s Food Aid Distribution program delivers monthly food packages to the most vulnerable families.',
+      en: 'Yemen is facing one of the world\'s worst humanitarian crises, with millions of people on the brink of famine. GHAR Organization\'s Food Aid Distribution program delivers monthly food packages to the most vulnerable families.',
       ar: 'يواجه اليمن واحدة من أسوأ الأزمات الإنسانية في العالم، مع ملايين الأشخاص على شفا المجاعة. يوفر برنامج توزيع المساعدات الغذائية لمؤسسة غار حزماً غذائية شهرية للأسر الأكثر ضعفاً.',
       de: 'Der Jemen steht vor einer der schlimmsten humanitären Krisen der Welt. Das Programm liefert monatlich Lebensmittelpakete an die bedürftigsten Familien.',
     },
@@ -43,7 +43,7 @@ const projects = [
       de: 'Kostenlose medizinische Versorgung in Flüchtlingslagern in Sudan.',
     },
     details: {
-      en: 'In conflict zones, access to basic healthcare can mean the difference between life and death. GHAR Foundation deploys mobile medical teams to refugee camps and remote communities in Sudan.',
+      en: 'In conflict zones, access to basic healthcare can mean the difference between life and death. GHAR Organization deploys mobile medical teams to refugee camps and remote communities in Sudan.',
       ar: 'في مناطق النزاع، يمكن أن يعني الوصول إلى الرعاية الصحية الأساسية الفرق بين الحياة والموت. تنشر مؤسسة غار فرقاً طبية متنقلة في مخيمات اللاجئين والمجتمعات النائية في السودان.',
       de: 'In Konfliktgebieten kann der Zugang zur Gesundheitsversorgung lebensrettend sein. Mobile Medizinteams versorgen Flüchtlingslager im Sudan.',
     },
@@ -63,7 +63,7 @@ const projects = [
       de: 'Unterstützung des Bildungsrechts von Kindern durch den Aufbau von Schulen in Konfliktgebieten.',
     },
     details: {
-      en: 'Conflict has deprived millions of Yemeni children of their right to education. GHAR Foundation\'s Education Initiative rebuilds and equips damaged schools, trains and pays teachers\' salaries.',
+      en: 'Conflict has deprived millions of Yemeni children of their right to education. GHAR Organization\'s Education Initiative rebuilds and equips damaged schools, trains and pays teachers\' salaries.',
       ar: 'حرم النزاع ملايين الأطفال اليمنيين من حقهم في التعليم. تعيد مبادرة التعليم لمؤسسة غار بناء وتجهيز المدارس المتضررة وتدريب المعلمين ودفع رواتبهم.',
       de: 'Der Konflikt hat Millionen jemenitischer Kinder ihres Bildungsrechts beraubt. Die Initiative baut Schulen wieder auf und zahlt Lehrergehälter.',
     },
@@ -83,7 +83,7 @@ const projects = [
       de: 'Bau von Notunterkünften für vertriebene Familien im Sudan.',
     },
     details: {
-      en: 'Displacement is one of the most devastating consequences of conflict. GHAR Foundation\'s Emergency Shelter program provides displaced families with safe, dignified shelter.',
+      en: 'Displacement is one of the most devastating consequences of conflict. GHAR Organization\'s Emergency Shelter program provides displaced families with safe, dignified shelter.',
       ar: 'التهجير هو أحد أكثر عواقب النزاع تدميراً. يوفر برنامج المأوى الطارئ لمؤسسة غار ملاجئ آمنة وكريمة للأسر النازحة.',
       de: 'Vertreibung ist eine der verheerendsten Folgen von Konflikten. Das Programm bietet vertriebenen Familien sichere Unterkünfte.',
     },

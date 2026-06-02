@@ -8,7 +8,7 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "Admin — GHAR Foundation",
+  title: "Admin — GHAR Organization",
 };
 
 export default function AdminLayout({

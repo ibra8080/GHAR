@@ -12,10 +12,10 @@ const privacyContent = {
   _type: 'privacyContent',
   _id: 'privacyContent',
   lastUpdated: 'March 2026',
-  contentEn: `GHAR Foundation is committed to protecting your privacy. This policy explains how we collect, use, and protect your personal data in accordance with the EU General Data Protection Regulation (GDPR).
+  contentEn: `GHAR Organization is committed to protecting your privacy. This policy explains how we collect, use, and protect your personal data in accordance with the EU General Data Protection Regulation (GDPR).
 
 1. Data Controller
-GHAR Foundation, Kullenkampffallee 193, 28217 Bremen, Germany. Email: info@ghar-ngo.com
+GHAR Organization, Kullenkampffallee 193, 28217 Bremen, Germany. Email: info@ghar-ngo.com
 
 2. Data We Collect
 We collect personal data you provide when donating (name, email, amount), volunteering (name, email, phone, country, specialty), or contacting us via our contact form.
@@ -36,7 +36,7 @@ Under GDPR, you have the right to access, correct, delete, or export your person
 We use PayPal for donation processing and Resend for email delivery. These services have their own privacy policies. We also use Vercel for hosting and Sanity for content management.
 
 8. Contact
-For any privacy-related questions, contact us at: info@ghar-ngo.com or write to GHAR Foundation, Kullenkampffallee 193, 28217 Bremen, Germany.`,
+For any privacy-related questions, contact us at: info@ghar-ngo.com or write to GHAR Organization, Kullenkampffallee 193, 28217 Bremen, Germany.`,
 
   contentAr: `تلتزم مؤسسة غار بحماية خصوصيتك. توضح هذه السياسة كيفية جمع بياناتك الشخصية واستخدامها وحمايتها وفقاً للائحة الأوروبية العامة لحماية البيانات (GDPR).
 
@@ -64,10 +64,10 @@ For any privacy-related questions, contact us at: info@ghar-ngo.com or write to 
 8. التواصل
 لأي أسئلة متعلقة بالخصوصية، تواصل معنا على: info@ghar-ngo.com`,
 
-  contentDe: `Die GHAR Foundation verpflichtet sich zum Schutz Ihrer Privatsphäre. Diese Richtlinie erläutert, wie wir Ihre personenbezogenen Daten gemäß der EU-Datenschutz-Grundverordnung (DSGVO) erheben, verwenden und schützen.
+  contentDe: `Die GHAR Organization verpflichtet sich zum Schutz Ihrer Privatsphäre. Diese Richtlinie erläutert, wie wir Ihre personenbezogenen Daten gemäß der EU-Datenschutz-Grundverordnung (DSGVO) erheben, verwenden und schützen.
 
 1. Verantwortlicher
-GHAR Foundation, Kullenkampffallee 193, 28217 Bremen, Deutschland. E-Mail: info@ghar-ngo.com
+GHAR Organization, Kullenkampffallee 193, 28217 Bremen, Deutschland. E-Mail: info@ghar-ngo.com
 
 2. Erhobene Daten
 Wir erheben personenbezogene Daten, die Sie beim Spenden (Name, E-Mail, Betrag), bei der Freiwilligenarbeit oder beim Kontakt über unser Formular angeben.
@@ -88,7 +88,7 @@ Gemäß DSGVO haben Sie das Recht auf Zugang, Berichtigung und Löschung Ihrer p
 Wir nutzen PayPal für die Spendenverarbeitung, Resend für E-Mail-Zustellung, Vercel für Hosting und Sanity für Content-Management.
 
 8. Kontakt
-Bei datenschutzbezogenen Fragen kontaktieren Sie uns unter: info@ghar-ngo.com oder GHAR Foundation, Kullenkampffallee 193, 28217 Bremen.`,
+Bei datenschutzbezogenen Fragen kontaktieren Sie uns unter: info@ghar-ngo.com oder GHAR Organization, Kullenkampffallee 193, 28217 Bremen.`,
 };
 
 async function importPrivacy() {

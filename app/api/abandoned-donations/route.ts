@@ -29,11 +29,11 @@ function getEmailContent(donor: {
 
   if (donor.reminderNumber === 1) {
     return {
-      subject: `Your donation to GHAR Foundation is waiting`,
+      subject: `Your donation to GHAR Organization is waiting`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="background: #1A6FA0; padding: 24px; text-align: center;">
-            <h1 style="color: white; margin: 0; font-size: 24px;">GHAR Foundation</h1>
+            <h1 style="color: white; margin: 0; font-size: 24px;">GHAR Organization</h1>
           </div>
           <div style="padding: 32px; background: #ffffff;">
             <h2 style="color: #2A2A2A;">Dear ${donor.name},</h2>
@@ -73,7 +73,7 @@ function getEmailContent(donor: {
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="background: #1A6FA0; padding: 24px; text-align: center;">
-            <h1 style="color: white; margin: 0; font-size: 24px;">GHAR Foundation</h1>
+            <h1 style="color: white; margin: 0; font-size: 24px;">GHAR Organization</h1>
           </div>
           <div style="padding: 32px; background: #ffffff;">
             <h2 style="color: #2A2A2A;">Dear ${donor.name},</h2>
@@ -112,11 +112,11 @@ function getEmailContent(donor: {
   }
 
   return {
-    subject: `Last chance — Your donation to GHAR Foundation`,
+    subject: `Last chance — Your donation to GHAR Organization`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <div style="background: #1A6FA0; padding: 24px; text-align: center;">
-          <h1 style="color: white; margin: 0; font-size: 24px;">GHAR Foundation</h1>
+          <h1 style="color: white; margin: 0; font-size: 24px;">GHAR Organization</h1>
         </div>
         <div style="padding: 32px; background: #ffffff;">
           <h2 style="color: #2A2A2A;">Dear ${donor.name},</h2>
@@ -182,7 +182,7 @@ const { data: donors } = await query;
         });
 
         await resend.emails.send({
-          from: "GHAR Foundation <info@ghar-ngo.com>",
+          from: "GHAR Organization <info@ghar-ngo.com>",
           to: donor.email,
           replyTo: "info@ghar-ngo.com",
           subject,

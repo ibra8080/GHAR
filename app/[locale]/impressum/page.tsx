@@ -10,7 +10,7 @@ export async function generateMetadata({
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "impressum" });
   return {
-    title: locale === "de" ? "Impressum | GHAR Foundation" : locale === "ar" ? "بيانات قانونية | مؤسسة غار" : "Impressum | GHAR Foundation",
+    title: locale === "de" ? "Impressum | GHAR Organization" : locale === "ar" ? "بيانات قانونية | مؤسسة غار" : "Impressum | GHAR Organization",
     description: t("metaDescription"),
   };
 }

@@ -38,7 +38,7 @@ export default function Navbar() {
 
           {/* Logo */}
           <Link href={`/${locale}`} className="flex items-center">
-            <Image src="/images/GahrLogo.svg" alt="GHAR Foundation" width={120} height={60} priority />
+            <Image src="/images/GahrLogo.svg" alt="GHAR Organization" width={120} height={60} priority />
           </Link>
 
           {/* Desktop Center Links */}

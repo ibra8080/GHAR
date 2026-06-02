@@ -42,7 +42,7 @@ export function StudioWelcome() {
           </div>
         ))}
       </div>
-      <p style={{color:'#aaa',fontSize:'12px',marginTop:'32px'}}>GHAR Foundation © {new Date().getFullYear()} — ghar-ngo.de</p>
+      <p style={{color:'#aaa',fontSize:'12px',marginTop:'32px'}}>GHAR Organization © {new Date().getFullYear()} — ghar-ngo.de</p>
     </div>
   )
 }
