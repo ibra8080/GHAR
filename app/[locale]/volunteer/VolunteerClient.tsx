@@ -47,7 +47,8 @@ const typeLabels: Record<string, Record<string, string>> = {
 };
 
 export default function VolunteerClient({ jobs }: { jobs: Job[] }) {
-  const [form, setForm] = useState({ name: "", phone: "", email: "", country: "", specialty: "", availability: "", message: "" });
+  const [form, setForm] = useState({ name: "", phone: "", email: "", country: "", specialty: "", availability: "", message: "", linkedin_url: "" });
+  const [cvFile, setCvFile] = useState<File | null>(null);
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const t = useTranslations("volunteer");
   const locale = useLocale();
@@ -61,15 +62,38 @@ export default function VolunteerClient({ jobs }: { jobs: Job[] }) {
   const handleSubmit = async () => {
     if (!form.name || !form.email || !form.country || !form.specialty || !form.availability) return;
     setStatus("loading");
-    const { error } = await supabase.from("volunteers").insert([form]);
+
+    let cv_url = "";
+
+    if (cvFile) {
+      const fileExt = cvFile.name.split(".").pop();
+      const fileName = `${Date.now()}-${form.email}.${fileExt}`;
+      const { error: uploadError } = await supabase.storage
+        .from("volunteer-cvs")
+        .upload(fileName, cvFile);
+      if (!uploadError) {
+        const { data } = supabase.storage.from("volunteer-cvs").getPublicUrl(fileName);
+        cv_url = data.publicUrl;
+      }
+    }
+
+    const { error } = await supabase.from("volunteers").insert([{
+      ...form,
+      cv_url,
+      status: "pending",
+    }]);
+
     if (error) { setStatus("error"); return; }
+
     await fetch("/api/send-volunteer-confirmation", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name: form.name, email: form.email }),
     });
+
     setStatus("success");
-    setForm({ name: "", phone: "", email: "", country: "", specialty: "", availability: "", message: "" });
+    setForm({ name: "", phone: "", email: "", country: "", specialty: "", availability: "", message: "", linkedin_url: "" });
+    setCvFile(null);
   };
 
   const getTitle = (job: Job) => locale === "ar" ? job.titleAr : locale === "de" ? job.titleDe : job.title;
@@ -125,6 +149,25 @@ export default function VolunteerClient({ jobs }: { jobs: Job[] }) {
               <textarea placeholder={t("messagePlaceholder")} rows={4} value={form.message}
                 onChange={(e) => setForm({ ...form, message: e.target.value })}
                 className="border border-gray-200 rounded-lg px-4 py-3 text-sm text-dark focus:outline-none focus:border-primary transition-colors resize-none" />
+              <input
+                type="url"
+                placeholder={locale === "ar" ? "رابط LinkedIn أو Xing (اختياري)" : locale === "de" ? "LinkedIn oder Xing Profil (optional)" : "LinkedIn or Xing Profile URL (optional)"}
+                value={form.linkedin_url}
+                onChange={(e) => setForm({ ...form, linkedin_url: e.target.value })}
+                className="border border-gray-200 rounded-lg px-4 py-3 text-sm text-dark focus:outline-none focus:border-primary transition-colors"
+              />
+              <div className="border border-gray-200 rounded-lg px-4 py-3">
+                <label className="text-sm text-gray-500 block mb-2">
+                  {locale === "ar" ? "السيرة الذاتية PDF (اختياري)" : locale === "de" ? "Lebenslauf PDF (optional)" : "CV / Resume PDF (optional)"}
+                </label>
+                <input
+                  type="file"
+                  accept=".pdf"
+                  onChange={(e) => setCvFile(e.target.files?.[0] || null)}
+                  className="text-sm text-gray-600 w-full"
+                />
+                {cvFile && <p className="text-xs text-secondary mt-1">✅ {cvFile.name}</p>}
+              </div>
               {status === "success" && <p className="text-secondary text-sm text-center">{t("successMessage")}</p>}
               {status === "error" && <p className="text-red-500 text-sm text-center">{t("errorMessage")}</p>}
               <button onClick={handleSubmit}
