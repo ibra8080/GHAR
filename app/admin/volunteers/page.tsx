@@ -42,6 +42,7 @@ export default function AdminVolunteersPage() {
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterSpecialty, setFilterSpecialty] = useState("all");
+  const [detailsPopup, setDetailsPopup] = useState<Volunteer | null>(null);
   const [approvePopup, setApprovePopup] = useState<Volunteer | null>(null);
   const [rejectPopup, setRejectPopup] = useState<Volunteer | null>(null);
   const [selectedInterviewer, setSelectedInterviewer] = useState<"ibrahim" | "eman">("ibrahim");
@@ -315,6 +316,73 @@ export default function AdminVolunteersPage() {
           </div>
         )}
 
+        {/* Details Popup */}
+        {detailsPopup && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-lg max-h-[80vh] overflow-y-auto">
+              <h3 className="text-lg font-bold text-dark mb-6">👤 {detailsPopup.name}</h3>
+              <div className="flex flex-col gap-3 text-sm">
+                <div className="flex justify-between border-b border-gray-50 pb-2">
+                  <span className="text-gray-400">Email</span>
+                  <span className="text-dark">{detailsPopup.email}</span>
+                </div>
+                <div className="flex justify-between border-b border-gray-50 pb-2">
+                  <span className="text-gray-400">Phone</span>
+                  <span className="text-dark">{detailsPopup.phone || '—'}</span>
+                </div>
+                <div className="flex justify-between border-b border-gray-50 pb-2">
+                  <span className="text-gray-400">Country</span>
+                  <span className="text-dark">{detailsPopup.country}</span>
+                </div>
+                <div className="flex justify-between border-b border-gray-50 pb-2">
+                  <span className="text-gray-400">Specialty</span>
+                  <span className="text-dark">{detailsPopup.specialty}</span>
+                </div>
+                <div className="flex justify-between border-b border-gray-50 pb-2">
+                  <span className="text-gray-400">Availability</span>
+                  <span className="text-dark">{detailsPopup.availability}</span>
+                </div>
+                {detailsPopup.linkedin_url && (
+                  <div className="flex justify-between border-b border-gray-50 pb-2">
+                    <span className="text-gray-400">LinkedIn</span>
+                    <a href={detailsPopup.linkedin_url} target="_blank" rel="noopener noreferrer"
+                      className="text-primary hover:underline">View Profile</a>
+                  </div>
+                )}
+                {detailsPopup.cv_url && (
+                  <div className="flex justify-between border-b border-gray-50 pb-2">
+                    <span className="text-gray-400">CV</span>
+                    <a href={detailsPopup.cv_url} target="_blank" rel="noopener noreferrer"
+                      className="text-primary hover:underline">Download CV</a>
+                  </div>
+                )}
+                {detailsPopup.message && (
+                  <div className="flex flex-col gap-1 border-b border-gray-50 pb-2">
+                    <span className="text-gray-400">Message</span>
+                    <p className="text-dark leading-relaxed bg-gray-50 rounded-lg p-3 mt-1">
+                      {detailsPopup.message}
+                    </p>
+                  </div>
+                )}
+                {detailsPopup.interviewer && (
+                  <div className="flex justify-between border-b border-gray-50 pb-2">
+                    <span className="text-gray-400">Interviewer</span>
+                    <span className="text-dark capitalize">{detailsPopup.interviewer}</span>
+                  </div>
+                )}
+                <div className="flex justify-between pb-2">
+                  <span className="text-gray-400">Applied</span>
+                  <span className="text-dark">{new Date(detailsPopup.created_at).toLocaleDateString()}</span>
+                </div>
+              </div>
+              <button onClick={() => setDetailsPopup(null)}
+                className="w-full mt-6 text-gray-400 hover:text-dark text-sm transition-colors border border-gray-200 rounded-lg py-2">
+                Close
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Table */}
         <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
           {loading ? (
@@ -370,6 +438,10 @@ export default function AdminVolunteersPage() {
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
+                          <button onClick={() => setDetailsPopup(volunteer)}
+                            className="text-xs bg-gray-50 text-gray-600 hover:bg-gray-100 px-2 py-1.5 rounded-lg transition-colors font-medium">
+                            👁 View
+                          </button>
                           {volunteer.status === "pending" && (
                             <>
                               <button onClick={() => setApprovePopup(volunteer)}
