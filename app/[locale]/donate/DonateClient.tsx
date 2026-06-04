@@ -12,6 +12,8 @@ import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
+const STRIPE_ENABLED = false;
+
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -191,7 +193,7 @@ export default function DonateClient({
 
   // ─── Payment Intent تلقائي عند اكتمال البيانات ─────────
   useEffect(() => {
-    if (!isFormValid || stripeLoading || donationType !== "once") return;
+    if (!STRIPE_ENABLED || !isFormValid || stripeLoading || donationType !== "once") return;
 
     let cancelled = false;
 
@@ -583,81 +585,119 @@ export default function DonateClient({
                 <p className="text-amber-600 text-sm text-center mb-4">{t("errorMessage")}</p>
               )}
 
-              {/* 1. نموذج البطاقة (Stripe) — دائماً أولاً */}
-              {donationType === "once" ? (
-                <div>
-                  {stripeLoading && (
-                    <div className="flex items-center justify-center gap-2 py-8 text-gray-400">
-                      <RefreshCw size={18} className="animate-spin" />
-                      <span className="text-sm">
-                        {locale === "ar" ? "جاري التحضير..." : locale === "de" ? "Wird vorbereitet..." : "Preparing..."}
-                      </span>
-                    </div>
-                  )}
-                  {stripeClientSecret && !stripeLoading && (
-                    <Elements
-                      stripe={stripePromise}
-                      options={{ clientSecret: stripeClientSecret }}
-                    >
-                      <StripePaymentForm
-                        locale={locale}
-                        donationType={donationType}
-                        onSuccess={(type) => setStatus(type === "monthly" ? "success_subscription" : "success_stripe")}
+              {/* 1. نموذج البطاقة (Stripe) — مخفي مؤقتاً */}
+              {STRIPE_ENABLED ? (
+                donationType === "once" ? (
+                  <div>
+                    {stripeLoading && (
+                      <div className="flex items-center justify-center gap-2 py-8 text-gray-400">
+                        <RefreshCw size={18} className="animate-spin" />
+                        <span className="text-sm">
+                          {locale === "ar" ? "جاري التحضير..." : locale === "de" ? "Wird vorbereitet..." : "Preparing..."}
+                        </span>
+                      </div>
+                    )}
+                    {stripeClientSecret && !stripeLoading && (
+                      <Elements
+                        stripe={stripePromise}
+                        options={{ clientSecret: stripeClientSecret }}
+                      >
+                        <StripePaymentForm
+                          locale={locale}
+                          donationType={donationType}
+                          onSuccess={(type) => setStatus(type === "monthly" ? "success_subscription" : "success_stripe")}
+                          onError={() => setStatus("error")}
+                        />
+                      </Elements>
+                    )}
+                    {!stripeClientSecret && !stripeLoading && !isFormValid && (
+                      <div className="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center">
+                        <CreditCard size={32} className="text-gray-300 mx-auto mb-2" />
+                        <p className="text-gray-400 text-sm">
+                          {locale === "ar"
+                            ? "أكمل بياناتك أعلاه لتظهر خيارات الدفع"
+                            : locale === "de"
+                            ? "Füllen Sie Ihre Daten aus, um die Zahlungsoptionen anzuzeigen"
+                            : "Complete your details above to see payment options"}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  /* Monthly — PayPal Subscription */
+                  <div>
+                    {isFormValid && hasMonthlyPlan ? (
+                      <PayPalButtons
+                        style={{ layout: "vertical", color: "blue", shape: "rect" }}
+                        createSubscription={(_data, actions) => {
+                          return actions.subscription.create({ plan_id: monthlyPlanId! });
+                        }}
+                        onApprove={async () => {
+                          await saveDonorToSupabase("paypal");
+                          setStatus("success_subscription");
+                        }}
                         onError={() => setStatus("error")}
                       />
-                    </Elements>
-                  )}
-                  {!stripeClientSecret && !stripeLoading && !isFormValid && (
-                    <div className="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center">
-                      <CreditCard size={32} className="text-gray-300 mx-auto mb-2" />
-                      <p className="text-gray-400 text-sm">
-                        {locale === "ar"
-                          ? "أكمل بياناتك أعلاه لتظهر خيارات الدفع"
-                          : locale === "de"
-                          ? "Füllen Sie Ihre Daten aus, um die Zahlungsoptionen anzuzeigen"
-                          : "Complete your details above to see payment options"}
-                      </p>
-                    </div>
-                  )}
-                </div>
+                    ) : isFormValid && !hasMonthlyPlan ? (
+                      <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center">
+                        <p className="text-amber-700 text-sm">
+                          {locale === "ar" ? "يرجى اختيار أحد المبالغ المحددة للاشتراك الشهري" : locale === "de" ? "Bitte wählen Sie einen der festgelegten Beträge für das monatliche Abonnement" : "Please select one of the fixed amounts for monthly subscription"}
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center">
+                        <RefreshCw size={32} className="text-gray-300 mx-auto mb-2" />
+                        <p className="text-gray-400 text-sm">
+                          {locale === "ar"
+                            ? "أكمل بياناتك أعلاه لتظهر خيارات الدفع"
+                            : locale === "de"
+                            ? "Füllen Sie Ihre Daten aus, um die Zahlungsoptionen anzuzeigen"
+                            : "Complete your details above to see payment options"}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )
               ) : (
-                /* Monthly — PayPal Subscription */
-                <div>
-                  {isFormValid && hasMonthlyPlan ? (
-                    <PayPalButtons
-                      style={{ layout: "vertical", color: "blue", shape: "rect" }}
-                      createSubscription={(_data, actions) => {
-                        return actions.subscription.create({ plan_id: monthlyPlanId! });
-                      }}
-                      onApprove={async () => {
-                        await saveDonorToSupabase("paypal");
-                        setStatus("success_subscription");
-                      }}
-                      onError={() => setStatus("error")}
-                    />
-                  ) : isFormValid && !hasMonthlyPlan ? (
-                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center">
-                      <p className="text-amber-700 text-sm">
-                        {locale === "ar" ? "يرجى اختيار أحد المبالغ المحددة للاشتراك الشهري" : locale === "de" ? "Bitte wählen Sie einen der festgelegten Beträge für das monatliche Abonnement" : "Please select one of the fixed amounts for monthly subscription"}
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center">
-                      <RefreshCw size={32} className="text-gray-300 mx-auto mb-2" />
-                      <p className="text-gray-400 text-sm">
-                        {locale === "ar"
-                          ? "أكمل بياناتك أعلاه لتظهر خيارات الدفع"
-                          : locale === "de"
-                          ? "Füllen Sie Ihre Daten aus, um die Zahlungsoptionen anzuzeigen"
-                          : "Complete your details above to see payment options"}
-                      </p>
-                    </div>
-                  )}
-                </div>
+                /* Stripe معطل — نعرض PayPal Subscription فقط للـ monthly */
+                donationType === "monthly" && (
+                  <div>
+                    {isFormValid && hasMonthlyPlan ? (
+                      <PayPalButtons
+                        style={{ layout: "vertical", color: "blue", shape: "rect" }}
+                        createSubscription={(_data, actions) => {
+                          return actions.subscription.create({ plan_id: monthlyPlanId! });
+                        }}
+                        onApprove={async () => {
+                          await saveDonorToSupabase("paypal");
+                          setStatus("success_subscription");
+                        }}
+                        onError={() => setStatus("error")}
+                      />
+                    ) : isFormValid && !hasMonthlyPlan ? (
+                      <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center">
+                        <p className="text-amber-700 text-sm">
+                          {locale === "ar" ? "يرجى اختيار أحد المبالغ المحددة للاشتراك الشهري" : locale === "de" ? "Bitte wählen Sie einen der festgelegten Beträge für das monatliche Abonnement" : "Please select one of the fixed amounts for monthly subscription"}
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center">
+                        <RefreshCw size={32} className="text-gray-300 mx-auto mb-2" />
+                        <p className="text-gray-400 text-sm">
+                          {locale === "ar"
+                            ? "أكمل بياناتك أعلاه لتظهر خيارات الدفع"
+                            : locale === "de"
+                            ? "Füllen Sie Ihre Daten aus, um die Zahlungsoptionen anzuzeigen"
+                            : "Complete your details above to see payment options"}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )
               )}
 
-              {/* ─── أو ─── */}
-              <OrDivider locale={locale} />
+              {/* ─── أو ─── — يظهر فقط مع Stripe أو Monthly */}
+              {(STRIPE_ENABLED || donationType === "monthly") && <OrDivider locale={locale} />}
 
               {/* 2. PayPal One-time (للدفع مرة واحدة فقط) */}
               {donationType === "once" && (
