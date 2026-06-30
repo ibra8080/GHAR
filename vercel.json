@@ -7,6 +7,14 @@
     {
       "path": "/api/abandoned-donations",
       "schedule": "0 10 * * *"
+    },
+    {
+      "path": "/api/recurring-donations",
+      "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/recurring-stopped-reminder",
+      "schedule": "0 11 * * *"
     }
   ]
 }

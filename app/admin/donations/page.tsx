@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { CheckCircle, XCircle, Clock, Download, Search, Filter } from "lucide-react";
 import { generateInvoice } from '@/lib/generateInvoice';
+import { getProjects } from "@/sanity/lib/queries";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -23,6 +24,10 @@ type Donor = {
   status: string;
   created_at: string;
   country: string;
+  is_recurring_master?: boolean;
+  recurring_active?: boolean;
+  parent_donor_id?: string;
+  next_charge_date?: string;
 };
 
 export default function AdminDonationsPage() {
@@ -43,6 +48,11 @@ export default function AdminDonationsPage() {
     donation_type: "once", payment_method: "cash",
   });
   const [savingManual, setSavingManual] = useState(false);
+  const [stopRecurringPopup, setStopRecurringPopup] = useState<Donor | null>(null);
+  const [stoppingRecurring, setStoppingRecurring] = useState(false);
+
+  type Project = { id: string; title: string };
+  const [projects, setProjects] = useState<Project[]>([]);
 
   const handleLogin = () => {
     if (password === ADMIN_PASSWORD) {
@@ -64,24 +74,60 @@ export default function AdminDonationsPage() {
   };
 
   useEffect(() => {
-  if (authenticated) fetchDonors(); // eslint-disable-line react-hooks/set-state-in-effect
-}, [authenticated]);
+    if (authenticated) {
+      fetchDonors(); // eslint-disable-line react-hooks/set-state-in-effect
+      getProjects().then((data) => setProjects(data));
+    }
+  }, [authenticated]);
 
   const updateStatus = async (id: string, newStatus: string, donor: Donor) => {
-    console.log("updateStatus called:", id, newStatus, donor.payment_method);
     if (newStatus === "completed" && (donor.payment_method !== "paypal" || donor.donation_type === "once")) {
       setConfirmPopup({ donor, newStatus });
       return;
     }
-    const { error } = await supabase.from("donors").update({ status: newStatus }).eq("id", id);
-    console.log("update result:", error);
+
+    const updateData: Record<string, unknown> = { status: newStatus };
+
+    const isRecurringEligible =
+      newStatus === "completed" &&
+      donor.donation_type === "monthly" &&
+      (donor.payment_method === "paypal" || donor.payment_method === "bank") &&
+      !donor.is_recurring_master &&
+      !donor.parent_donor_id;
+
+    if (isRecurringEligible) {
+      const nextDate = new Date();
+      nextDate.setMonth(nextDate.getMonth() + 1);
+      updateData.is_recurring_master = true;
+      updateData.recurring_active = true;
+      updateData.next_charge_date = nextDate.toISOString().split("T")[0];
+    }
+
+    await supabase.from("donors").update(updateData).eq("id", id);
     fetchDonors();
   };
 
   const handleConfirmAndSend = async (lang: 'de' | 'en', sendEmail: boolean) => {
     if (!confirmPopup) return;
     setSendingInvoice(true);
-    await supabase.from("donors").update({ status: confirmPopup.newStatus }).eq("id", confirmPopup.donor.id);
+
+    const updateData: Record<string, unknown> = { status: confirmPopup.newStatus };
+    const isRecurringEligible =
+      confirmPopup.newStatus === "completed" &&
+      confirmPopup.donor.donation_type === "monthly" &&
+      (confirmPopup.donor.payment_method === "paypal" || confirmPopup.donor.payment_method === "bank") &&
+      !confirmPopup.donor.is_recurring_master &&
+      !confirmPopup.donor.parent_donor_id;
+
+    if (isRecurringEligible) {
+      const nextDate = new Date();
+      nextDate.setMonth(nextDate.getMonth() + 1);
+      updateData.is_recurring_master = true;
+      updateData.recurring_active = true;
+      updateData.next_charge_date = nextDate.toISOString().split("T")[0];
+    }
+
+    await supabase.from("donors").update(updateData).eq("id", confirmPopup.donor.id);
     if (sendEmail) {
       const { doc, receiptNo } = generateInvoice(confirmPopup.donor, lang);
       const pdfBlob = doc.output('blob');
@@ -114,6 +160,31 @@ export default function AdminDonationsPage() {
     setSavingManual(false);
     setManualPopup(false);
     setManualForm({ name: "", email: "", amount: "", project: "general", donation_type: "once", payment_method: "cash" });
+    fetchDonors();
+  };
+
+  const handleStopRecurring = async () => {
+    if (!stopRecurringPopup) return;
+    setStoppingRecurring(true);
+
+    const masterId = stopRecurringPopup.parent_donor_id || stopRecurringPopup.id;
+
+    await supabase
+      .from("donors")
+      .update({ recurring_active: false, recurring_stopped_at: new Date().toISOString() })
+      .eq("id", masterId);
+
+    await fetch("/api/send-recurring-stopped", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: stopRecurringPopup.name,
+        email: stopRecurringPopup.email,
+      }),
+    });
+
+    setStoppingRecurring(false);
+    setStopRecurringPopup(null);
     fetchDonors();
   };
 
@@ -179,6 +250,7 @@ export default function AdminDonationsPage() {
     if (status === "abandoned") return <span className="flex items-center gap-1 text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full"><Clock size={12} />Abandoned</span>;
     if (status === "abandoned2") return <span className="flex items-center gap-1 text-xs text-orange-500 bg-orange-50 px-2 py-1 rounded-full"><Clock size={12} />Reminded</span>;
     if (status === "expired") return <span className="flex items-center gap-1 text-xs text-red-400 bg-red-50 px-2 py-1 rounded-full"><XCircle size={12} />Expired</span>;
+    if (status === "recurring_due") return <span className="flex items-center gap-1 text-xs text-purple-600 bg-purple-50 px-2 py-1 rounded-full"><Clock size={12} />Recurring Due</span>;
     return <span className="flex items-center gap-1 text-xs text-yellow-600 bg-yellow-50 px-2 py-1 rounded-full"><Clock size={12} />Pending</span>;
   };
 
@@ -278,6 +350,7 @@ export default function AdminDonationsPage() {
               <option value="abandoned">Abandoned</option>
               <option value="abandoned2">Reminded</option>
               <option value="expired">Expired</option>
+              <option value="recurring_due">Recurring Due</option>
             </select>
             <select value={filterMethod} onChange={(e) => setFilterMethod(e.target.value)}
               className="text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none">
@@ -350,9 +423,15 @@ export default function AdminDonationsPage() {
                 <input type="number" placeholder="Amount (€)" value={manualForm.amount}
                   onChange={(e) => setManualForm({ ...manualForm, amount: e.target.value })}
                   className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary" />
-                <input type="text" placeholder="Project ID (e.g. general)" value={manualForm.project}
+                <select value={manualForm.project}
                   onChange={(e) => setManualForm({ ...manualForm, project: e.target.value })}
-                  className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary" />
+                  className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none">
+                  <option value="general">General Donation</option>
+                  <option value="zakat">Zakat</option>
+                  {projects.map((p) => (
+                    <option key={p.id} value={p.id}>{p.title}</option>
+                  ))}
+                </select>
                 <select value={manualForm.donation_type}
                   onChange={(e) => setManualForm({ ...manualForm, donation_type: e.target.value })}
                   className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none">
@@ -378,6 +457,39 @@ export default function AdminDonationsPage() {
                   </button>
                   <button onClick={() => setManualPopup(false)}
                     className="w-full text-gray-300 hover:text-dark text-xs transition-colors">
+                    Cancel
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Stop Recurring Popup */}
+        {stopRecurringPopup && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-sm">
+              <h3 className="text-lg font-bold text-dark mb-2">⏹ Stop Subscription</h3>
+              <p className="text-gray-400 text-sm mb-2">
+                This will stop future monthly donations for <strong>{stopRecurringPopup.name}</strong>.
+              </p>
+              <p className="text-gray-400 text-sm mb-6">
+                No new recurring entries will be generated. A reminder email will be sent now, and a follow-up after one week.
+              </p>
+              {stoppingRecurring ? (
+                <div className="text-center text-gray-400 text-sm py-4">Stopping...</div>
+              ) : (
+                <>
+                  <button
+                    onClick={handleStopRecurring}
+                    className="w-full bg-red-500 hover:bg-red-600 text-white py-2.5 rounded-lg text-sm font-medium transition-colors mb-2"
+                  >
+                    ⏹ Stop & Notify Donor
+                  </button>
+                  <button
+                    onClick={() => setStopRecurringPopup(null)}
+                    className="w-full text-gray-300 hover:text-dark text-xs transition-colors mt-2"
+                  >
                     Cancel
                   </button>
                 </>
@@ -471,28 +583,45 @@ export default function AdminDonationsPage() {
                         {new Date(donor.created_at).toLocaleDateString()}
                       </td>
                       <td className="px-4 py-3">
-                        <div className="flex items-center gap-2">
-                          <select
-                              value={donor.status}
-                              onChange={(e) => updateStatus(donor.id, e.target.value, donor)}
-                              className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:border-primary transition-colors cursor-pointer"
-                            >
-                              <option value="pending">🕐 Pending</option>
-                              <option value="completed">✅ Completed</option>
-                              <option value="cancelled">❌ Cancelled</option>
-                              <option value="abandoned">🚫 Abandoned</option>
-                              <option value="abandoned2">🔔 Reminded</option>
-                              <option value="expired">⏰ Expired</option>
-                            </select>
-                          {donor.status === "completed" && (
+                        {donor.status === "recurring_due" ? (
+                          <div className="flex items-center gap-2">
                             <button
-                              onClick={() => setInvoicePopup(donor)}
-                              className="text-xs bg-primary/10 text-primary hover:bg-primary hover:text-white px-2 py-1.5 rounded-lg transition-colors font-medium"
+                              onClick={() => updateStatus(donor.id, "completed", donor)}
+                              className="text-xs bg-green-50 text-green-600 hover:bg-green-100 px-2 py-1.5 rounded-lg transition-colors font-medium"
                             >
-                              📄 Invoice
+                              ✅ Confirm Payment
                             </button>
-                          )}
-                        </div>
+                            <button
+                              onClick={() => setStopRecurringPopup(donor)}
+                              className="text-xs bg-red-50 text-red-500 hover:bg-red-100 px-2 py-1.5 rounded-lg transition-colors font-medium"
+                            >
+                              ⏹ Stop Subscription
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <select
+                                value={donor.status}
+                                onChange={(e) => updateStatus(donor.id, e.target.value, donor)}
+                                className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:border-primary transition-colors cursor-pointer"
+                              >
+                                <option value="pending">🕐 Pending</option>
+                                <option value="completed">✅ Completed</option>
+                                <option value="cancelled">❌ Cancelled</option>
+                                <option value="abandoned">🚫 Abandoned</option>
+                                <option value="abandoned2">🔔 Reminded</option>
+                                <option value="expired">⏰ Expired</option>
+                              </select>
+                            {donor.status === "completed" && (
+                              <button
+                                onClick={() => setInvoicePopup(donor)}
+                                className="text-xs bg-primary/10 text-primary hover:bg-primary hover:text-white px-2 py-1.5 rounded-lg transition-colors font-medium"
+                              >
+                                📄 Invoice
+                              </button>
+                            )}
+                          </div>
+                        )}
                       </td>
                     </tr>
                   ))}
