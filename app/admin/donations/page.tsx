@@ -37,6 +37,12 @@ export default function AdminDonationsPage() {
   const [invoicePopup, setInvoicePopup] = useState<Donor | null>(null);
   const [confirmPopup, setConfirmPopup] = useState<{donor: Donor, newStatus: string} | null>(null);
   const [sendingInvoice, setSendingInvoice] = useState(false);
+  const [manualPopup, setManualPopup] = useState(false);
+  const [manualForm, setManualForm] = useState({
+    name: "", email: "", amount: "", project: "general",
+    donation_type: "once", payment_method: "cash",
+  });
+  const [savingManual, setSavingManual] = useState(false);
 
   const handleLogin = () => {
     if (password === ADMIN_PASSWORD) {
@@ -90,6 +96,24 @@ export default function AdminDonationsPage() {
     }
     setSendingInvoice(false);
     setConfirmPopup(null);
+    fetchDonors();
+  };
+
+  const handleAddManual = async () => {
+    if (!manualForm.name || !manualForm.amount) return;
+    setSavingManual(true);
+    await supabase.from("donors").insert([{
+      name: manualForm.name,
+      email: manualForm.email || "manual@ghar-ngo.com",
+      amount: parseFloat(manualForm.amount),
+      donation_type: manualForm.donation_type,
+      project: manualForm.project,
+      payment_method: manualForm.payment_method,
+      status: "completed",
+    }]);
+    setSavingManual(false);
+    setManualPopup(false);
+    setManualForm({ name: "", email: "", amount: "", project: "general", donation_type: "once", payment_method: "cash" });
     fetchDonors();
   };
 
@@ -194,11 +218,17 @@ export default function AdminDonationsPage() {
             <h1 className="text-2xl font-bold text-dark">Donations Dashboard</h1>
             <p className="text-gray-400 text-sm mt-1">GHAR Organization — Admin Panel</p>
           </div>
-          <button onClick={exportCSV}
-            className="flex items-center gap-2 bg-primary hover:bg-secondary text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-            <Download size={16} />
-            Export CSV
-          </button>
+          <div className="flex items-center gap-3">
+            <button onClick={() => setManualPopup(true)}
+              className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+              + Add Manual Donation
+            </button>
+            <button onClick={exportCSV}
+              className="flex items-center gap-2 bg-primary hover:bg-secondary text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+              <Download size={16} />
+              Export CSV
+            </button>
+          </div>
         </div>
 
         {/* Stats */}
@@ -296,6 +326,58 @@ export default function AdminDonationsPage() {
                     onClick={() => setConfirmPopup(null)}
                     className="w-full text-gray-300 hover:text-dark text-xs transition-colors mt-2"
                   >
+                    Cancel
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Manual Donation Popup */}
+        {manualPopup && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-sm">
+              <h3 className="text-lg font-bold text-dark mb-2">➕ Add Manual Donation</h3>
+              <p className="text-gray-400 text-sm mb-6">For cash, bank transfer, or direct PayPal donations not registered on the website.</p>
+              <div className="flex flex-col gap-3 mb-4">
+                <input type="text" placeholder="Donor name" value={manualForm.name}
+                  onChange={(e) => setManualForm({ ...manualForm, name: e.target.value })}
+                  className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary" />
+                <input type="email" placeholder="Email (optional)" value={manualForm.email}
+                  onChange={(e) => setManualForm({ ...manualForm, email: e.target.value })}
+                  className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary" />
+                <input type="number" placeholder="Amount (€)" value={manualForm.amount}
+                  onChange={(e) => setManualForm({ ...manualForm, amount: e.target.value })}
+                  className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary" />
+                <input type="text" placeholder="Project ID (e.g. general)" value={manualForm.project}
+                  onChange={(e) => setManualForm({ ...manualForm, project: e.target.value })}
+                  className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary" />
+                <select value={manualForm.donation_type}
+                  onChange={(e) => setManualForm({ ...manualForm, donation_type: e.target.value })}
+                  className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none">
+                  <option value="once">One-time</option>
+                  <option value="monthly">Monthly</option>
+                </select>
+                <select value={manualForm.payment_method}
+                  onChange={(e) => setManualForm({ ...manualForm, payment_method: e.target.value })}
+                  className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none">
+                  <option value="cash">Cash</option>
+                  <option value="bank">Bank Transfer</option>
+                  <option value="paypal">PayPal (Direct)</option>
+                </select>
+              </div>
+              {savingManual ? (
+                <div className="text-center text-gray-400 text-sm py-4">Saving...</div>
+              ) : (
+                <>
+                  <button onClick={handleAddManual}
+                    disabled={!manualForm.name || !manualForm.amount}
+                    className="w-full bg-green-600 hover:bg-green-700 text-white py-2.5 rounded-lg text-sm font-medium transition-colors mb-2 disabled:opacity-50">
+                    ✅ Add as Completed
+                  </button>
+                  <button onClick={() => setManualPopup(false)}
+                    className="w-full text-gray-300 hover:text-dark text-xs transition-colors">
                     Cancel
                   </button>
                 </>
