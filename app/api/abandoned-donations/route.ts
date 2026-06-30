@@ -10,8 +10,8 @@ const supabase = createClient(
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 const REMINDER_INTERVALS = [
-  { hours: 24, reminderNumber: 1, fromStatus: "abandoned", toStatus: "abandoned2" },
-  { hours: 48, reminderNumber: 2, fromStatus: "abandoned2", toStatus: "abandoned2" },
+  { hours: 48, reminderNumber: 1, fromStatus: "abandoned", toStatus: "abandoned2" },
+  { hours: 120, reminderNumber: 2, fromStatus: "abandoned2", toStatus: "abandoned2" },
   { hours: 168, reminderNumber: 3, fromStatus: "abandoned2", toStatus: "expired" },
 ];
 
