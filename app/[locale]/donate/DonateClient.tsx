@@ -134,13 +134,20 @@ export default function DonateClient({
   const [stripeClientSecret, setStripeClientSecret] = useState<string | null>(null);
   const [stripeLoading, setStripeLoading] = useState(false);
   const [donorId, setDonorId] = useState<string | null>(null);
+  const [emailError, setEmailError] = useState("");
   const qrCanvasRef = useRef<HTMLCanvasElement>(null);
   const t = useTranslations("donate");
   const locale = useLocale();
 
   const finalAmount = customAmount ? parseFloat(customAmount) : selectedAmount;
   const fullName = `${firstName} ${lastName}`.trim();
-  const isFormValid = !!(firstName && lastName && email && finalAmount);
+
+  const validateEmail = (val: string) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(val);
+  };
+
+  const isFormValid = !!(firstName && lastName && email && finalAmount && !emailError && validateEmail(email));
 
   const isMonthly = donationType === "monthly";
 
@@ -554,9 +561,29 @@ export default function DonateClient({
                       onChange={(e) => setLastName(e.target.value)}
                       className="flex-1 border border-gray-200 rounded-lg px-4 py-3 text-sm text-dark focus:outline-none focus:border-primary transition-colors" />
                   </div>
-                  <input type="email" placeholder={t("emailPlaceholder")} value={email}
-                    onChange={(e) => setEmail(e.target.value.toLowerCase())}
-                    className="border border-gray-200 rounded-lg px-4 py-3 text-sm text-dark focus:outline-none focus:border-primary transition-colors" />
+                  <div className="flex flex-col gap-1">
+                    <input type="email" placeholder={t("emailPlaceholder")} value={email}
+                      onChange={(e) => {
+                        const val = e.target.value.toLowerCase();
+                        setEmail(val);
+                        setEmailError(val && !validateEmail(val) ? (
+                          locale === "ar" ? "يرجى إدخال بريد إلكتروني صحيح" :
+                          locale === "de" ? "Bitte geben Sie eine gültige E-Mail-Adresse ein" :
+                          "Please enter a valid email address"
+                        ) : "");
+                      }}
+                      onBlur={() => {
+                        if (email && !validateEmail(email)) {
+                          setEmailError(
+                            locale === "ar" ? "يرجى إدخال بريد إلكتروني صحيح" :
+                            locale === "de" ? "Bitte geben Sie eine gültige E-Mail-Adresse ein" :
+                            "Please enter a valid email address"
+                          );
+                        }
+                      }}
+                      className={`border rounded-lg px-4 py-3 text-sm text-dark focus:outline-none transition-colors ${emailError ? "border-red-400 focus:border-red-400" : "border-gray-200 focus:border-primary"}`} />
+                    {emailError && <p className="text-red-500 text-xs">{emailError}</p>}
+                  </div>
                 </div>
               </div>
 
