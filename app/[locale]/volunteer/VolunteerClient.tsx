@@ -128,7 +128,10 @@ export default function VolunteerClient({ jobs }: { jobs: Job[] }) {
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                   className="border border-gray-200 rounded-lg px-4 py-3 text-sm text-dark focus:outline-none focus:border-primary transition-colors" />
                 <input type="tel" placeholder={t("phonePlaceholder")} value={form.phone}
-                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/[^0-9+\s\-()]/g, "");
+                    setForm({ ...form, phone: val });
+                  }}
                   className="border border-gray-200 rounded-lg px-4 py-3 text-sm text-dark focus:outline-none focus:border-primary transition-colors" />
               </div>
               <div className="flex flex-col gap-1">
