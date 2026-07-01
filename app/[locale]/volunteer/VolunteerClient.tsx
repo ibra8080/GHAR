@@ -50,6 +50,7 @@ export default function VolunteerClient({ jobs }: { jobs: Job[] }) {
   const [form, setForm] = useState({ name: "", phone: "", email: "", country: "", specialty: "", availability: "", message: "", linkedin_url: "" });
   const [cvFile, setCvFile] = useState<File | null>(null);
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [emailError, setEmailError] = useState("");
   const t = useTranslations("volunteer");
   const locale = useLocale();
 
@@ -130,9 +131,21 @@ export default function VolunteerClient({ jobs }: { jobs: Job[] }) {
                   onChange={(e) => setForm({ ...form, phone: e.target.value })}
                   className="border border-gray-200 rounded-lg px-4 py-3 text-sm text-dark focus:outline-none focus:border-primary transition-colors" />
               </div>
-              <input type="email" placeholder={t("emailPlaceholder")} value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value.toLowerCase() })}
-                className="border border-gray-200 rounded-lg px-4 py-3 text-sm text-dark focus:outline-none focus:border-primary transition-colors" />
+              <div className="flex flex-col gap-1">
+                <input type="email" placeholder={t("emailPlaceholder")} value={form.email}
+                  onChange={(e) => {
+                    const val = e.target.value.toLowerCase();
+                    setForm({ ...form, email: val });
+                    setEmailError(val && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) ? "Please enter a valid email address" : "");
+                  }}
+                  onBlur={() => {
+                    if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+                      setEmailError("Please enter a valid email address");
+                    }
+                  }}
+                  className={`border rounded-lg px-4 py-3 text-sm text-dark focus:outline-none transition-colors ${emailError ? "border-red-400 focus:border-red-400" : "border-gray-200 focus:border-primary"}`} />
+                {emailError && <p className="text-red-500 text-xs">{emailError}</p>}
+              </div>
               <input type="text" placeholder={t("countryPlaceholder")} value={form.country}
                 onChange={(e) => setForm({ ...form, country: e.target.value })}
                 className="border border-gray-200 rounded-lg px-4 py-3 text-sm text-dark focus:outline-none focus:border-primary transition-colors" />
@@ -171,7 +184,7 @@ export default function VolunteerClient({ jobs }: { jobs: Job[] }) {
               {status === "success" && <p className="text-secondary text-sm text-center">{t("successMessage")}</p>}
               {status === "error" && <p className="text-red-500 text-sm text-center">{t("errorMessage")}</p>}
               <button onClick={handleSubmit}
-                disabled={status === "loading" || !form.name || !form.email || !form.country || !form.specialty || !form.availability}
+                disabled={status === "loading" || !form.name || !form.email || !form.country || !form.specialty || !form.availability || !!emailError}
                 className="bg-primary hover:bg-secondary text-white py-3 rounded-lg font-semibold text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                 {status === "loading" ? t("submitting") : t("submitApplication")}
               </button>
