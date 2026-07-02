@@ -47,9 +47,12 @@ export default async function Home({
     }
   }
 
+  const homeProjects = projects.filter((p: { showOnHome?: boolean }) => p.showOnHome);
+
   return (
     <HomeClient
       projects={projects}
+      homeProjects={homeProjects}
       news={news}
       heroSlides={heroSlides}
       stats={stats}

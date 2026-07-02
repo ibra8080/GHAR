@@ -50,6 +50,7 @@ type Project = {
   category: string;
   raised: number;
   goal: number;
+  showOnHome?: boolean;
 };
 
 type NewsItem = {
@@ -90,6 +91,7 @@ type HomeContent = {
 
 export default function HomeClient({
   projects,
+  homeProjects,
   news,
   heroSlides,
   stats,
@@ -97,6 +99,7 @@ export default function HomeClient({
   raisedByProject,
 }: {
   projects: Project[];
+  homeProjects: Project[];
   news: NewsItem[];
   heroSlides: HeroSlide[];
   stats: Stat[];
@@ -185,7 +188,7 @@ export default function HomeClient({
       <section className="py-16 px-4 md:px-8 max-w-7xl mx-auto">
         <h2 className="text-3xl font-bold text-dark mb-10 text-center">{t("projects")}</h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          {projects.slice(0, 4).map((project, i) => (
+          {(homeProjects.length > 0 ? homeProjects : projects.slice(0, 4)).map((project, i) => (
             <Link key={i} href={`/${locale}/projects/${project.id}`} className="rounded-xl overflow-hidden shadow-md bg-white flex flex-col hover:shadow-lg transition-shadow group">
               <div className="relative h-48">
                 <Image
@@ -225,6 +228,14 @@ export default function HomeClient({
             </Link>
           ))}
         </div>
+        {projects.length > homeProjects.length && homeProjects.length > 0 && (
+          <div className="text-center mt-8">
+            <Link href={`/${locale}/projects`}
+              className="inline-flex items-center gap-2 text-primary hover:text-secondary font-medium text-sm transition-colors border border-primary hover:border-secondary px-6 py-2 rounded-lg">
+              {locale === "ar" ? "عرض جميع المشاريع" : locale === "de" ? "Alle Projekte anzeigen" : "View All Projects"} →
+            </Link>
+          </div>
+        )}
       </section>
 
       {/* Quote Section */}

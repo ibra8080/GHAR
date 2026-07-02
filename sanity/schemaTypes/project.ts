@@ -88,5 +88,12 @@ export const project = defineType({
       type: 'array',
       of: [{ type: 'string' }],
     }),
+    defineField({
+      name: 'showOnHome',
+      title: 'Show on Home Page',
+      type: 'boolean',
+      description: 'Show this project on the home page',
+      initialValue: false,
+    }),
   ],
 });

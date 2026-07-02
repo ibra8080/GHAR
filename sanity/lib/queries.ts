@@ -21,6 +21,7 @@ export async function getProjects() {
         "detailsAr": details.ar,
         "detailsDe": details.de,
         impact,
+        showOnHome,
       }
     `);
   } catch {
