@@ -36,6 +36,17 @@ export default async function Home({
     raisedByProject[project.id] = (raisedByProject[project.id] || 0) + (project.raised || 0);
   }
 
+  const generalTotal = (donors || [])
+    .filter(d => d.project === "general" || d.project === "zakat")
+    .reduce((sum, d) => sum + (d.amount || 0), 0);
+
+  if (generalTotal > 0 && projects.length > 0) {
+    const perProject = generalTotal / projects.length;
+    for (const project of projects) {
+      raisedByProject[project.id] = (raisedByProject[project.id] || 0) + perProject;
+    }
+  }
+
   return (
     <HomeClient
       projects={projects}

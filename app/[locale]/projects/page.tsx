@@ -44,6 +44,18 @@ export default async function ProjectsPage({
     raisedByProject[project.id] = (raisedByProject[project.id] || 0) + (project.raised || 0);
   }
 
+  // توزيع general وzakat بالتساوي على المشاريع
+  const generalTotal = (donors || [])
+    .filter(d => d.project === "general" || d.project === "zakat")
+    .reduce((sum, d) => sum + (d.amount || 0), 0);
+
+  if (generalTotal > 0 && projects.length > 0) {
+    const perProject = generalTotal / projects.length;
+    for (const project of projects) {
+      raisedByProject[project.id] = (raisedByProject[project.id] || 0) + perProject;
+    }
+  }
+
   const heroImage = projectsPage?.heroImage || "/images/ProjectCards1.png";
   const heroTitle = locale === "ar" ? projectsPage?.heroTitleAr : locale === "de" ? projectsPage?.heroTitleDe : projectsPage?.heroTitle;
   const heroSubtitle = locale === "ar" ? projectsPage?.heroSubtitleAr : locale === "de" ? projectsPage?.heroSubtitleDe : projectsPage?.heroSubtitle;
