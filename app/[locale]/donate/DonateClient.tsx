@@ -311,11 +311,7 @@ export default function DonateClient({
     if (!saved) { setStatus("error"); return; }
     setStatus("success_paypal");
     const paypalUrl = `https://www.paypal.com/donate?business=${paypalEmail}&amount=${finalAmount}&currency_code=EUR`;
-    if (isInAppBrowser()) {
-      window.location.href = paypalUrl;
-    } else {
-      window.open(paypalUrl, "_blank");
-    }
+    window.location.href = paypalUrl;
   };
 
   const handleBankTransfer = async () => {
