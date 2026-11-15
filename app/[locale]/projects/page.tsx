@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { getProjects, getProjectsPage } from "@/sanity/lib/queries";
 import { createClient } from "@supabase/supabase-js";
 import ProjectsClient from "./ProjectsClient";
+import { computeRaisedByProject } from "@/lib/computeRaisedByProject";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -32,29 +33,7 @@ export default async function ProjectsPage({
       .eq("status", "completed"),
   ]);
 
-  // مجموع التبرعات المكتملة من Supabase لكل مشروع
-  const raisedByProject: Record<string, number> = {};
-  for (const donor of donors || []) {
-    if (!donor.project || donor.project === "general" || donor.project === "zakat") continue;
-    raisedByProject[donor.project] = (raisedByProject[donor.project] || 0) + (donor.amount || 0);
-  }
-
-  // إضافة الـ raised اليدوي من Sanity
-  for (const project of projects) {
-    raisedByProject[project.id] = (raisedByProject[project.id] || 0) + (project.raised || 0);
-  }
-
-  // توزيع general وzakat بالتساوي على المشاريع
-  const generalTotal = (donors || [])
-    .filter(d => d.project === "general" || d.project === "zakat")
-    .reduce((sum, d) => sum + (d.amount || 0), 0);
-
-  if (generalTotal > 0 && projects.length > 0) {
-    const perProject = generalTotal / projects.length;
-    for (const project of projects) {
-      raisedByProject[project.id] = (raisedByProject[project.id] || 0) + perProject;
-    }
-  }
+  const raisedByProject = computeRaisedByProject(donors, projects);
 
   const heroImage = projectsPage?.heroImage || "/images/ProjectCards1.png";
   const heroTitle = locale === "ar" ? projectsPage?.heroTitleAr : locale === "de" ? projectsPage?.heroTitleDe : projectsPage?.heroTitle;

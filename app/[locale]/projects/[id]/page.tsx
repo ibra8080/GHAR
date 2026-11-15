@@ -6,6 +6,8 @@ import { client } from "@/sanity/lib/client";
 import { notFound } from "next/navigation";
 import { getCountryName } from "@/lib/utils";
 import { createClient } from "@supabase/supabase-js";
+import { getProjects } from "@/sanity/lib/queries";
+import { computeRaisedByProject } from "@/lib/computeRaisedByProject";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -54,14 +56,13 @@ export default async function ProjectDetailPage({
   if (!project) notFound();
 
   // جلب التبرعات المكتملة من Supabase لهذا المشروع
-  const { data: donors } = await supabase
-    .from("donors")
-    .select("amount")
-    .eq("project", id)
-    .eq("status", "completed");
+  const [{ data: donors }, allProjects] = await Promise.all([
+    supabase.from("donors").select("project, amount").eq("status", "completed"),
+    getProjects(),
+  ]);
 
-  const supabaseRaised = (donors || []).reduce((sum, d) => sum + (d.amount || 0), 0);
-  const totalRaised = (project.raised || 0) + supabaseRaised;
+  const raisedByProject = computeRaisedByProject(donors, allProjects);
+  const totalRaised = raisedByProject[id] || 0;
   const progress = Math.min(Math.round((totalRaised / (project.goal || 1)) * 100), 100);
 
   const getTitle = () => locale === "ar" ? project.titleAr : locale === "de" ? project.titleDe : project.title;
