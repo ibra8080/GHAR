@@ -426,35 +426,35 @@ export default function DonateClient({
             <h3 className="text-dark font-bold text-base mb-4">
               {locale === "ar" ? "بيانات التحويل البنكي" : locale === "de" ? "Bankverbindung" : "Bank Transfer Details"}
             </h3>
-            <div className="flex gap-6 items-start">
-              <div className="flex flex-col gap-2 flex-1">
+            <div className="flex flex-col-reverse md:flex-row gap-6 items-center md:items-start">
+              <div className="flex flex-col gap-2 w-full md:flex-1 min-w-0">
                 <div className="flex justify-between gap-3">
                   <span className="text-gray-500 text-sm shrink-0">
                     {locale === "ar" ? "المستفيد:" : locale === "de" ? "Empfänger:" : "Recipient:"}
                   </span>
                   <span className="text-dark font-medium text-sm text-right break-words">{recipientName}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500 text-sm">Bank:</span>
+                <div className="flex justify-between gap-3">
+                  <span className="text-gray-500 text-sm shrink-0">Bank:</span>
                   <span className="text-dark font-medium text-sm">{bankName}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500 text-sm">IBAN:</span>
-                  <span className="text-dark font-medium text-sm font-mono">{bankIban}</span>
+                <div className="flex justify-between gap-3">
+                  <span className="text-gray-500 text-sm shrink-0">IBAN:</span>
+                  <span className="text-dark font-medium text-sm font-mono break-all text-right">{bankIban}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500 text-sm">BIC:</span>
+                <div className="flex justify-between gap-3">
+                  <span className="text-gray-500 text-sm shrink-0">BIC:</span>
                   <span className="text-dark font-medium text-sm font-mono">{bankBic}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500 text-sm">
+                <div className="flex justify-between gap-3">
+                  <span className="text-gray-500 text-sm shrink-0">
                     {locale === "ar" ? "المبلغ:" : locale === "de" ? "Betrag:" : "Amount:"}
                   </span>
                   <span className="text-primary font-bold text-lg">€{finalAmount}</span>
                 </div>
                 {isMonthly && (
-                  <div className="flex justify-between">
-                    <span className="text-gray-500 text-sm">
+                  <div className="flex justify-between gap-3">
+                    <span className="text-gray-500 text-sm shrink-0">
                       {locale === "ar" ? "التكرار:" : locale === "de" ? "Rhythmus:" : "Frequency:"}
                     </span>
                     <span className="text-secondary font-bold text-sm">
@@ -462,11 +462,11 @@ export default function DonateClient({
                     </span>
                   </div>
                 )}
-                <div className="flex justify-between">
-                  <span className="text-gray-500 text-sm">
+                <div className="flex justify-between gap-3">
+                  <span className="text-gray-500 text-sm shrink-0">
                     {locale === "ar" ? "المرجع:" : locale === "de" ? "Verwendungszweck:" : "Reference:"}
                   </span>
-                  <span className="text-dark font-medium text-sm">{fullName} — {selectedProject}</span>
+                  <span className="text-dark font-medium text-sm text-right break-words">{fullName} — {selectedProject}</span>
                 </div>
               </div>
               <div className="flex flex-col items-center gap-2 shrink-0">
