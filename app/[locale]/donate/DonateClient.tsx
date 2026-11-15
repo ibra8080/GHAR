@@ -166,6 +166,7 @@ export default function DonateClient({
   const bankIban = siteSettings?.bankIban || 'BE88 9053 4986 3041';
   const bankBic = siteSettings?.bankBic || 'TRWIBEB1XXX';
   const bankName = siteSettings?.bankName || 'Wise';
+  const recipientName = 'German Humanitarian Relief Organization e.V.';
 
   useEffect(() => {
     fetch('https://ipapi.co/json/')
@@ -183,7 +184,7 @@ export default function DonateClient({
       const epcData = [
         'BCD', '002', '1', 'SCT',
         bankBic,
-        'German Humanitarian Relief Organization e.V.',
+        recipientName,
         bankIban.replace(/\s/g, ''),
         `EUR${(finalAmount || 0).toFixed(2)}`,
         '',
@@ -196,7 +197,7 @@ export default function DonateClient({
         color: { dark: '#1A6FA0', light: '#FFFFFF' },
       });
     }
-  }, [status, bankBic, bankIban, finalAmount, fullName, selectedProject]);
+  }, [status, bankBic, bankIban, recipientName, finalAmount, fullName, selectedProject]);
 
   // ─── Payment Intent تلقائي عند اكتمال البيانات ─────────
   useEffect(() => {
@@ -427,6 +428,12 @@ export default function DonateClient({
             </h3>
             <div className="flex gap-6 items-start">
               <div className="flex flex-col gap-2 flex-1">
+                <div className="flex justify-between gap-3">
+                  <span className="text-gray-500 text-sm shrink-0">
+                    {locale === "ar" ? "المستفيد:" : locale === "de" ? "Empfänger:" : "Recipient:"}
+                  </span>
+                  <span className="text-dark font-medium text-sm text-right break-words">{recipientName}</span>
+                </div>
                 <div className="flex justify-between">
                   <span className="text-gray-500 text-sm">Bank:</span>
                   <span className="text-dark font-medium text-sm">{bankName}</span>
